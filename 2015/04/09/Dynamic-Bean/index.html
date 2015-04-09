@@ -4,21 +4,48 @@
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="chrome=1">
   
-  <title>磐石</title>
+  <title>Dynamic Bean | 磐石</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
   
     <meta name="author" content="danielding">
   
   
-  <meta name="description" content="danielding&apos;s blog | java | bi">
-<meta property="og:type" content="website">
-<meta property="og:title" content="磐石">
-<meta property="og:url" content="https://danieldingzju.github.io/index.html">
+    <meta name="description" content="突然对一些基础类库的代码感了兴趣，于是最先看起了apache的commons-beanutils这个包，然后顺藤摸瓜式的了解javabean和dynamic bean相关的知识。
+common-beanutils-1.9.2此包主要功能如下：
+创建动态的JavaBean及相关的util类型代码。
+主要类的关系图如下：
+
+
+DynaClass, DynaProperty, DynaBean用来动态生">
+  
+  <meta name="description" content="突然对一些基础类库的代码感了兴趣，于是最先看起了apache的commons-beanutils这个包，然后顺藤摸瓜式的了解javabean和dynamic bean相关的知识。
+common-beanutils-1.9.2此包主要功能如下：
+创建动态的JavaBean及相关的util类型代码。
+主要类的关系图如下：
+
+
+DynaClass, DynaProperty, DynaBean用来动态生">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Dynamic Bean">
+<meta property="og:url" content="https://danieldingzju.github.io/2015/04/09/Dynamic-Bean/index.html">
 <meta property="og:site_name" content="磐石">
-<meta property="og:description" content="danielding&apos;s blog | java | bi">
+<meta property="og:description" content="突然对一些基础类库的代码感了兴趣，于是最先看起了apache的commons-beanutils这个包，然后顺藤摸瓜式的了解javabean和dynamic bean相关的知识。
+common-beanutils-1.9.2此包主要功能如下：
+创建动态的JavaBean及相关的util类型代码。
+主要类的关系图如下：
+
+
+DynaClass, DynaProperty, DynaBean用来动态生">
+<meta property="og:image" content="http://tempwork.qiniudn.com/apache-beanutils-class-diagram.jpg">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="磐石">
-<meta name="twitter:description" content="danielding&apos;s blog | java | bi">
+<meta name="twitter:title" content="Dynamic Bean">
+<meta name="twitter:description" content="突然对一些基础类库的代码感了兴趣，于是最先看起了apache的commons-beanutils这个包，然后顺藤摸瓜式的了解javabean和dynamic bean相关的知识。
+common-beanutils-1.9.2此包主要功能如下：
+创建动态的JavaBean及相关的util类型代码。
+主要类的关系图如下：
+
+
+DynaClass, DynaProperty, DynaBean用来动态生">
   
   
   <link rel="stylesheet" href="/css/style.css" type="text/css">
@@ -48,13 +75,7 @@
   </nav>
   <div class="clearfix"></div>
 </header>
-    <div class="content">
-
-
-
-
-  
-    <article class="post">
+    <div class="content"><article class="post">
   <header>
     
       <div class="icon"></div>
@@ -66,7 +87,7 @@
     
     
   
-    <h1 class="title"><a href="/2015/04/09/Dynamic-Bean/">Dynamic Bean</a></h1>
+    <h1 class="title">Dynamic Bean</h1>
   
 
   </header>
@@ -132,7 +153,7 @@
 
     
   </div>
-  <footer class="end-sep">
+  <footer>
     
       
       
@@ -142,93 +163,11 @@
 </article>
 
 
-  
-    <article class="post">
-  <header>
-    
-      <div class="icon"></div>
-      <a href="/2015/04/09/JavaBeans-TM/">
-  <time datetime="2015-04-09T02:12:55.000Z">
-    4月 9 2015
-  </time>
-</a>
-    
-    
-  
-    <h1 class="title"><a href="/2015/04/09/JavaBeans-TM/">JavaBeans(TM)</a></h1>
-  
-
-  </header>
-  
-  <div class="entry">
-    
-      <p>JavaBeans是为了定义出最小的可复用的组件，具备移植性和复用性，类似com+组件。</p>
-<p>Java Bean由properties，event，method(listen methods)组成。</p>
-<p>JavaBeans定义了一堆规范和利用了listener design pattern来完成properties变化事件和自定义事件的监听。</p>
-<p><img src="http://tempwork.qiniudn.com/beans.jpg" alt="JavaBeans交互图"></p>
-
-    
+<section id="comment">
+  <h1 class="title">评论</h1>
+  <div class="ds-thread" data-title="Dynamic Bean">
   </div>
-  <footer class="end-sep">
-    
-      
-      
-    
-    <div class="clearfix"></div>
-  </footer>
-</article>
-
-
-  
-    <article class="post">
-  <header>
-    
-      <div class="icon"></div>
-      <a href="/2015/03/24/hello-world/">
-  <time datetime="2015-03-24T02:16:39.000Z">
-    3月 24 2015
-  </time>
-</a>
-    
-    
-  
-    <h1 class="title"><a href="/2015/03/24/hello-world/">Hello World</a></h1>
-  
-
-  </header>
-  
-  <div class="entry">
-    
-      <p>Welcome to <a href="http://hexo.io/" target="_blank" rel="external">Hexo</a>! This is your very first post. Check <a href="http://hexo.io/docs/" target="_blank" rel="external">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a href="http://hexo.io/docs/troubleshooting.html" target="_blank" rel="external">troubleshooting</a> or you can ask me on <a href="https://github.com/hexojs/hexo/issues" target="_blank" rel="external">GitHub</a>.</p>
-<h2 id="Quick_Start">Quick Start</h2><h3 id="Create_a_new_post">Create a new post</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo new <span class="string">"My New Post"</span></span><br></pre></td></tr></table></figure>
-<p>More info: <a href="http://hexo.io/docs/writing.html" target="_blank" rel="external">Writing</a></p>
-<h3 id="Run_server">Run server</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo server</span><br></pre></td></tr></table></figure>
-<p>More info: <a href="http://hexo.io/docs/server.html" target="_blank" rel="external">Server</a></p>
-<h3 id="Generate_static_files">Generate static files</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo generate</span><br></pre></td></tr></table></figure>
-<p>More info: <a href="http://hexo.io/docs/generating.html" target="_blank" rel="external">Generating</a></p>
-<h3 id="Deploy_to_remote_sites">Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure>
-<p>More info: <a href="http://hexo.io/docs/deployment.html" target="_blank" rel="external">Deployment</a></p>
-
-    
-  </div>
-  <footer class="end-sep">
-    
-      
-      
-    
-    <div class="clearfix"></div>
-  </footer>
-</article>
-
-
-  
-
-  <nav id="pagination">
-  
-  
-  <div class="clearfix"></div>
-</nav>
-
+</section>
 </div>
   </div>
   <footer id="footer"><div class="copyright">

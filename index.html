@@ -73,11 +73,11 @@
   
   <div class="entry">
     
-      <p>突然对一些基础类库的代码感了兴趣，于是最先看起了apache的commons-beanutils这个包，然后顺藤摸瓜式的了解javabeans和dynamic bean相关的知识。</p>
+      <p>突然对一些基础类库的代码感了兴趣，于是最先看起了Apache的commons-beanutils这个包，然后顺藤摸瓜式的了解JavaBeans和Dynamic Bean相关的知识。</p>
 <h3 id="common-beanutils-1-9-2">common-beanutils-1.9.2</h3><p>此包主要功能如下：</p>
 <pre><code>创建动态的JavaBean及相关的util类型代码。
 </code></pre><p>主要类的关系图如下：</p>
-<p><img src="http://tempwork.qiniudn.com/apache-beanutils-class-diagram.jpg" alt="主要类图" title="Title"></p>
+<p><img src="http://tempwork.qiniudn.com/commons-beanutils" alt="主要类图" title="Title"></p>
 <ul>
 <li><p>DynaClass, DynaProperty, DynaBean用来动态生成JavaBean, 主要使用了Java的原生包：java.lang.reflect &amp; java.beans</p>
 </li>
@@ -125,8 +125,8 @@
         ac.runExample();
     }
 }
-</code></pre><p>所以看着这个使用的方式感觉还是蛮有意思的，可以动态的生成自己想要的<em>JavaBean</em>。</p>
-<p>这个时候就开始好奇这个包会有什么问题呢？比如性能上面？然后就搜到了<a href="http://blog.athico.com/2006/11/just-say-no-to-dynabeans.html" title="反对使用beanutils包" target="_blank" rel="external">这个</a>。<strong>Drools</strong>很早就开始反对使用这种方式来构建<strong>JavaBeans</strong>，理由很简单，系统兼容性不好，说这个包虽然实现的<strong>Dynamic Bean</strong>的功能，但是生成的DynaBean是不符合<strong>JavaBeans</strong>的规范的，将会引发一系列的代码兼容性的问题，所以不建议商业系统环境使用这个包—例如主流的ORM框架都只支持规范的<strong>JavaBeans</strong>。我们看代码可以发现<code>DynaBean</code>使用的是一个<code>Map&lt;String, DynaProperty&gt;</code>来存储属性的。</p>
+</code></pre><p>所以看着这个使用的方式感觉还是蛮有意思的，可以动态的生成自己想要的<em>“Java Bean”</em>。</p>
+<p>这个时候就开始好奇这个包会有什么问题呢？比如性能上面？然后就搜到了<a href="http://blog.athico.com/2006/11/just-say-no-to-dynabeans.html" title="反对使用beanutils包" target="_blank" rel="external">这个</a>。<strong>Drools</strong>很早就开始反对使用这种方式来构建<strong>Java Bean</strong>，理由很简单，系统兼容性不好，说这个包虽然实现的<strong>Dynamic Bean</strong>的功能，但是生成的DynaBean是不符合<strong>JavaBeans</strong>的规范的，将会引发一系列的代码兼容性的问题，所以不建议商业系统环境使用这个包—例如主流的ORM框架都只支持规范的<strong>JavaBeans</strong>。我们看代码可以发现<code>DynaBean</code>使用的是一个<code>Map&lt;String, DynaProperty&gt;</code>来存储属性的。</p>
 <p>那么现在问题来了，什么是<strong>JavaBeans</strong> ?</p>
 <h3 id="JavaBean">JavaBean</h3><p>参阅<a href="http://download.oracle.com/otndocs/jcp/7224-javabeans-1.01-fr-spec-oth-JSpec/" target="_blank" rel="external">JavaBeans(TM) Specification</a>官方的文档，移步<a href="http://melody-dc.com/2015/04/09/JavaBeans-TM/" target="_blank" rel="external">解读大纲</a>。所以这个包是通过使用Introspection相关的类来实现<strong>Dynamic Bean</strong>，而不是构造符合<strong>JavaBeans</strong>规范的类.所以<strong>Drools</strong>就推荐使用了cglib来实现<strong>Dynamic Bean</strong>, 移步此<a href="http://sixlegs.com/blog/java/death-to-dynabeans.html" target="_blank" rel="external">参考</a>。</p>
 

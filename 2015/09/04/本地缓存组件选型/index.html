@@ -4,21 +4,40 @@
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="chrome=1">
   
-  <title>磐石</title>
+  <title>本地缓存组件选型 | 磐石</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
   
     <meta name="author" content="danielding">
   
   
-  <meta name="description" content="danielding&apos;s blog | java | bi">
-<meta property="og:type" content="website">
-<meta property="og:title" content="磐石">
-<meta property="og:url" content="https://danieldingzju.github.io/index.html">
+    <meta name="description" content="本地缓存组件选型需要： 记录系统执行数据，能持久化，容错。
+Guava官网就没有说有persistent的功能，直接略过。
+ehcache企业版需要缴费，然后持久化功能和保证重启可用的功能都需要缴费。
+看看开源版ehcache的是否可以满足，现状是：可以在只是DiskStore相关配置，让cache把内容序列化后直接overflow到文件。现在问题是：
+重启重启以后，是重新新建文件并覆盖同名文件—">
+  
+  <meta name="description" content="本地缓存组件选型需要： 记录系统执行数据，能持久化，容错。
+Guava官网就没有说有persistent的功能，直接略过。
+ehcache企业版需要缴费，然后持久化功能和保证重启可用的功能都需要缴费。
+看看开源版ehcache的是否可以满足，现状是：可以在只是DiskStore相关配置，让cache把内容序列化后直接overflow到文件。现在问题是：
+重启重启以后，是重新新建文件并覆盖同名文件—">
+<meta property="og:type" content="article">
+<meta property="og:title" content="本地缓存组件选型">
+<meta property="og:url" content="https://danieldingzju.github.io/2015/09/04/本地缓存组件选型/index.html">
 <meta property="og:site_name" content="磐石">
-<meta property="og:description" content="danielding&apos;s blog | java | bi">
+<meta property="og:description" content="本地缓存组件选型需要： 记录系统执行数据，能持久化，容错。
+Guava官网就没有说有persistent的功能，直接略过。
+ehcache企业版需要缴费，然后持久化功能和保证重启可用的功能都需要缴费。
+看看开源版ehcache的是否可以满足，现状是：可以在只是DiskStore相关配置，让cache把内容序列化后直接overflow到文件。现在问题是：
+重启重启以后，是重新新建文件并覆盖同名文件—">
+<meta property="og:image" content="http://7oxfl2.com1.z0.glb.clouddn.com/思路.jpg">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="磐石">
-<meta name="twitter:description" content="danielding&apos;s blog | java | bi">
+<meta name="twitter:title" content="本地缓存组件选型">
+<meta name="twitter:description" content="本地缓存组件选型需要： 记录系统执行数据，能持久化，容错。
+Guava官网就没有说有persistent的功能，直接略过。
+ehcache企业版需要缴费，然后持久化功能和保证重启可用的功能都需要缴费。
+看看开源版ehcache的是否可以满足，现状是：可以在只是DiskStore相关配置，让cache把内容序列化后直接overflow到文件。现在问题是：
+重启重启以后，是重新新建文件并覆盖同名文件—">
   
   
   <link rel="stylesheet" href="/css/style.css" type="text/css">
@@ -48,13 +67,7 @@
   </nav>
   <div class="clearfix"></div>
 </header>
-    <div class="content">
-
-
-
-
-  
-    <article class="post">
+    <div class="content"><article class="post">
   <header>
     
       <div class="icon"></div>
@@ -66,7 +79,7 @@
     
     
   
-    <h1 class="title"><a href="/2015/09/04/本地缓存组件选型/">本地缓存组件选型</a></h1>
+    <h1 class="title">本地缓存组件选型</h1>
   
 
   </header>
@@ -167,7 +180,7 @@ cacheManager.addCache(cache1Name);
 
     
   </div>
-  <footer class="end-sep">
+  <footer>
     
       
       
@@ -177,182 +190,11 @@ cacheManager.addCache(cache1Name);
 </article>
 
 
-  
-    <article class="post">
-  <header>
-    
-      <div class="icon"></div>
-      <a href="/2015/04/09/Dynamic-Bean/">
-  <time datetime="2015-04-09T02:19:28.000Z">
-    4月 9 2015
-  </time>
-</a>
-    
-    
-  
-    <h1 class="title"><a href="/2015/04/09/Dynamic-Bean/">Dynamic Bean</a></h1>
-  
-
-  </header>
-  
-  <div class="entry">
-    
-      <p>突然对一些基础类库的代码感了兴趣，于是最先看起了Apache的commons-beanutils这个包，然后顺藤摸瓜式的了解JavaBeans和Dynamic Bean相关的知识。</p>
-<h3 id="common-beanutils-1-9-2">common-beanutils-1.9.2</h3><p>此包主要功能如下：</p>
-<pre><code>创建动态的JavaBean及相关的util类型代码。
-</code></pre><p>主要类的关系图如下：</p>
-<p><img src="http://tempwork.qiniudn.com/apache-beanutils-class-diagram.jpg" alt="主要类图" title="Title"></p>
-<ul>
-<li><p>DynaClass, DynaProperty, DynaBean用来动态生成JavaBean, 主要使用了Java的原生包：java.lang.reflect &amp; java.beans</p>
-</li>
-<li><p>BeanUtilsBean是单例, 包含拷贝属性，克隆bean等util方法。</p>
-</li>
-</ul>
-<p>举个<a href="http://www.javadb.com/simple-dynabean-example-apache-commons-beanutils/" title="beanutils实践例子" target="_blank" rel="external">栗子</a>：</p>
-<pre><code><span class="preprocessor"><span class="keyword">import</span> org.apache.commons.beanutils.BasicDynaClass;</span>
-<span class="preprocessor"><span class="keyword">import</span> org.apache.commons.beanutils.DynaBean;</span>
-<span class="preprocessor"><span class="keyword">import</span> org.apache.commons.beanutils.DynaClass;</span>
-<span class="preprocessor"><span class="keyword">import</span> org.apache.commons.beanutils.DynaProperty;</span>
-
-<span class="comment">/**
- *
-  * @author www.javadb.com
-  */</span>
-<span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">DynaBeanExample</span> </span>{
-
-    <span class="keyword">private</span> <span class="keyword">final</span> String NR_OF_WHEELS = <span class="string">"numberOfWheels"</span>;
-
-    <span class="keyword">private</span> <span class="keyword">void</span> runExample() {
-
-        DynaClass dynaClass = <span class="keyword">new</span> BasicDynaClass(<span class="string">"Car"</span>, <span class="literal">null</span>,
-            <span class="keyword">new</span> DynaProperty[]{
-                <span class="keyword">new</span> DynaProperty(NR_OF_WHEELS, Integer.TYPE)});
-
-        <span class="keyword">try</span> {
-            DynaBean car = dynaClass.newInstance();
-            car.<span class="keyword">set</span>(NR_OF_WHEELS, <span class="number">4</span>);
-
-               System.out.println(<span class="string">"Number of wheels: "</span> + car.<span class="keyword">get</span>(NR_OF_WHEELS));
-
-            System.out.println(<span class="string">"DynaBean is instance of DynaClass: "</span> + car.getDynaClass().getName());
-
-        } <span class="keyword">catch</span> (IllegalAccessException | InstantiationException ex) {
-            System.err.println(ex.getMessage());
-        }
-    }
-
-   <span class="comment">/**
-     * @param args the command line arguments
-     */</span>
-    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> main(String[] args) {
-        DynaBeanExample ac = <span class="keyword">new</span> DynaBeanExample();
-        ac.runExample();
-    }
-}
-</code></pre><p>所以看着这个使用的方式感觉还是蛮有意思的，可以动态的生成自己想要的<em>“Java Bean”</em>。</p>
-<p>这个时候就开始好奇这个包会有什么问题呢？比如性能上面？然后就搜到了<a href="http://blog.athico.com/2006/11/just-say-no-to-dynabeans.html" title="反对使用beanutils包" target="_blank" rel="external">这个</a>。<strong>Drools</strong>很早就开始反对使用这种方式来构建<strong>Java Bean</strong>，理由很简单，系统兼容性不好，说这个包虽然实现的<strong>Dynamic Bean</strong>的功能，但是生成的DynaBean是不符合<strong>JavaBeans</strong>的规范的，将会引发一系列的代码兼容性的问题，所以不建议商业系统环境使用这个包—例如主流的ORM框架都只支持规范的<strong>JavaBeans</strong>。我们看代码可以发现<code>DynaBean</code>使用的是一个<code>Map&lt;String, DynaProperty&gt;</code>来存储属性的。</p>
-<p>那么现在问题来了，什么是<strong>JavaBeans</strong> ?</p>
-<h3 id="JavaBean">JavaBean</h3><p>参阅<a href="http://download.oracle.com/otndocs/jcp/7224-javabeans-1.01-fr-spec-oth-JSpec/" target="_blank" rel="external">JavaBeans(TM) Specification</a>官方的文档，移步<a href="http://melody-dc.com/2015/04/09/JavaBeans-TM/" target="_blank" rel="external">解读大纲</a>。所以这个包是通过使用Introspection相关的类来实现<strong>Dynamic Bean</strong>，而不是构造符合<strong>JavaBeans</strong>规范的类.所以<strong>Drools</strong>就推荐使用了cglib来实现<strong>Dynamic Bean</strong>, 移步此<a href="http://sixlegs.com/blog/java/death-to-dynabeans.html" target="_blank" rel="external">参考</a>。</p>
-
-    
+<section id="comment">
+  <h1 class="title">评论</h1>
+  <div class="ds-thread" data-title="本地缓存组件选型">
   </div>
-  <footer class="end-sep">
-    
-      
-      
-    
-    <div class="clearfix"></div>
-  </footer>
-</article>
-
-
-  
-    <article class="post">
-  <header>
-    
-      <div class="icon"></div>
-      <a href="/2015/04/09/JavaBeans-TM/">
-  <time datetime="2015-04-09T02:12:55.000Z">
-    4月 9 2015
-  </time>
-</a>
-    
-    
-  
-    <h1 class="title"><a href="/2015/04/09/JavaBeans-TM/">JavaBeans(TM)</a></h1>
-  
-
-  </header>
-  
-  <div class="entry">
-    
-      <p>JavaBeans是为了定义出最小的可复用的组件，具备移植性和复用性，类似com+组件。</p>
-<p>Java Bean由properties，event，method(listen methods)组成。</p>
-<p>JavaBeans定义了一堆规范和利用了listener design pattern来完成properties变化事件和自定义事件的监听。</p>
-<p><img src="http://tempwork.qiniudn.com/beans.jpg" alt="JavaBeans交互图"></p>
-
-    
-  </div>
-  <footer class="end-sep">
-    
-      
-      
-    
-    <div class="clearfix"></div>
-  </footer>
-</article>
-
-
-  
-    <article class="post">
-  <header>
-    
-      <div class="icon"></div>
-      <a href="/2015/03/24/hello-world/">
-  <time datetime="2015-03-24T02:16:39.000Z">
-    3月 24 2015
-  </time>
-</a>
-    
-    
-  
-    <h1 class="title"><a href="/2015/03/24/hello-world/">Hello World</a></h1>
-  
-
-  </header>
-  
-  <div class="entry">
-    
-      <p>Welcome to <a href="http://hexo.io/" target="_blank" rel="external">Hexo</a>! This is your very first post. Check <a href="http://hexo.io/docs/" target="_blank" rel="external">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a href="http://hexo.io/docs/troubleshooting.html" target="_blank" rel="external">troubleshooting</a> or you can ask me on <a href="https://github.com/hexojs/hexo/issues" target="_blank" rel="external">GitHub</a>.</p>
-<h2 id="Quick_Start">Quick Start</h2><h3 id="Create_a_new_post">Create a new post</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo new <span class="string">"My New Post"</span></span><br></pre></td></tr></table></figure>
-<p>More info: <a href="http://hexo.io/docs/writing.html" target="_blank" rel="external">Writing</a></p>
-<h3 id="Run_server">Run server</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo server</span><br></pre></td></tr></table></figure>
-<p>More info: <a href="http://hexo.io/docs/server.html" target="_blank" rel="external">Server</a></p>
-<h3 id="Generate_static_files">Generate static files</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo generate</span><br></pre></td></tr></table></figure>
-<p>More info: <a href="http://hexo.io/docs/generating.html" target="_blank" rel="external">Generating</a></p>
-<h3 id="Deploy_to_remote_sites">Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure>
-<p>More info: <a href="http://hexo.io/docs/deployment.html" target="_blank" rel="external">Deployment</a></p>
-
-    
-  </div>
-  <footer class="end-sep">
-    
-      
-      
-    
-    <div class="clearfix"></div>
-  </footer>
-</article>
-
-
-  
-
-  <nav id="pagination">
-  
-  
-  <div class="clearfix"></div>
-</nav>
-
+</section>
 </div>
   </div>
   <footer id="footer"><div class="copyright">

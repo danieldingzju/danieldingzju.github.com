@@ -161,7 +161,8 @@ cacheManager.addCache(cache1Name);
 </code></pre><p>这个构造函数，消息队列是默认11个的PriorityQueue，所以机器中断可能导致数据还在queue里面没被写入到磁盘。这个组件不能用了！！！</p>
 <h2 id="OSCache">OSCache</h2><p>名声挺好的，搜了下，已经不维护了，略过</p>
 <h2 id="JCS">JCS</h2><p>JCS是插件式管看着很棒，persistent功能介绍也很强大，符合我的需求，看了一眼bugfix清单，关于persistet的bug那么多，最新的版本还是beta的，完全不敢用，不想自找麻烦。</p>
-<h2 id="FQueue">FQueue</h2><p>转换下思路了。如果说持久化要做到可靠性最佳，理论上面就应该是同步插入数据到磁盘；如果还要保证消费的顺序性，想了一种方案，如下<img src="http://7oxfl2.com1.z0.glb.clouddn.com/思路.jpg" alt="思路">：</p>
+<h2 id="FQueue">FQueue</h2><p>转换下思路了。如果说持久化要做到可靠性最佳，理论上面就应该是同步插入数据到磁盘；如果还要保证消费的顺序性，想了一种方案，如下:</p>
+<p><img src="http://7oxfl2.com1.z0.glb.clouddn.com/思路.jpg" alt="思路">：</p>
 <p>虽然很开心的想出来了，但是可靠性却不能保证啊。我们的存储使用的是HBASE，scheme设计是：rowkey用index，所有相同index的记录都需要记录到一行记录里面。如果我再搞一个持久化的重试队列，Queue的Element先poll出来，push到retryQueue extends LinkedList，并在内存存储retryQueue的Element和位置的关系Map，然后等异步插入HBase数据完成之后，利用内存关系来做删除，这个时候有两个问题：</p>
 <ol>
 <li><p>fQueue使用是FIFO的Queue，如何在记录位置并删除呢，效率是否有影响？想象下多个线程同时操作一个文件。如果要做的可能需要学ehcache的方式，在内存里面映射文件为一个map，做segment分段加锁，然后在内存中删除，同时交给一个只有一个线程的线程池异步删除对应文件数据，那这样最多就2个线程抢占一个文件，一个写入，一个删除；那么问题来了，因为是异步，所以可能存在crash的时候内存删除了，文件数据没删除的情况，对异常恢复造成影响，如同后面都2情况。</p>

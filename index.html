@@ -73,7 +73,7 @@
   
   <div class="entry">
     
-      <h3 id="本地缓存组件选型">本地缓存组件选型</h3><p>需要： 记录系统执行数据，能持久化，容错。</p>
+      <p>需求： 记录系统执行数据，能持久化，容错。</p>
 <h2 id="Guava">Guava</h2><p>官网就没有说有persistent的功能，直接略过。</p>
 <h2 id="ehcache">ehcache</h2><p>企业版需要缴费，然后持久化功能和保证重启可用的功能都需要缴费。</p>
 <p>看看开源版ehcache的是否可以满足，现状是：可以在只是DiskStore相关配置，让cache把内容序列化后直接overflow到文件。<br>现在问题是：</p>

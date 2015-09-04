@@ -10,34 +10,34 @@
     <meta name="author" content="danielding">
   
   
-    <meta name="description" content="本地缓存组件选型需要： 记录系统执行数据，能持久化，容错。
+    <meta name="description" content="需求： 记录系统执行数据，能持久化，容错。
 Guava官网就没有说有persistent的功能，直接略过。
 ehcache企业版需要缴费，然后持久化功能和保证重启可用的功能都需要缴费。
 看看开源版ehcache的是否可以满足，现状是：可以在只是DiskStore相关配置，让cache把内容序列化后直接overflow到文件。现在问题是：
-重启重启以后，是重新新建文件并覆盖同名文件—">
+重启重启以后，是重新新建文件并覆盖同名文件—也就是之前同名c">
   
-  <meta name="description" content="本地缓存组件选型需要： 记录系统执行数据，能持久化，容错。
+  <meta name="description" content="需求： 记录系统执行数据，能持久化，容错。
 Guava官网就没有说有persistent的功能，直接略过。
 ehcache企业版需要缴费，然后持久化功能和保证重启可用的功能都需要缴费。
 看看开源版ehcache的是否可以满足，现状是：可以在只是DiskStore相关配置，让cache把内容序列化后直接overflow到文件。现在问题是：
-重启重启以后，是重新新建文件并覆盖同名文件—">
+重启重启以后，是重新新建文件并覆盖同名文件—也就是之前同名c">
 <meta property="og:type" content="article">
 <meta property="og:title" content="本地缓存组件选型">
 <meta property="og:url" content="https://danieldingzju.github.io/2015/09/04/本地缓存组件选型/index.html">
 <meta property="og:site_name" content="磐石">
-<meta property="og:description" content="本地缓存组件选型需要： 记录系统执行数据，能持久化，容错。
+<meta property="og:description" content="需求： 记录系统执行数据，能持久化，容错。
 Guava官网就没有说有persistent的功能，直接略过。
 ehcache企业版需要缴费，然后持久化功能和保证重启可用的功能都需要缴费。
 看看开源版ehcache的是否可以满足，现状是：可以在只是DiskStore相关配置，让cache把内容序列化后直接overflow到文件。现在问题是：
-重启重启以后，是重新新建文件并覆盖同名文件—">
+重启重启以后，是重新新建文件并覆盖同名文件—也就是之前同名c">
 <meta property="og:image" content="http://7oxfl2.com1.z0.glb.clouddn.com/思路.jpg">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="本地缓存组件选型">
-<meta name="twitter:description" content="本地缓存组件选型需要： 记录系统执行数据，能持久化，容错。
+<meta name="twitter:description" content="需求： 记录系统执行数据，能持久化，容错。
 Guava官网就没有说有persistent的功能，直接略过。
 ehcache企业版需要缴费，然后持久化功能和保证重启可用的功能都需要缴费。
 看看开源版ehcache的是否可以满足，现状是：可以在只是DiskStore相关配置，让cache把内容序列化后直接overflow到文件。现在问题是：
-重启重启以后，是重新新建文件并覆盖同名文件—">
+重启重启以后，是重新新建文件并覆盖同名文件—也就是之前同名c">
   
   
   <link rel="stylesheet" href="/css/style.css" type="text/css">
@@ -86,7 +86,7 @@ ehcache企业版需要缴费，然后持久化功能和保证重启可用的功�
   
   <div class="entry">
     
-      <h3 id="本地缓存组件选型">本地缓存组件选型</h3><p>需要： 记录系统执行数据，能持久化，容错。</p>
+      <p>需求： 记录系统执行数据，能持久化，容错。</p>
 <h2 id="Guava">Guava</h2><p>官网就没有说有persistent的功能，直接略过。</p>
 <h2 id="ehcache">ehcache</h2><p>企业版需要缴费，然后持久化功能和保证重启可用的功能都需要缴费。</p>
 <p>看看开源版ehcache的是否可以满足，现状是：可以在只是DiskStore相关配置，让cache把内容序列化后直接overflow到文件。<br>现在问题是：</p>

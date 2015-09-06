@@ -165,6 +165,164 @@ cacheManager.addCache(cache1Name);
 </li>
 </ol>
 <p>恩，现在感觉完美了。</p>
+<p>FQueue默认文件大小是300M，用400个线程同时创建文件，ssd 硬盘，2.5GCPU的配置直接卡爆。然后调整为默认为1M。重写了三个类：FQueue.java, FSQueue.java, LogEntity.java</p>
+<p>HMFQueue.java</p>
+<pre><code><span class="function"><span class="keyword">public</span> <span class="title">HMFQueue</span><span class="params">(String path)</span> <span class="keyword">throws</span> Exception </span>{
+    fsQueue = <span class="keyword">new</span> HMFSQueue(path, <span class="number">1024</span> * <span class="number">1024</span> * <span class="number">1</span>); <span class="comment">//默认是1M大小</span>
+}
+
+<span class="annotation">@Override</span>
+<span class="comment">//not thread safe, be careful , 添加了iterator的支持，需要修改FSQueue和LogEntity</span>
+<span class="keyword">public</span> Iterator&lt;<span class="keyword">byte</span>[]&gt; iterator() {
+    <span class="keyword">try</span> {
+        fsQueue.curseToHead();
+    } <span class="keyword">catch</span> (IOException e) {
+        log.<span class="keyword">error</span>(<span class="string">" cannot open the file!"</span>,e );
+        <span class="keyword">throw</span> <span class="keyword">new</span> UnsupportedOperationException(<span class="string">"failed to move to head!"</span>);
+    } <span class="keyword">catch</span> (FileFormatException e) {
+        log.<span class="keyword">error</span>(<span class="string">"failed to move to head! the file format is wrong"</span>,e );
+        <span class="keyword">throw</span> <span class="keyword">new</span> UnsupportedOperationException(<span class="string">"failed to move to head!"</span>);
+    }
+
+    <span class="keyword">return</span> <span class="keyword">new</span> Iterator&lt;<span class="keyword">byte</span>[]&gt;() {
+
+        <span class="annotation">@Override</span>
+         <span class="keyword">public</span> <span class="function"><span class="keyword">boolean</span> <span class="title">hasNext</span><span class="params">()</span> </span>{
+            <span class="function"><span class="keyword">return</span> fsQueue.<span class="title">hasNext</span><span class="params">()</span></span>;
+        }
+
+        <span class="annotation">@Override</span>
+        <span class="keyword">public</span> <span class="keyword">byte</span>[] next() {
+            <span class="function"><span class="keyword">return</span> fsQueue.<span class="title">readNextAndMove</span><span class="params">()</span></span>;
+        }
+
+        <span class="annotation">@Override</span>
+        <span class="keyword">public</span> <span class="function"><span class="keyword">void</span> <span class="title">remove</span><span class="params">()</span> </span>{
+            <span class="keyword">throw</span> <span class="keyword">new</span> UnsupportedOperationException(<span class="string">"remove operation is not supported here!"</span>);
+        }
+    };
+}
+</code></pre><p>HMFSQueue.java 添加如下方法支持文件的重头读取和遍历</p>
+<pre><code><span class="comment">//not thread safe 定位到文件的头部，更新index</span>
+<span class="keyword">public</span> <span class="function"><span class="keyword">void</span> <span class="title">curseToHead</span><span class="params">()</span>  <span class="keyword">throws</span> IOException, FileFormatException </span>{
+    <span class="keyword">int</span> fileNum = -<span class="number">1</span>;
+    File dir = <span class="keyword">new</span> File(path);
+    <span class="keyword">if</span>(dir.exists() &amp;&amp; dir.isDirectory()){
+        <span class="keyword">if</span>(dir.listFiles() != <span class="keyword">null</span> &amp;&amp; dir.listFiles().length &gt; <span class="number">0</span>){
+            <span class="keyword">for</span>(<span class="keyword">int</span> i = <span class="number">1</span>; i &lt; Integer.MAX_VALUE; i++){
+                String fileName = path + fileSeparator + filePrefix + <span class="string">"data_"</span> + i + <span class="string">".idb"</span>;
+                File file = <span class="keyword">new</span> File(fileName);
+                <span class="keyword">if</span>(file.exists()){
+                    fileNum = i;
+                    <span class="keyword">break</span>;
+                }
+            }
+            <span class="keyword">if</span>(fileNum != -<span class="number">1</span>){
+                <span class="keyword">if</span> (writerHandle.getCurrentFileNumber() == fileNum) {
+                    readerHandle = writerHandle;
+                }<span class="keyword">else</span>{
+                    readerHandle = createLogEntity(path + fileSeparator + filePrefix + <span class="string">"data_"</span> + fileNum + <span class="string">".idb"</span>, db,
+                            fileNum);
+                }
+                readerHandle.resetReaderPosition();
+            }
+        }
+    }
+}
+
+<span class="comment">//not thread safe 判断是否有下一条数据</span>
+<span class="keyword">public</span> <span class="function"><span class="keyword">boolean</span> <span class="title">hasNext</span><span class="params">()</span></span>{
+    <span class="keyword">byte</span>[] b = <span class="keyword">null</span>;
+    <span class="keyword">try</span> {
+        b = readerHandle.readNext();
+    } <span class="keyword">catch</span> (FileEOFException e) {
+        <span class="keyword">int</span> nextfile = readerHandle.getNextFile();
+        readerHandle.close();
+        <span class="comment">// 更新下一次读取的位置和索引</span>
+        db.putReaderPosition(HMLogEntity.messageStartPosition);
+        db.putReaderIndex(nextfile);
+        <span class="keyword">if</span> (writerHandle.getCurrentFileNumber() == nextfile) {
+            readerHandle = writerHandle;
+        } <span class="keyword">else</span> {
+            <span class="keyword">try</span> {
+                readerHandle = createLogEntity(path + fileSeparator + filePrefix + <span class="string">"data_"</span> + nextfile + <span class="string">".idb"</span>, db,
+                        nextfile);
+            } <span class="keyword">catch</span> (IOException e1) {
+                log.<span class="keyword">error</span>(<span class="string">"failed to read file: "</span> + path + fileSeparator + filePrefix + <span class="string">"data_"</span> + nextfile + <span class="string">".idb"</span>,e1);
+            } <span class="keyword">catch</span> (FileFormatException e1) {
+                log.<span class="keyword">error</span>(<span class="string">"the file has wrong format: "</span> + path + fileSeparator + filePrefix + <span class="string">"data_"</span> + nextfile + <span class="string">".idb"</span>, e1);
+            }
+        }
+        <span class="keyword">try</span> {
+            b = readerHandle.readNext();
+        } <span class="keyword">catch</span> (FileEOFException e1) {
+            log.<span class="keyword">error</span>(<span class="string">"read new log file FileEOFException error occurred"</span>,e1);
+        }
+    }
+    <span class="keyword">if</span> (b != <span class="keyword">null</span>) {
+        <span class="keyword">return</span> <span class="keyword">true</span>;
+    }
+    <span class="keyword">return</span> <span class="keyword">false</span>;
+}
+
+<span class="comment">//not thread safe 读取下一个并且更新索引</span>
+<span class="keyword">public</span> <span class="keyword">byte</span>[] readNextAndMove(){
+    <span class="keyword">byte</span>[] b = <span class="keyword">null</span>;
+    <span class="keyword">try</span> {
+        b = readerHandle.readNextAndMove();
+    } <span class="keyword">catch</span> (FileEOFException e) {
+        <span class="keyword">int</span> nextfile = readerHandle.getNextFile();
+        readerHandle.close();
+        <span class="comment">// 更新下一次读取的位置和索引</span>
+        db.putReaderPosition(HMLogEntity.messageStartPosition);
+        db.putReaderIndex(nextfile);
+        <span class="keyword">if</span> (writerHandle.getCurrentFileNumber() == nextfile) {
+            readerHandle = writerHandle;
+        } <span class="keyword">else</span> {
+            <span class="keyword">try</span> {
+                readerHandle = createLogEntity(path + fileSeparator + filePrefix + <span class="string">"data_"</span> + nextfile + <span class="string">".idb"</span>, db,
+                        nextfile);
+            } <span class="keyword">catch</span> (IOException e1) {
+                log.<span class="keyword">error</span>(<span class="string">"failed to read file: "</span> + path + fileSeparator + filePrefix + <span class="string">"data_"</span> + nextfile + <span class="string">".idb"</span>, e1);
+            } <span class="keyword">catch</span> (FileFormatException e1) {
+                log.<span class="keyword">error</span>(<span class="string">"the file has wrong format: "</span> + path + fileSeparator + filePrefix + <span class="string">"data_"</span> + nextfile + <span class="string">".idb"</span>, e1);
+            }
+        }
+        <span class="keyword">try</span> {
+            b = readerHandle.readNextAndMove();
+        } <span class="keyword">catch</span> (FileEOFException e1) {
+            log.<span class="keyword">error</span>(<span class="string">"read new log file FileEOFException error occurred"</span>,e1);
+        }
+    }
+    <span class="keyword">return</span> b;
+}
+
+<span class="comment">//删除消息队列相关数据文件</span>
+<span class="keyword">public</span> <span class="function"><span class="keyword">void</span> <span class="title">delQueue</span><span class="params">()</span> <span class="keyword">throws</span> IOException, FileFormatException </span>{
+    FileUtils.deleteDirectory(<span class="keyword">new</span> File(path));
+}
+</code></pre><p>HMLogEntity.java</p>
+<pre><code><span class="keyword">public</span> HMLogEntity(<span class="built_in">String</span> path, LogIndex db, int fileNumber,
+                 int fileLimitLength) throws IOException, FileFormatException {
+    <span class="attribute">...</span><span class="attribute">...</span><span class="built_in">..
+    </span><span class="keyword">if</span> (file<span class="built_in">.</span>exists() <span class="subst">==</span> <span class="literal">false</span>) {
+        createLogEntity();
+        <span class="comment">//FileRunner.addCreateFile(Integer.toString(fileNumber + 1)); //注释掉，如果文件切片为1M时候，提前创建有问题：由于是异步的，消费的时候会存在还没有创建成功，写入失败的情况。</span>
+    } <span class="keyword">else</span> {
+        <span class="attribute">...</span><span class="attribute">...</span><span class="built_in">..
+    </span>}      
+}
+</code></pre><p>测试下性能，单线程写20W的数据花了9s；</p>
+<p>但是多线程写入多个文件性能和稳定性可能有问题了：</p>
+<ol>
+<li><p>400个线程，每个线程创建自己的文件，写入300条数据，遍历300条数据，删除自己创建写入的文件总共要6.1s，且写入正常。</p>
+</li>
+<li><p>400个线程，每个线程创建自己的文件，写入400条数据，遍历400条数据，删除自己创建写入的文件出现写入失败和读取失败的情况：240个线程写入完成，133个线程遍历完成，且没有异常抛出。</p>
+</li>
+<li><p>600个线程，每个线程创建自己的文件，写入300条数据，遍历300条数据，删除自己创建写入的文件出现写入失败和读取失败的情况：244个线程写入完成，160个线程遍历完成，且没有异常抛出。</p>
+</li>
+</ol>
+<p>1的情况已经是达到了临界值。2，3都会出现不稳定的情况，我去，这个是啥原因呢？？百思不得其解。</p>
 
     
   </div>

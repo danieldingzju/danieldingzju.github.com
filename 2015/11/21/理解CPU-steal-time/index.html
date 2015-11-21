@@ -1,0 +1,210 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="chrome=1">
+  
+  <title>理解CPU steal time | 磐石</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  
+    <meta name="author" content="danielding">
+  
+  
+    <meta name="description" content="x 很关注CPU的Steal Time。他们的策略是：如果是当前虚拟机的Steal Time 超过了你们设置的 阈值，他们会关闭这台虚拟机并且在另外一台物理机上面重启。
+如果你想要部署虚拟环境（例如：Amazon EC2）， steal time就是你想要关注的性能指标之一。 如果这个指标的数值很高，那么说明机器状态非常糟糕。什么是steal time？什么会引发高steal time？多少才是警">
+  
+  <meta name="description" content="x 很关注CPU的Steal Time。他们的策略是：如果是当前虚拟机的Steal Time 超过了你们设置的 阈值，他们会关闭这台虚拟机并且在另外一台物理机上面重启。
+如果你想要部署虚拟环境（例如：Amazon EC2）， steal time就是你想要关注的性能指标之一。 如果这个指标的数值很高，那么说明机器状态非常糟糕。什么是steal time？什么会引发高steal time？多少才是警">
+<meta property="og:type" content="article">
+<meta property="og:title" content="理解CPU steal time">
+<meta property="og:url" content="https://danieldingzju.github.io/2015/11/21/理解CPU-steal-time/index.html">
+<meta property="og:site_name" content="磐石">
+<meta property="og:description" content="x 很关注CPU的Steal Time。他们的策略是：如果是当前虚拟机的Steal Time 超过了你们设置的 阈值，他们会关闭这台虚拟机并且在另外一台物理机上面重启。
+如果你想要部署虚拟环境（例如：Amazon EC2）， steal time就是你想要关注的性能指标之一。 如果这个指标的数值很高，那么说明机器状态非常糟糕。什么是steal time？什么会引发高steal time？多少才是警">
+<meta property="og:image" content="https://dl.dropboxusercontent.com/u/468982/blog/steal/top_steal.png">
+<meta property="og:image" content="https://dl.dropboxusercontent.com/u/468982/blog/steal/movie_line.png">
+<meta property="og:image" content="https://dl.dropboxusercontent.com/u/468982/blog/steal/steal_scenarios.png">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="理解CPU steal time">
+<meta name="twitter:description" content="x 很关注CPU的Steal Time。他们的策略是：如果是当前虚拟机的Steal Time 超过了你们设置的 阈值，他们会关闭这台虚拟机并且在另外一台物理机上面重启。
+如果你想要部署虚拟环境（例如：Amazon EC2）， steal time就是你想要关注的性能指标之一。 如果这个指标的数值很高，那么说明机器状态非常糟糕。什么是steal time？什么会引发高steal time？多少才是警">
+  
+  
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+  
+  <link rel="stylesheet" href="/css/style.css" type="text/css">
+  <!--[if lt IE 9]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+  
+  
+<script type="text/javascript">
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "//hm.baidu.com/hm.js?e36f59d471ddc16c84ea8f9ea2e342ed";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+
+</head>
+
+<body>
+  <div class="wrapper">
+    <header id="header">
+  <div class="title">
+    <h1><a href="/">磐石</a></h1>
+    <p><a href="/">工程狮</a></p>
+  </div>
+  <nav class="nav">
+    <ul>
+      
+        <li><a href="/archives">Archives</a></li>
+      
+        <li><a href="/reading">Reading</a></li>
+      
+        <li><a href="/about">About</a></li>
+      
+      
+    </ul>
+    <div class="clearfix"></div>
+  </nav>
+  <div class="clearfix"></div>
+</header>
+    <div class="content"><article class="post">
+  <header>
+    
+      <div class="icon"></div>
+      <a href="/2015/11/21/理解CPU-steal-time/">
+  <time datetime="2015-11-21T06:37:04.000Z">
+    11月 21 2015
+  </time>
+</a>
+    
+    
+  
+    <h1 class="title">理解CPU steal time</h1>
+  
+
+  </header>
+  
+  <div class="entry">
+    
+      <p>x 很关注CPU的Steal Time。他们的策略是：如果是当前虚拟机的Steal Time 超过了你们设置的 阈值，他们会关闭这台虚拟机并且在另外一台物理机上面重启。</p>
+<p>如果你想要部署虚拟环境（例如：Amazon EC2）， steal time就是你想要关注的性能指标之一。 如果这个指标的数值很高，那么说明机器状态非常糟糕。什么是steal time？什么会引发高steal time？多少才是警戒值（你需要做什么）？</p>
+<h3 id="CPU_Steal_Time_的定义">CPU Steal Time 的定义</h3><p>From <a href="ibm.com">ibm</a>:</p>
+<pre><code>Steal <span class="built_in">time</span> is <span class="operator">the</span> percentage <span class="operator">of</span> <span class="built_in">time</span> <span class="operator">a</span> virtual CPU waits <span class="keyword">for</span> <span class="operator">a</span> real CPU <span class="keyword">while</span> <span class="operator">the</span> hypervisor is servicing another virtual processor.
+</code></pre><p>你的虚拟机（VM）会与虚拟环境的宿主机上的多个虚拟机实例共享物理资源。其中之一共享的就是CPU时间切片。如果你的VM的物理机虚拟比是1/4， 那么它的CPU使用率不会限制于25%的CPU时间切片－它能够使用超过它设置的虚拟比。（有别于内存的使用，内存大小是严格控制的）。</p>
+<h3 id="哪里可以看到CPU_Steal_Time?">哪里可以看到CPU Steal Time?</h3><p>你可以使用Linux 的 TOP 命令来看到实时的一些性能指标。CPU相关的其中一行内容如下：<br><img src="https://dl.dropboxusercontent.com/u/468982/blog/steal/top_steal.png" alt="top"><br>两个你可能较为熟悉的是 %id(空闲 百分比) 和 %wa(I/O 等待 百分比)。 如果 %id 很低， 那么说明CPU的工作负载很大并且没有多少计算负载能力剩余。 如果 %wa 很高，则说明瓶 CPU 处于等待计算的状态，但是正在等待I/O活动的完成(类似 从数据库中获取存储在 磁盘上 的一行数据)。</p>
+<p>%st（percent steal time） 是CPU展示的最后一个性能指标。</p>
+<h3 id="CPU_Steal_Time_-_the_ticket_booth_analogy">CPU Steal Time - the ticket booth analogy</h3><p>假设你打算买了若干张最新的好莱坞大片的电影票，且有两条队伍等待买票和一个售票口：</p>
+<p><img src="https://dl.dropboxusercontent.com/u/468982/blog/steal/movie_line.png" alt="Movie Theater"></p>
+<p>如果我们把 CPU steal time 性能指标 类比成 售票的过程， 那么过程就是如下：</p>
+<ul>
+<li><p><strong>0% Steal Time</strong> - 现在是礼拜三下午场：售票口正在工作，先处理第一条队伍的电影观众，然后处理第二条，然后第一条，然后第二条，轮流进行。处理的很快，且没有人在等待。</p>
+</li>
+<li><p><strong>50% Steal Time</strong> - 现在是礼拜五晚上： 在队伍中的一个人有一半的时间需要等待另一个在售票口的人完成卖票，而不能立刻买到票。卖票的时间更长了。</p>
+</li>
+<li><p><strong>100% Steal Time</strong> - 现在是礼拜五晚上并且 现金出纳金 坏了：所有人都在等待。</p>
+</li>
+</ul>
+<h3 id="为什么高_Steal_Time_会对web应用有更大的影响">为什么高 Steal Time 会对web应用有更大的影响</h3><p>如果有你在负载未满的物理机器上面运行一个长时间的计算任务，那么它可能会使用超过它额定的CPU切片 时间。过一段时间，可能其他的VMs可能也会需要超过它们额定量的CPU切片 时间，所以这个任务的执行会变慢。对于长时间计算任务而言之，这个情况可能并不是不能接受的：它可能是会晚点一完成或者也可能更快的完成（由于它能够使用更多的资源）。</p>
+<p>然后，这种情况能够时代web应用停止响应。对于实时任务，类似快速响应许多的web请求，性能下降到1/4会对请求队列执行对应备选逻辑—中断请求。</p>
+<h3 id="Steal_Time远高于0的原因">Steal Time远高于0的原因</h3><p>这里有两种可能性：</p>
+<ol>
+<li><p>你需要一个额定更多CPU资源的虚拟机（你的虚拟机<strong>是</strong>问题）</p>
+</li>
+<li><p>物理机已经超卖了并且多个虚拟机之间在激烈的竞争资源（你的虚拟机<strong>不是</strong>问题）</p>
+</li>
+</ol>
+<p>提示：<strong>你不能通过看当前被影响的虚拟机实例的CPU性能指标来判断你所遇到的场景。（1 or 2）</strong> 当你有很多的虚拟宿主机上分别都部署了相同职责的服务程序（可能作为集群）时，就比较容易知道自己遇到的问题了。</p>
+<p><img src="https://dl.dropboxusercontent.com/u/468982/blog/steal/steal_scenarios.png" alt="资源图片"></p>
+<ul>
+<li><p>是否 %st(CPU Steal Time Percentage) 在所有机器上面都上涨了？</p>
+<p>  这个意味着你的虚拟机在使用更多的CPU资源。你需要为你的虚拟起增加更多的CPU资源的配额。</p>
+</li>
+<li><p>是否%st(CPU Steal Time Percentage) 只在一部分机器上面陡峭增长？</p>
+<p>  这个意味着物理机器被超卖了。把你自己的虚拟机挪到另一个物理机器去吧。</p>
+</li>
+</ul>
+<h3 id="所有，什么时候你应该单行？">所有，什么时候你应该单行？</h3><p>一般的参考标准-<strong>如果steal time 超过了10%并且持续了20分钟，那么虚拟机就可能性能下降了</strong></p>
+<p>当这种情况发生：</p>
+<ol>
+<li><p>关闭虚拟机并且挪到另一台物理机器上面</p>
+</li>
+<li><p>如果steal time维持在很高的数值， 那么增加CPU资源配额。</p>
+</li>
+<li><p>如果steal time维持在很高的数值， 联系你的虚拟机提供商。你的虚拟机提供商有可能在超卖物理机。</p>
+</li>
+</ol>
+<p><em>翻译自 <a href="http://blog.scoutapp.com/articles/2013/07/25/understanding-cpu-steal-time-when-should-you-be-worried" target="_blank" rel="external">这里</a></em></p>
+<p>公司的应用最近都已经迁移到自家的云计算平台上面了，所以也开始出现了无故Load飙升的情况，最后定位出来原因时虚拟机CPU资源竞争的情况。新知识Get！</p>
+
+    
+  </div>
+  <footer>
+    
+      
+      
+    
+    <div class="clearfix"></div>
+  </footer>
+</article>
+
+<!-- JiaThis Button BEGIN -->
+<script type="text/javascript">
+var jiathis_config = {data_track_clickback:'true'};
+</script>
+<script type="text/javascript" src="http://v3.jiathis.com/code/jiathis_r.js?move=0&amp;uid=2063207" charset="utf-8"></script>
+<!-- JiaThis Button END -->
+
+
+<section id="comment">
+  <h1 class="title">评论</h1>
+  <div class="ds-thread" data-title="理解CPU steal time">
+  </div>
+</section>
+
+</div>
+  </div>
+  <footer id="footer"><div class="copyright">
+  
+  &copy; 2015 <a href="/">danielding</a>
+  
+</div>
+<div class="theme-copyright">
+  Theme by <a href="https://github.com/orderedlist" target="_blank">orderedlist</a>
+   | 
+  Redesign by <a href="http://heroicyang.com/" target="_blank">Heroic Yang</a>
+</div>
+<div class="clearfix"></div></footer>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8/jquery.min.js"></script>
+<script src="/js/scale.fix.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+
+
+<script type="text/javascript">
+  var duoshuoQuery = { short_name: 'danielding' };
+  (function() {
+    var ds = document.createElement('script');
+    ds.type = 'text/javascript';
+    ds.async = true;
+    ds.src = 'http://static.duoshuo.com/embed.js';
+    ds.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(ds);
+  })();
+</script>
+
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+  (function($){
+    $('.fancybox').fancybox();
+  })(jQuery);
+</script>
+
+</body>
+</html>

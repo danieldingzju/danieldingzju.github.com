@@ -1,0 +1,401 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="chrome=1">
+  
+  <title>JVMS7笔记 | 磐石</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  
+    <meta name="author" content="danielding">
+  
+  
+    <meta name="description" content="tructure of JVM
+
+DataTypes:
+
+primitive types 
+
+Integral Types : int, long, short, char。
+Boolean Type : 计算的时候使用int。
+Floating-Point Types : float, double。
+the returnAddress Type : 开发不能直接使用。
+
+
+reference">
+  
+  <meta name="description" content="tructure of JVM
+
+DataTypes:
+
+primitive types 
+
+Integral Types : int, long, short, char。
+Boolean Type : 计算的时候使用int。
+Floating-Point Types : float, double。
+the returnAddress Type : 开发不能直接使用。
+
+
+reference">
+<meta property="og:type" content="article">
+<meta property="og:title" content="JVMS7笔记">
+<meta property="og:url" content="https://danieldingzju.github.io/2015/12/20/JVMS7笔记/index.html">
+<meta property="og:site_name" content="磐石">
+<meta property="og:description" content="tructure of JVM
+
+DataTypes:
+
+primitive types 
+
+Integral Types : int, long, short, char。
+Boolean Type : 计算的时候使用int。
+Floating-Point Types : float, double。
+the returnAddress Type : 开发不能直接使用。
+
+
+reference">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="JVMS7笔记">
+<meta name="twitter:description" content="tructure of JVM
+
+DataTypes:
+
+primitive types 
+
+Integral Types : int, long, short, char。
+Boolean Type : 计算的时候使用int。
+Floating-Point Types : float, double。
+the returnAddress Type : 开发不能直接使用。
+
+
+reference">
+  
+  
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+  
+  <link rel="stylesheet" href="/css/style.css" type="text/css">
+  <!--[if lt IE 9]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+  
+  
+<script type="text/javascript">
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "//hm.baidu.com/hm.js?e36f59d471ddc16c84ea8f9ea2e342ed";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+
+</head>
+
+<body>
+  <div class="wrapper">
+    <header id="header">
+  <div class="title">
+    <h1><a href="/">磐石</a></h1>
+    <p><a href="/">工程狮</a></p>
+  </div>
+  <nav class="nav">
+    <ul>
+      
+        <li><a href="/archives">Archives</a></li>
+      
+        <li><a href="/reading">Reading</a></li>
+      
+        <li><a href="/about">About</a></li>
+      
+      
+    </ul>
+    <div class="clearfix"></div>
+  </nav>
+  <div class="clearfix"></div>
+</header>
+    <div class="content"><article class="post">
+  <header>
+    
+      <div class="icon"></div>
+      <a href="/2015/12/20/JVMS7笔记/">
+  <time datetime="2015-12-20T08:00:12.000Z">
+    12月 20 2015
+  </time>
+</a>
+    
+    
+  
+    <h1 class="title">JVMS7笔记</h1>
+  
+
+  </header>
+  
+  <div class="entry">
+    
+      <p>tructure of JVM</p>
+<hr>
+<p>DataTypes:</p>
+<ul>
+<li><p>primitive types </p>
+<ul>
+<li>Integral Types : int, long, short, char。</li>
+<li>Boolean Type : 计算的时候使用int。</li>
+<li>Floating-Point Types : float, double。</li>
+<li>the returnAddress Type : 开发不能直接使用。</li>
+</ul>
+</li>
+<li><p>reference types</p>
+<ul>
+<li>足够长来存储指针，长度一般与机器位数相同。</li>
+</ul>
+</li>
+</ul>
+<hr>
+<p>Runtime Data Areas:</p>
+<ul>
+<li><p>The <strong>pc</strong> Register</p>
+<p>  正常指向指令的地址。</p>
+<ul>
+<li>执行native方法的时候，pc是不存在值的。</li>
+</ul>
+</li>
+<li><p>Java Virtual Machine Stacks</p>
+<p>  每个线程都有自己的stack，stack存储了frames。</p>
+<ul>
+<li><p>frame</p>
+<p>  A frame is used to store data and partial results, as well as to perform dynamic linking, return values for methods, and dispatch exceptions.</p>
+</li>
+</ul>
+</li>
+</ul>
+<pre><code>A new frame <span class="keyword">is</span> created each time a <span class="keyword">method</span> <span class="keyword">is</span> invoked. A frame <span class="keyword">is</span> destroyed <span class="keyword">when</span> its <span class="keyword">method</span> invocation completes, whether that completion <span class="keyword">is</span> normal <span class="keyword">or</span> abrupt (it throws an uncaught exception). <span class="type">Frames</span> are allocated <span class="keyword">from</span> the <span class="type">Java</span> virtual machine stack (§<span class="number">2</span>.<span class="number">5</span>.<span class="number">2</span>) <span class="keyword">of</span> the thread creating the frame. <span class="type">Each</span> frame has its own <span class="type">array</span> <span class="keyword">of</span> local variables (§<span class="number">2</span>.<span class="number">6</span>.<span class="number">1</span>), its own operand stack (§<span class="number">2</span>.<span class="number">6</span>.<span class="number">2</span>), <span class="keyword">and</span> a reference to the runtime constant pool (§<span class="number">2</span>.<span class="number">5</span>.<span class="number">5</span>) <span class="keyword">of</span> the class <span class="keyword">of</span> the current <span class="keyword">method</span>.
+
+* <span class="type">Local</span> <span class="type">Variables</span>
+
+    一个local variable 占用一个word size；long，double占用两个word size，所以是两个local variable。 <span class="number">0</span> local variable 为被调用的<span class="keyword">method</span>所在的<span class="keyword">object</span>的reference（即this），方法的参数从<span class="number">1</span> local variable 开始连续 存储。
+
+        <span class="type">JVM</span> 设计的word size 不同于 word（<span class="number">8</span> bits） <span class="keyword">in</span> computer science：
+
+        <span class="type">The</span> basic unit <span class="keyword">of</span> size <span class="keyword">for</span> data values <span class="keyword">in</span> the <span class="type">Java</span> virtual machine <span class="keyword">is</span> the word--a fixed size chosen by the designer <span class="keyword">of</span> each <span class="type">Java</span> virtual machine implementation. <span class="type">The</span> word size must be large enough to hold a value <span class="keyword">of</span> <span class="keyword">type</span> byte, short, <span class="type">int</span>, <span class="type">char</span>, <span class="type">float</span>, returnAddress, <span class="keyword">or</span> reference. <span class="type">Two</span> words must be large enough to hold a value <span class="keyword">of</span> <span class="keyword">type</span> long <span class="keyword">or</span> double. <span class="type">An</span> implementation designer must therefore choose a word size that <span class="keyword">is</span> at least <span class="number">32</span> bits, but otherwise can pick whatever word size will <span class="keyword">yield</span> the most efficient implementation. <span class="type">The</span> word size <span class="keyword">is</span> often chosen to be the size <span class="keyword">of</span> a native <span class="type">pointer</span> on the host platform.
+
+* <span class="type">Operand</span> <span class="type">Stacks</span>
+
+        <span class="type">Each</span> frame (§<span class="number">2</span>.<span class="number">6</span>) contains a last-<span class="keyword">in</span>-first-<span class="keyword">out</span> (<span class="type">LIFO</span>) stack known <span class="keyword">as</span> its operand stack.
+
+* <span class="type">Dynamic</span> <span class="type">Linking</span>
+
+        <span class="type">The</span> class file code <span class="keyword">for</span> a <span class="keyword">method</span> refers to methods to be invoked <span class="keyword">and</span> variables to be accessed via symbolic references.
+
+* <span class="type">Special</span> <span class="type">Methods</span>
+
+        每一个construction都是&lt;init&gt;方法；每一个默认的<span class="type">Void</span> 且没有参数的contruction是&lt;clinit&gt;方法。
+        they are never invoked directly <span class="keyword">from</span> <span class="type">any</span> <span class="type">Java</span> virtual machine instruction, but are invoked only indirectly <span class="keyword">as</span> part <span class="keyword">of</span> the class initialization process.
+        signature polymorphic（<span class="type">MethodHandler</span>）这个也是<span class="type">JDK7</span>加入的，为了实现<span class="type">JSR292</span>，为在<span class="type">JVM</span>上实现动态语言提供更多的支持。<span class="type">MethodHandle</span>是<span class="type">JSR292</span>的重要组成部分之一。invokevirtual 指令会对siglenature polymorphic <span class="keyword">method</span>（<span class="type">MethodHandler</span>以及子类）多特殊处理。
+
+* <span class="type">Exception</span>
+
+        同步异常（synchronous exception）抛出的方式：
+        <span class="number">1</span>. athrow 指令的调用
+        <span class="number">2</span>. <span class="type">JVM</span>相关的<span class="type">Error</span>，类loading，liking阶段相关的<span class="type">Exception</span>，<span class="type">OutOfMemory</span>，<span class="type">StackOverflow</span>，<span class="type">RuntimeException</span>的继承类等。
+        异步异常（asynchronous exception）抛出的方式：
+        <span class="number">1</span>. <span class="type">Thread</span>或者<span class="type">ThreadGroup</span>的stop方法被触发。
+        <span class="number">2</span>. <span class="type">JVM</span>内部的错误
+            <span class="type">JVM</span>允许异步的异常抛出存在一定的延迟，在最适合的时候记性处理－－在这段延迟中，可以让<span class="type">JVM</span>重排指令来优化代码和计算。（比较简单的实现方式是：在每条[control transfer instruction]执行的时候才去poll异步的异常。正是因为有这个保证，所以control transfer instruction之间的指令能够被<span class="type">JVM</span>优化）
+
+    在class文件中，excpetion handlers都存在table里面。
+</code></pre><ul>
+<li><p>Heap</p>
+<p>  Heap的管理是通过automacic storage management system，JVMS的实现可以实现自己heap管理机制。</p>
+</li>
+<li><p>Method Area</p>
+<p>  It stores per-class structures such as the runtime constant pool, field and method data, and the code for methods and constructors, including the special methods (§2.9) used in class and instance initialization and interface initialization</p>
+<ul>
+<li><p>一般JVMS简单的实现是不会选择去处理Method Area的，但是这个版本的JVMS没有强制要求这么做。</p>
+</li>
+<li><p>Runtime Constant Pool</p>
+<pre><code>A runtime <span class="type">constant</span> pool <span class="keyword">is</span> a per-<span class="type">class</span> <span class="keyword">or</span> per-interface runtime representation <span class="keyword">of</span> <span class="keyword">the</span> constant_pool table <span class="keyword">in</span> a <span class="type">class</span> <span class="type">file</span> (§<span class="number">4.4</span>). It <span class="keyword">contains</span> several kinds <span class="keyword">of</span> constants, ranging <span class="keyword">from</span> numeric literals known <span class="keyword">at</span> compile-<span class="property">time</span> <span class="keyword">to</span> method <span class="keyword">and</span> field references <span class="keyword">that</span> must be resolved <span class="keyword">at</span> runtime. The runtime <span class="type">constant</span> pool serves a function similar <span class="keyword">to</span> <span class="keyword">that</span> <span class="keyword">of</span> a symbol table <span class="keyword">for</span> a conventional programming language, although <span class="keyword">it</span> <span class="keyword">contains</span> a wider range <span class="keyword">of</span> data than a typical symbol table.
+</code></pre></li>
+</ul>
+</li>
+</ul>
+<hr>
+<p>Instruction Summary:</p>
+<p>字节码指令流一般是按照字节排列的，只有lookupswitch &amp; tableswitch 比较特别。</p>
+<ul>
+<li><p>instructions with type info:</p>
+<p>  指令集里面有部分是可以之间看出类型，比如iadd表示可以计算int类型的数据，fadd表示计算float类型的的数据等。但是要每个指令都支持所有的类型，是不现实的，因为一个byte只有8位。所以最后char，boolean，short等的add指令都会被转换成int的计算（使用iadd）。</p>
+</li>
+<li><p>instructions regardless of type info:</p>
+<p>  指令集里面的类似push，pop，swap等是不带type信息的，只关心使用到的category of computational types。</p>
+<ul>
+<li><p>Category 1: </p>
+<p>  boolean, byte, char, short, int 的计算类型是 int； float计算类型位float；reference为reference；returnAddress为returnAddress；</p>
+</li>
+<li><p>Category 2: </p>
+<p>  long的计算类型为long， double计算类型为double，</p>
+</li>
+</ul>
+</li>
+<li><p>指令概览</p>
+<ul>
+<li><p>支持的类型widening指令（ i2l, i2f, i2d, l2f, l2d, and f2d）：</p>
+<ul>
+<li>int to long, float, or double</li>
+<li>long to float or double</li>
+<li>float to double</li>
+</ul>
+</li>
+<li><p>支持的narrowing指令（i2b, i2c, i2s, l2i, f2i, f2l, d2i, d2l, and d2f）：</p>
+<ul>
+<li>int to byte, short, or char</li>
+<li>long to int</li>
+<li>float to int or long</li>
+<li>double to int, long, or float</li>
+</ul>
+<p>类型转换过程中，会存在一定的信息丢失情况，具体需要具体翻看了解。</p>
+</li>
+<li><p>支持的 control transfer instruction 分为以下几类：</p>
+<ul>
+<li><p>conditional branch: </p>
+<p>  ifeq, ifne, iflt, ifle, ifgt, ifge, ifnull, ifnonnull, if_icmpeq, if_icmpne, if_icmplt, if_icmple, if_icmpgt if_icmpge, if_acmpeq, if_acmpne</p>
+</li>
+<li><p>compound conditional brach: </p>
+<p>  tableswitch, lookupswitch</p>
+</li>
+<li><p>unconditional brach: </p>
+<p>  goto, goto_w, jsr, jsr_w, ret</p>
+</li>
+</ul>
+</li>
+<li><p>5种方法调用指令：</p>
+<ul>
+<li>invokevirtual: 调用类实例的方法</li>
+<li>invokeinterface: ???</li>
+<li>invokespecial: init, private, super class的方法</li>
+<li>invokestatic: 调用类的方法</li>
+<li>invokedynamic: 关联到MethodHandle，看了相关的资料，暂时还没有领会其用途（？？？）</li>
+</ul>
+</li>
+<li><p>同步, 分为两类：</p>
+<ul>
+<li>method synchronization</li>
+<li><p>block synchronization</p>
+<p>moniterenter，moniterexit 这两个指令配合完成同步。</p>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<hr>
+<h6 id="Compiling_for_JVM">Compiling for JVM</h6><p>tableswitch是switch 连续的int 和 lookupswitch是switch离散的int。排序过的switch key 效率更高；tableswitch效率比lookupswitch高。</p>
+<p>try-catch statements：</p>
+<pre><code>As a subtle point, note <span class="keyword">that</span> <span class="keyword">the</span> range <span class="keyword">of</span> a catch clause <span class="keyword">is</span> inclusive <span class="function_start"><span class="keyword">on</span></span> <span class="keyword">the</span> <span class="string">"from"</span> <span class="keyword">end</span> <span class="keyword">and</span> exclusive <span class="function_start"><span class="keyword">on</span></span> <span class="keyword">the</span> <span class="string">"to"</span> <span class="keyword">end</span>.
+</code></pre><p>A Java virtual machine implementation verifies that each class file satisfies the necessary constraints at linking time</p>
+<p>String.intern() 会找到runtime constant pool中相同字符串的引用地址</p>
+<p><strong>skip Class file format &amp; Verification of Class Files</strong></p>
+<hr>
+<h6 id="Loading,_Linking,_and_Initializing">Loading, Linking, and Initializing</h6><p>VM Start-up</p>
+<p>调用bootstrap classloader 加载 初始化类，然后加载main方法；一般jvm的实现都有 命令行参数 或者 提供 初始化参数的方式。</p>
+<p>Creation and Loading</p>
+<p>C代表一个interface or class;</p>
+<p>N代表internal name of C in JVM implementation;</p>
+<p>D触发了C的创建：D的runtime contant pool有C的引用 或者 D通过反射创建C</p>
+<p>A class loader L may create C by defining it directly or by delegating to another class loader. <strong>If L creates C directly, we say that L defines C or, equivalently, that L is the defining loader of C.</strong></p>
+<p>When one class loader delegates to another class loader, the loader that initiates the loading is not necessarily the same loader that completes the loading and defines the class. <strong>If L creates C, either by defining it directly or by delegation, we say that L initiates loading of C or, equivalently, that L is an initiating loader of C.</strong></p>
+<p>The Java virtual machine uses one of three procedures to create class or interface C denoted by N:</p>
+<ul>
+<li><p>If N denotes a nonarray class or an interface, one of the two following methods is used to load and thereby create C:</p>
+<ul>
+<li><p>If D was defined by the bootstrap class loader, then the bootstrap class loader initiates loading of C.</p>
+</li>
+<li><p>If D was defined by a user-defined class loader, then that same user-defined class loader initiates loading of C.</p>
+</li>
+</ul>
+</li>
+<li><p>Otherwise N denotes anarray class.An array class is created directly by the Java virtual machine, not by a class loader. However, the defining class loader of D is used in the process of creating array class C.</p>
+</li>
+</ul>
+<p>在loading的阶段出现异常，抛出LinkageError的继承类。</p>
+<p>$$$ <n, l_d=""> $$$: N denotes the name of the class or interface and $$$ L_d $$$ denotes the defining loader of the class or interface.</n,></p>
+<p>$$$ N^{L_i} $$$: N denotes the name of the class or interface and $$$ L_i $$$ denotes an initiating loader of the class or interface.</p>
+<hr>
+<p>Linking:</p>
+<p>如果JVM在Verification or Resolution class C的时候抛出了ClassNotFoundException的时候，会被包装成NoClassDefFoundError.（Loading of superclass 是 Rsolution逻辑的一部分）</p>
+<ul>
+<li>Verification</li>
+<li>Prepare</li>
+<li>Resolusion: 这个可能在真正使用的时候（懒加载，invokedynamic指令）才会使用到；也有情况是直接使用。</li>
+</ul>
+<hr>
+<p>Initializing:</p>
+<p>ClassLoader.loadClass() 与 Class.forName()<br>ClassLoader.loadClass(String name, boolean resolve)，其中resolve默认为false，即只执行类装载的第一个阶段。</p>
+<p>Class.forName(String name, boolean initialize, ClassLoader loader)， 其中initialize默认为true，即执行到类装载的第三个阶段。</p>
+
+    
+  </div>
+  <footer>
+    
+      
+      
+    
+    <div class="clearfix"></div>
+  </footer>
+</article>
+
+<!-- JiaThis Button BEGIN -->
+<script type="text/javascript">
+var jiathis_config = {data_track_clickback:'true'};
+</script>
+<script type="text/javascript" src="http://v3.jiathis.com/code/jiathis_r.js?move=0&amp;uid=2063207" charset="utf-8"></script>
+<!-- JiaThis Button END -->
+
+
+<section id="comment">
+  <h1 class="title">评论</h1>
+  <div class="ds-thread" data-title="JVMS7笔记">
+  </div>
+</section>
+
+</div>
+  </div>
+  <footer id="footer"><div class="copyright">
+  
+  &copy; 2015 <a href="/">danielding</a>
+  
+</div>
+<div class="theme-copyright">
+  Theme by <a href="https://github.com/orderedlist" target="_blank">orderedlist</a>
+   | 
+  Redesign by <a href="http://heroicyang.com/" target="_blank">Heroic Yang</a>
+</div>
+<div class="clearfix"></div></footer>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8/jquery.min.js"></script>
+<script src="/js/scale.fix.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+
+
+<script type="text/javascript">
+  var duoshuoQuery = { short_name: 'danielding' };
+  (function() {
+    var ds = document.createElement('script');
+    ds.type = 'text/javascript';
+    ds.async = true;
+    ds.src = 'http://static.duoshuo.com/embed.js';
+    ds.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(ds);
+  })();
+</script>
+
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+  (function($){
+    $('.fancybox').fancybox();
+  })(jQuery);
+</script>
+
+</body>
+</html>

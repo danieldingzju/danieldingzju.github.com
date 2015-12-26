@@ -127,7 +127,8 @@
 <pre><code><span class="keyword">try</span>{
     <span class="built_in">String</span> pid = fetchPidId(); <span class="comment">//获取到java 的 pid（各种方式）</span>
     <span class="keyword">if</span>( pid != <span class="keyword">null</span> ){
-        vm = VirtualMachine.attach( pid );    <span class="comment">// 获取attach到的vm对象实例                                 vm.loadAgent(agentJarFilePath, args); // 加载agent</span>
+        vm = VirtualMachine.attach( pid );    <span class="comment">// 获取attach到的vm对象实例                                 </span>
+        vm.loadAgent(agentJarFilePath, args); <span class="comment">// 加载agent</span>
     }
 }<span class="keyword">finally</span> {
     vm.detach();

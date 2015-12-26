@@ -73,6 +73,116 @@
     <div class="outer">
       <section id="main">
   
+    <article id="post-认识java-agent" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2015/12/26/认识java-agent/" class="article-date">
+  <time datetime="2015-12-26T14:25:02.000Z" itemprop="datePublished">12月 26 2015</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2015/12/26/认识java-agent/">认识java agent</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h4 id="java_agent">java agent</h4><h6 id="agent">agent</h6><p>java agent是在JDK1.5之后引入的，是main方法之前的拦截器；其作用是在main之前之前执行agent中的逻辑。</p>
+<p>假设 A 是主要业务逻辑应用所在进程； B 是要拦截在A的main方法之前的 agent。</p>
+<p>那么agent有两种启动方式：</p>
+<ul>
+<li><p>（1）B在A之前启动：通过 启动A时添加vm参数 -javaagent:xxxx.jar</p>
+<p>  a. xxxx.jar包含了自己实现的agent类，实现规范中一种形式如下：</p>
+<pre><code><span class="keyword">public</span> <span class="keyword">static</span> <span class="function"><span class="keyword">void</span> <span class="title">premain</span><span class="params">(String agentOps, Instrumentation inst)</span></span>{  
+    <span class="comment">//TODO </span>
+}
+</code></pre><p>  b. xxxx.jar包含的资源配置文件Manifest中需要指明premain所在的类：</p>
+<pre><code>Premain-Class: com<span class="class">.mypackage</span><span class="class">.MyAgent</span>
+</code></pre></li>
+</ul>
+<ul>
+<li><p>（2）B在A之后启动：通过 VirtualMachine 的 attach 和 loadAgent 方法实现。</p>
+<p>  VirtualMachine类所在包为：com.sun.tools.attach；相关代码：</p>
+<pre><code><span class="keyword">try</span>{
+    <span class="built_in">String</span> pid = fetchPidId(); <span class="comment">//获取到java 的 pid（各种方式）</span>
+    <span class="keyword">if</span>( pid != <span class="keyword">null</span> ){
+        vm = VirtualMachine.attach( pid );    <span class="comment">// 获取attach到的vm对象实例                                 vm.loadAgent(agentJarFilePath, args); // 加载agent</span>
+    }
+}<span class="keyword">finally</span> {
+    vm.detach();
+}
+</code></pre><p>  a. agentJarFilePath包含了自己实现的agent类，实现规范中一种形式如下：</p>
+<pre><code><span class="keyword">public</span> <span class="keyword">static</span> <span class="function"><span class="keyword">void</span> <span class="title">agentmain</span><span class="params">(String args, Instrumentation inst)</span> </span>{
+    <span class="comment">//TODO</span>
+}
+</code></pre><p>  b. agentJarFilePath包含了资源配置文件Manifest中需要指明agentmain所在的类：</p>
+<pre><code><span class="attribute">Agent-Class</span>: <span class="string">war.Hatch</span>
+</code></pre></li>
+</ul>
+<p><strong><em>tips</em></strong>：<br>资源描述文件Manifest里面agent相关的额外配置项如下：</p>
+<ul>
+<li><p>Can-Redefine-Classes</p>
+<p>  如果此值为true，可以修改已经加载的class的字节码。</p>
+</li>
+<li><p>Can-Retransform-Classes  </p>
+<p>  如果此值为true，表示支持重复修改class的字节码。这个和redefine的区别是，transform只是一个filter，没有修改本源字节码。</p>
+</li>
+</ul>
+<h6 id="instrument">instrument</h6><p>在<strong>agent</strong>介绍中，我们可以看到instrument的身影，用来增强字节码。</p>
+<p>instrument中可以：</p>
+<pre><code><span class="number">1.</span> 在 A 所在的JVM进程的BootstrapClassLoader 或者 SystemClassLoader（AppClassLoader）中加载额外的jar包。
+<span class="number">2.</span> 可以获得 A 中已经加载的所有的<span class="class"><span class="keyword">class</span>类。</span>
+<span class="number">3.</span> 可以添加 ClassFileTransformer 类来进行<span class="class"><span class="keyword">class</span>文件（字节码）的修改。</span>
+    instrument.add
+</code></pre><p>更多请参考API。<a href="http://www.chinaxing.org/articles/Java/2014/09/25/2014-09-24-instrumentation.html" target="_blank" rel="external">这里</a>有一篇比较好的理解，强烈推荐。</p>
+<h6 id="实践经验">实践经验</h6><ul>
+<li><p>因为com.sun.tools.attach.VirtualMachine在tools.jar中，所以在（2）情况下要调用其attach和loadAgent的时候，需要在classpath中添加tools.jar。形如：</p>
+<pre><code>java -<span class="keyword">classpath</span> {JAVA_HOME}<span class="regexp">/lib/</span>tools.jar:myTransport.jar Transport
+</code></pre><p>  Transport 中的main方法包含了（2）中的示例代码。</p>
+</li>
+<li><p>加入是用maven打包的推荐使用 maven-assembly-plugin，用其<manifestentries>来管理资源管理文件配置项，示例配置如下：</manifestentries></p>
+<pre><code><span class="tag">&lt;<span class="title">manifestEntries</span>&gt;</span>
+    <span class="tag">&lt;<span class="title">Premain-Class</span>&gt;</span>agent<span class="tag">&lt;/<span class="title">Premain-Class</span>&gt;</span>
+    <span class="tag">&lt;<span class="title">Agent-Class</span>&gt;</span>agent<span class="tag">&lt;/<span class="title">Agent-Class</span>&gt;</span>
+    <span class="tag">&lt;<span class="title">Can-Redine-Classes</span>&gt;</span>true<span class="tag">&lt;/<span class="title">Can-Redine-Classes</span>&gt;</span>
+    <span class="tag">&lt;<span class="title">Can-Retransform-Classes</span>&gt;</span>true<span class="tag">&lt;/<span class="title">Can-Retransform-Classes</span>&gt;</span>
+<span class="tag">&lt;/<span class="title">manifestEntries</span>&gt;</span>
+</code></pre></li>
+<li><p>获取PID的示例命令：</p>
+<pre><code>ps ax | grep <span class="string">'java'</span> | cut <span class="operator">-d</span> <span class="string">" "</span> <span class="operator">-f</span>2
+</code></pre></li>
+</ul>
+<h6 id="agent技术已知商业价值">agent技术已知商业价值</h6><ul>
+<li>性能剖析：Btrace</li>
+<li>错误诊断：Btrace， Greys</li>
+<li>AOP切面技术：Spring</li>
+</ul>
+
+      
+    </div>
+    <footer class="article-footer">
+      
+        <a data-url="https://danieldingzju.github.io/2015/12/26/认识java-agent/" data-id="ciin79b600002sobu2rrgeej2" class="article-share-link" data-share="baidu" data-title="认识java agent">分享到</a>
+      
+
+      
+
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+  
     <article id="post-JVMS7笔记" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
     <a href="/2015/12/20/JVMS7笔记/" class="article-date">
@@ -292,7 +402,7 @@ signature polymorphic（MethodHandler）这个也是JDK7加入的，为了实现
     </div>
     <footer class="article-footer">
       
-        <a data-url="https://danieldingzju.github.io/2015/12/20/JVMS7笔记/" data-id="ciieaknyv0007gwbu8silqeyr" class="article-share-link" data-share="baidu" data-title="JVMS7笔记">分享到</a>
+        <a data-url="https://danieldingzju.github.io/2015/12/20/JVMS7笔记/" data-id="ciin79b6b0008sobu8a8p6huk" class="article-share-link" data-share="baidu" data-title="JVMS7笔记">分享到</a>
       
 
       
@@ -381,7 +491,7 @@ signature polymorphic（MethodHandler）这个也是JDK7加入的，为了实现
     </div>
     <footer class="article-footer">
       
-        <a data-url="https://danieldingzju.github.io/2015/11/21/理解CPU-steal-time/" data-id="ciieaknym0002gwbu31sq501o" class="article-share-link" data-share="baidu" data-title="理解CPU steal time">分享到</a>
+        <a data-url="https://danieldingzju.github.io/2015/11/21/理解CPU-steal-time/" data-id="ciin79b640003sobus6lmg4rv" class="article-share-link" data-share="baidu" data-title="理解CPU steal time">分享到</a>
       
 
       
@@ -441,7 +551,7 @@ signature polymorphic（MethodHandler）这个也是JDK7加入的，为了实现
     </div>
     <footer class="article-footer">
       
-        <a data-url="https://danieldingzju.github.io/2015/10/06/亲身经历icloud账号被黑事件/" data-id="ciieaknyr0004gwbudz6jk5cd" class="article-share-link" data-share="baidu" data-title="亲身经历icloud账号被黑事件">分享到</a>
+        <a data-url="https://danieldingzju.github.io/2015/10/06/亲身经历icloud账号被黑事件/" data-id="ciin79b670005sobu9a98prdf" class="article-share-link" data-share="baidu" data-title="亲身经历icloud账号被黑事件">分享到</a>
       
 
       
@@ -731,7 +841,7 @@ cacheManager.addCache(cache1Name);
     </div>
     <footer class="article-footer">
       
-        <a data-url="https://danieldingzju.github.io/2015/09/04/本地缓存组件选型/" data-id="ciieaknyq0003gwbufp14ldmn" class="article-share-link" data-share="baidu" data-title="本地缓存组件选型">分享到</a>
+        <a data-url="https://danieldingzju.github.io/2015/09/04/本地缓存组件选型/" data-id="ciin79b660004sobupth04hsv" class="article-share-link" data-share="baidu" data-title="本地缓存组件选型">分享到</a>
       
 
       
@@ -827,7 +937,7 @@ cacheManager.addCache(cache1Name);
     </div>
     <footer class="article-footer">
       
-        <a data-url="https://danieldingzju.github.io/2015/04/09/Dynamic-Bean/" data-id="ciieaknyw0008gwbu5drm4cfr" class="article-share-link" data-share="baidu" data-title="Dynamic Bean">分享到</a>
+        <a data-url="https://danieldingzju.github.io/2015/04/09/Dynamic-Bean/" data-id="ciin79b6d0009sobu5mgpnd08" class="article-share-link" data-share="baidu" data-title="Dynamic Bean">分享到</a>
       
 
       
@@ -871,7 +981,7 @@ cacheManager.addCache(cache1Name);
     </div>
     <footer class="article-footer">
       
-        <a data-url="https://danieldingzju.github.io/2015/04/09/JavaBeans-TM/" data-id="ciieaknyu0006gwbu0o0pkegb" class="article-share-link" data-share="baidu" data-title="JavaBeans(TM)">分享到</a>
+        <a data-url="https://danieldingzju.github.io/2015/04/09/JavaBeans-TM/" data-id="ciin79b6a0007sobufom2upvf" class="article-share-link" data-share="baidu" data-title="JavaBeans(TM)">分享到</a>
       
 
       
@@ -920,7 +1030,7 @@ cacheManager.addCache(cache1Name);
     </div>
     <footer class="article-footer">
       
-        <a data-url="https://danieldingzju.github.io/2015/03/24/hello-world/" data-id="ciieaknys0005gwbu36hu9mhb" class="article-share-link" data-share="baidu" data-title="Hello World">分享到</a>
+        <a data-url="https://danieldingzju.github.io/2015/03/24/hello-world/" data-id="ciin79b690006sobuilc6jtdq" class="article-share-link" data-share="baidu" data-title="Hello World">分享到</a>
       
 
       
@@ -948,7 +1058,7 @@ cacheManager.addCache(cache1Name);
   <div class="widget-wrap">
     <h3 class="widget-title">归档</h3>
     <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/12/">十二月 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/11/">十一月 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/10/">十月 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/09/">九月 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/04/">四月 2015</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/03/">三月 2015</a><span class="archive-list-count">1</span></li></ul>
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/12/">十二月 2015</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/11/">十一月 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/10/">十月 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/09/">九月 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/04/">四月 2015</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/03/">三月 2015</a><span class="archive-list-count">1</span></li></ul>
     </div>
   </div>
 
@@ -958,6 +1068,10 @@ cacheManager.addCache(cache1Name);
     <h3 class="widget-title">近期文章</h3>
     <div class="widget">
       <ul>
+        
+          <li>
+            <a href="/2015/12/26/认识java-agent/">认识java agent</a>
+          </li>
         
           <li>
             <a href="/2015/12/20/JVMS7笔记/">JVMS7笔记</a>
@@ -973,10 +1087,6 @@ cacheManager.addCache(cache1Name);
         
           <li>
             <a href="/2015/09/04/本地缓存组件选型/">本地缓存组件选型</a>
-          </li>
-        
-          <li>
-            <a href="/2015/04/09/Dynamic-Bean/">Dynamic Bean</a>
           </li>
         
       </ul>

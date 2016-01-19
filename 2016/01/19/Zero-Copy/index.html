@@ -110,7 +110,7 @@
 <pre><code><span class="keyword">read</span>(<span class="keyword">file</span>, tmp_buf, <span class="built_in">len</span>);
 
 <span class="keyword">write</span>(socket, tmp_buf, <span class="built_in">len</span>);
-</code></pre><p>看起来非常简单；你可能会想里面最多也就两个系统调用（system calls）。事实上，实时也就是如此。在这两个带哦用之后，数据（data）已经被复制了最少四次，同时相同次数的 user/kernel mode上下文切换 执行了。（事实上这个过程比这个描述的更复杂）。为了更深入的理解这个过程，请看图1。上半部展示了user/kernel mode上下文切换，并且下半部展示了复制操作。</p>
+</code></pre><p>看起来非常简单；你可能会想里面最多也就两个系统调用（system calls）。事实上，实时也就是如此。在这两次调用之后，数据（data）已经被复制了最少四次，同时执行了相同次数的 user/kernel mode上下文切换 。（事实上这个过程比这个描述的更复杂）。为了更深入的理解这个过程，请看图1。上半部展示了user/kernel mode上下文切换，并且下半部展示了复制操作。</p>
 <p><img src="http://www.linuxjournal.com/files/linuxjournal.com/linuxjournal/articles/063/6345/6345f1.jpg" alt="Copying in Two Sample System Calls"></p>
 <ul>
 <li><p>第一步：读系统调用（read system call）引起了从user mode to kernel mode 的上下文切换。第一次的copy被DMA engine执行，它从磁盘中读取了文件的内容然后存储到kernel address space buffer 里面。</p>
@@ -122,7 +122,7 @@
 <li><p>第四步：写系统调用（write system call）返回，创建了我们的第四次的上下文切换。异步且于之前不依赖（Independently and asynchronously）的情况下，第四次是在DMA engine 从kernel buffer 复制 到 protocol engine的时候发生的。你可能问自己，“什么是 Independently and asynchronously？ 数据难道不是在调用返回之前就完成数据传输的么？” 事实上，调用返回 步保证 输入传输完成；它甚至步保证数据开始传输。 它只是意味着网卡驱动在其处理队列中有清空的描述符（？free descriptors）并且接收了我们需要传输的数据。这个时候在网卡的处理队列中可能还有很多的数据包在我们的数据之前。除非驱动／硬件实现了优先级环活着队列，不然数据在处理队列中都是按照先进先出的方式传输的。（带分叉的DMA 复制 表示了最后的复制能够被延迟）。</p>
 </li>
 </ul>
-<p>正如你所看到的， 以上过程有很多的数据冗余是不必要的且误事的。其中一部分冗余是可以消除来减少资源浪费以提高性能的。 作为一个驱动开发者， 我在一些有非常先进功能的硬件上面工作过。有些硬件能够绕过主存直接传送数据到另外一个设备。这个功能能够减少系统内存中的数据冗余，非常值得拥有，但是不是所有的硬件都是支持的。可能还会存在额外的数据问题会引入一定的复杂性：来源于disk的数据需要repackage才能发送给网卡。 为了减少资源浪费， 我们可以从减少kernel buffers和 user buffers之间的数据复制。</p>
+<p>正如你所看到的， 以上过程有很多的数据复制是不必要的。其中一部分复制是可以消除来减少资源浪费以提高性能的。 作为一个驱动开发者， 我在一些有非常先进功能的硬件上面工作过。有些硬件能够绕过主存直接传送数据到另外一个设备。这个功能能够减少系统内存中的数据冗余，非常值得拥有，但是不是所有的硬件都是支持的。可能还会存在额外的数据问题会引入一定的复杂性：来源于disk的数据需要repackage才能发送给网卡。 为了减少资源浪费， 我们可以从减少kernel buffers和 user buffers之间的数据复制。</p>
 <p>减少一次复制的一种方法是跳过调用 read 而用 调用 mmap 来替代。举例来说：</p>
 <pre><code>tmp_buf = mmp(<span class="keyword">file</span>, <span class="built_in">len</span>);
 <span class="keyword">write</span>(socket, tmp_buf, <span class="built_in">len</span>);

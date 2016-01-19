@@ -1,0 +1,394 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>Zero Copy | 磐石</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="Zero Copy I: User-Mode Perspective翻译自这里
+到目前为止几乎所有的人都听说过linux下的所谓的zero-copy，但是我还是经常碰到不能完全理解这个内容的人。 基于此，我打算写一些文章深挖，剖析一下这个有用的功能。在这个文章里面，我们从user-mode（用户模式）应用这个角度来看下zero copy， 所以更详尽的kernel-level（内核）细节会被有意的">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Zero Copy">
+<meta property="og:url" content="https://danieldingzju.github.io/2016/01/19/Zero-Copy/index.html">
+<meta property="og:site_name" content="磐石">
+<meta property="og:description" content="Zero Copy I: User-Mode Perspective翻译自这里
+到目前为止几乎所有的人都听说过linux下的所谓的zero-copy，但是我还是经常碰到不能完全理解这个内容的人。 基于此，我打算写一些文章深挖，剖析一下这个有用的功能。在这个文章里面，我们从user-mode（用户模式）应用这个角度来看下zero copy， 所以更详尽的kernel-level（内核）细节会被有意的">
+<meta property="og:image" content="http://www.linuxjournal.com/files/linuxjournal.com/linuxjournal/articles/063/6345/6345f1.jpg">
+<meta property="og:image" content="http://www.linuxjournal.com/files/linuxjournal.com/linuxjournal/articles/063/6345/6345f2.jpg">
+<meta property="og:image" content="http://www.linuxjournal.com/files/linuxjournal.com/linuxjournal/articles/063/6345/6345f4.jpg">
+<meta property="og:image" content="http://www.linuxjournal.com/files/linuxjournal.com/linuxjournal/articles/063/6345/6345f4.jpg">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Zero Copy">
+<meta name="twitter:description" content="Zero Copy I: User-Mode Perspective翻译自这里
+到目前为止几乎所有的人都听说过linux下的所谓的zero-copy，但是我还是经常碰到不能完全理解这个内容的人。 基于此，我打算写一些文章深挖，剖析一下这个有用的功能。在这个文章里面，我们从user-mode（用户模式）应用这个角度来看下zero copy， 所以更详尽的kernel-level（内核）细节会被有意的">
+  
+    <link rel="alternative" href="/atom.xml" title="磐石" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  <link rel="stylesheet" href="/css/style.css" type="text/css">
+  <link href="//fonts.useso.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  <!--[if lt IE 9]><script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7/html5shiv.min.js"></script><![endif]-->
+  
+</head>
+<body>
+<div id="container">
+  <div id="wrap">
+    <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">磐石</a>
+      </h1>
+      
+        <h2 id="subtitle-wrap">
+          <a href="/" id="subtitle">工程狮</a>
+        </h2>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="http://www.baidu.com/baidu" method="get" accept-charset="utf-8" class="search-form">
+          <input type="search" name="word" maxlength="20" class="search-form-input" placeholder="Search">
+          <input type="submit" value="" class="search-form-submit">
+          <input name=tn type=hidden value="bds">
+          <input name=cl type=hidden value="3">
+          <input name=ct type=hidden value="2097152">
+          <input type="hidden" name="si" value="danieldingzju.github.io">
+        </form>
+      </div>
+    </div>
+  </div>
+</header>
+    <div class="outer">
+      <section id="main"><article id="post-Zero-Copy" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2016/01/19/Zero-Copy/" class="article-date">
+  <time datetime="2016-01-19T03:51:02.000Z" itemprop="datePublished">1月 19 2016</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      Zero Copy
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h3 id="Zero_Copy_I:_User-Mode_Perspective">Zero Copy I: User-Mode Perspective</h3><p>翻译自<a href="http://www.linuxjournal.com/article/6345" target="_blank" rel="external">这里</a></p>
+<p>到目前为止几乎所有的人都听说过linux下的所谓的zero-copy，但是我还是经常碰到不能完全理解这个内容的人。 基于此，我打算写一些文章深挖，剖析一下这个有用的功能。在这个文章里面，我们从user-mode（用户模式）应用这个角度来看下zero copy， 所以更详尽的kernel-level（内核）细节会被有意的忽略。</p>
+<h4 id="What_is_Zero-Copy?">What is Zero-Copy?</h4><p>为了更好的理解一个问题的解决方案，我们首先需要的是理解问题本身。让我们了解下网络服务器进程（？network server dæmon ）为client端提供数据存储在文件中的服务的简单过程中包含了什么。一下是实例代码：</p>
+<pre><code><span class="keyword">read</span>(<span class="keyword">file</span>, tmp_buf, <span class="built_in">len</span>);
+
+<span class="keyword">write</span>(socket, tmp_buf, <span class="built_in">len</span>);
+</code></pre><p>看起来非常简单；你可能会想里面最多也就两个系统调用（system calls）。事实上，实时也就是如此。在这两个带哦用之后，数据（data）已经被复制了最少四次，同时相同次数的 user/kernel mode上下文切换 执行了。（事实上这个过程比这个描述的更复杂）。为了更深入的理解这个过程，请看图1。上半部展示了user/kernel mode上下文切换，并且下半部展示了复制操作。</p>
+<p><img src="http://www.linuxjournal.com/files/linuxjournal.com/linuxjournal/articles/063/6345/6345f1.jpg" alt="Copying in Two Sample System Calls"></p>
+<ul>
+<li><p>第一步：读系统调用（read system call）引起了从user mode to kernel mode 的上下文切换。第一次的copy被DMA engine执行，它从磁盘中读取了文件的内容然后存储到kernel address space buffer 里面。</p>
+</li>
+<li><p>第二步：第二次的copy是数据从kernel buffer 复制到 user buffer，然后读系统调用（read system call）返回。这个 返回 引起了从 kernel mode 变回 user mode 的上下文切换。现在数据被存在了user address space buffer了。</p>
+</li>
+<li><p>第三步：写系统调用（write system call）引起了从user mode to kernel mode。第三次copy是为了把再次把数据放入到kernel address space buffer。这次数据被放在了不同的buffer，是跟sockets相关的buffer。</p>
+</li>
+<li><p>第四步：写系统调用（write system call）返回，创建了我们的第四次的上下文切换。异步且于之前不依赖（Independently and asynchronously）的情况下，第四次是在DMA engine 从kernel buffer 复制 到 protocol engine的时候发生的。你可能问自己，“什么是 Independently and asynchronously？ 数据难道不是在调用返回之前就完成数据传输的么？” 事实上，调用返回 步保证 输入传输完成；它甚至步保证数据开始传输。 它只是意味着网卡驱动在其处理队列中有清空的描述符（？free descriptors）并且接收了我们需要传输的数据。这个时候在网卡的处理队列中可能还有很多的数据包在我们的数据之前。除非驱动／硬件实现了优先级环活着队列，不然数据在处理队列中都是按照先进先出的方式传输的。（带分叉的DMA 复制 表示了最后的复制能够被延迟）。</p>
+</li>
+</ul>
+<p>正如你所看到的， 以上过程有很多的数据冗余是不必要的且误事的。其中一部分冗余是可以消除来减少资源浪费以提高性能的。 作为一个驱动开发者， 我在一些有非常先进功能的硬件上面工作过。有些硬件能够绕过主存直接传送数据到另外一个设备。这个功能能够减少系统内存中的数据冗余，非常值得拥有，但是不是所有的硬件都是支持的。可能还会存在额外的数据问题会引入一定的复杂性：来源于disk的数据需要repackage才能发送给网卡。 为了减少资源浪费， 我们可以从减少kernel buffers和 user buffers之间的数据复制。</p>
+<p>减少一次复制的一种方法是跳过调用 read 而用 调用 mmap 来替代。举例来说：</p>
+<pre><code>tmp_buf = mmp(<span class="keyword">file</span>, <span class="built_in">len</span>);
+<span class="keyword">write</span>(socket, tmp_buf, <span class="built_in">len</span>);
+</code></pre><p>为了更好的了解这个过程，请看下图 2. Context switches（上下文切换）仍然一样。<br><img src="http://www.linuxjournal.com/files/linuxjournal.com/linuxjournal/articles/063/6345/6345f2.jpg" alt="Calling mmap"></p>
+<ul>
+<li><p>第一步：mmap 系统调用通过DMA engine复制到kernel buffer。这个buffer之后会被user process（用户京城）共享使用，而不需要在kernel memory space 和 user memory sapce之间执行数据的复制。</p>
+</li>
+<li><p>第二步：写系统调用让kernal 把之前的 kernel buffer中的数据传输到 socket相关的kernel buffer。</p>
+</li>
+<li><p>第三步：第三次数据复制发生在 DMA engine 传输数据从 kernel socket buffers 到protocal engine。</p>
+</li>
+</ul>
+<p>通过使用mmap来替代read，我们已经减少了一半的kernel不得步复制的次数。在大量数据需要传输的时候，这种方式带来了很好的结果。然而，这种提升不是没有代价的；这种使用mmap＋write方法的方式会存在隐藏的陷阱。其中一种情况是党你正在使用mmap（memory map）读取文件的时候并且已经调用了write操作 的时候，另外一个线程删减了文件的部分内容。你的write system call 就会被bus error（signal SIGBUS）打断，因为你执行了一个次有问题的内存访问。这个signal的默认行为就是杀死对应的进程和dump core－－但对网络服务器无法记全所有希望了解的操作。有两种方式能够解决这个问题。</p>
+<ul>
+<li><p>第一种解决方案是为 SIGBUS signal 添加singal handler，然后handler只要简单的return逻辑就可以了。通过这种方式，write system call 会返回在它被中断前要写的字节流并且errno会被设置成success。这种方式在我看来是一种不好的解决方案，只是一种处理了表层症状而不是问题的根本的方式。因为SIGBUS signals 有时候说明了进程出现了非常严重的问题，但现在却被屏蔽了，所以不推荐使用这种方案。</p>
+</li>
+<li><p>第二种解决方案使用了 kernel 的file leasing[文件租约]（在Microsoft Windows里面叫做“opportunistic locking”）。我认为这是一种解决这个问题的正确方法。通过在文件描述符(file descriptor)续约(leasing)，你可以在kernel中获得某个具体文件的租约(lease)。紧接着你可以在kernel中请求一次读／写租约(lease)。当另一个进程尝试着删减(修改)你正在传输的文件内容的时候，kernel会发送给你一个实时的signal，RT_SIGNAL_LEASE signal。它告诉你kernel正在打断你在某个文件上面的读／写租约。你的write system call会在你的程序访问非法地址和北SIGBUS signal杀掉之前就被中断。write system call 返回的数据是中断之间将要卸乳的字节流数据，并且errno 会被设置成 success。一下是从kernel获得租约的事例代码：</p>
+<pre><code><span class="keyword">if</span>(fcntl(fd, F_SETSIG, RT_SIGNAL_LEASE) == -<span class="number">1</span>) {
+    perror(<span class="string">"kernel lease set signal"</span>);
+    <span class="built_in">return</span> -<span class="number">1</span>;
+}
+/* l_<span class="built_in">type</span> can be F_RDLCK F_WRLCK */
+<span class="keyword">if</span>(fcntl(fd, F_SETLEASE, l_<span class="built_in">type</span>)){
+    perror(<span class="string">"kernel lease set type"</span>);
+    <span class="built_in">return</span> -<span class="number">1</span>;
+}
+</code></pre><p>你需要在 mmap 文件之前获得租约，然后在你完成逻辑之后解除租约。解除租约可以通过调用 fcntl F_SETLEASE with the lease type of F_UNLCK 来完成。</p>
+</li>
+</ul>
+<p>在kerverl version 2.1, the sendfile system call 被添加来简化网络内机器之间或一台机器本地文件之间的数据传输。 sendfile 不但能减少数据的复制，还能减少context switches(kernel， user)，是按照如下方式使用的：</p>
+<pre><code>sendfile(<span class="keyword">socket</span>, <span class="keyword">file</span>, len);
+</code></pre><p>为了更好的理解这个过程，请看图3.<br><img src="http://www.linuxjournal.com/files/linuxjournal.com/linuxjournal/articles/063/6345/6345f4.jpg" alt="图3"></p>
+<ul>
+<li><p>第一步：sendfile system call 把文件的数据通过DMA engine 复制到kernel buffer里面。然后数据通过kernel复制到sockets相关的kernel buffer里面。</p>
+</li>
+<li><p>第二步：第三次的复制是当DMA engine 从kernel socket buffers中数据传送数据到protocal engine中。</p>
+</li>
+</ul>
+<p>你可能会想当另外一个线程删减这个我们正在使用sendfile system call 来传输的文件的时候会发生什么。如果我们没有注册任何signal handlers（信号量处理器），sendfile call 会返回被中断之前将要传输的字节流，并且errno会被设置为sucess状态。</p>
+<p>如果我们在调用sendfile之前通过kernel获得获得文件的租约，那么之后的行为和返回状态就和之前描述的一样。我们也会在sendfile call 返回之前得到RT_SIGNAL_LEASE信号量。</p>
+<p>到现在位置，我们已经能够减少若干次kernel发生的数据复制了，但是我们仍然留下了一次复制。那么是否那次复制也能避免？当然可以，只要通过一些硬件的帮助。为了消除所有通过kernel完成的数据复制，我们需要网卡支持gather(聚合) operations。简单理解就是等在等待被传输的数据不需要在连续的内存中；他们能够被存储在不同的内存位置。在内部版本2.4，socket buffer discriptor为了适应这些需求而做了修改－－这就是Linux的zero copy。这个方法不但减少多次的context switches，而且它减少processors(处理器)完成的多次数据复制。对于user-level的应用什么都不需要改变，代码仍然如下：</p>
+<pre><code>sendfile(<span class="keyword">socket</span>, <span class="keyword">file</span>, len);
+</code></pre><p>为了能够更深入的理解这个过程，请看图4.<br><img src="http://www.linuxjournal.com/files/linuxjournal.com/linuxjournal/articles/063/6345/6345f4.jpg" alt="图4"></p>
+<ul>
+<li><p>第一步：the sendfile system call 通过DMA engine复制数据内容至kernel buffer。</p>
+</li>
+<li><p>第二步：没有数据被复制到socket buffer。只有包含数据的 whereabouts（内存地址信息？）和长度信息的descriptors(描述符号)才被添加到socket buffer。The DMA engine 直接把数据从kernel buffer 传递到 protocol engine，所以消除了剩余最后的数据复制。</p>
+</li>
+</ul>
+<p>因为数据实际上仍然从disk复制到了memory并且之后从memory到了wire，有人可能会说这个不是真正的 zero copy。 之前所描述的是 操作系统角度 的zero copy，因为数据没有在kernel buffers之间被复制。当使用zero copy的时候，能得到除了避免数据复制之外的性能提升，例如更少的context switches，更少的CPU data cache pollution（cpu 数据缓存污染，不需要修改cpu的缓存内容？）和 no CPU checksum calculations（这个是什么？）</p>
+<p>现在我们知道了什么是zero copy，让我们实践下理论并且写一些代码吧。</p>
+<p>C的代码参考<a href="http://www.linuxjournal.com/article/6345" target="_blank" rel="external">这里</a></p>
+<p>以下为JAVA中如何完成zero copy，只要使用api：</p>
+<pre><code>java.nio.channel.FileChannel的transferTo(<span class="keyword">long</span> position, <span class="keyword">long</span> count, WritableByteChannel <span class="keyword">target</span>) <span class="keyword">throws</span> IOException;
+</code></pre>
+      
+    </div>
+    <footer class="article-footer">
+      
+        <a data-url="https://danieldingzju.github.io/2016/01/19/Zero-Copy/" data-id="cijkv6ng0000728bu6ahsijid" class="article-share-link" data-share="baidu" data-title="Zero Copy">分享到</a>
+      
+
+      
+
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Linux/">Linux</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+  
+    <a href="/2015/12/26/认识java-agent/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">上一篇</strong>
+      <div class="article-nav-title">认识java agent</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+      
+      <aside id="sidebar">
+  
+    
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">标签</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Linux/">Linux</a><span class="tag-list-count">1</span></li></ul>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">标签云</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/Linux/" style="font-size: NaNpx;">Linux</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">归档</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/01/">一月 2016</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/12/">十二月 2015</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/11/">十一月 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/10/">十月 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/09/">九月 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/04/">四月 2015</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/03/">三月 2015</a><span class="archive-list-count">1</span></li></ul>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">近期文章</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2016/01/19/Zero-Copy/">Zero Copy</a>
+          </li>
+        
+          <li>
+            <a href="/2015/12/26/认识java-agent/">认识java agent</a>
+          </li>
+        
+          <li>
+            <a href="/2015/12/20/JVMS7笔记/">JVMS7笔记</a>
+          </li>
+        
+          <li>
+            <a href="/2015/11/21/理解CPU-steal-time/">理解CPU steal time</a>
+          </li>
+        
+          <li>
+            <a href="/2015/10/06/亲身经历icloud账号被黑事件/">亲身经历icloud账号被黑事件</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">友情链接</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="http://xiguabaobao.com" target="_blank">主题作者</a>
+          </li>
+        
+          <li>
+            <a href="http://reqianduan.com" target="_blank">热前端</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+      
+    </div>
+    <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2016 danielding<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+      .
+      Theme by <a href="https://github.com/xiangming/landscape-plus" target="_blank">Landscape-plus</a>
+    </div>
+  </div>
+</footer>
+  </div>
+  <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+  <!-- totop start -->
+<div id="totop">
+<a title="返回顶部"><img src="/img/scrollup.png"/></a>
+</div>
+
+<!-- totop end -->
+
+
+<!-- 百度分享 start -->
+
+<div id="article-share-box" class="article-share-box">
+  <div id="bdshare" class="bdsharebuttonbox article-share-links">
+    <a class="article-share-weibo" data-cmd="tsina" title="分享到新浪微博"></a>
+    <a class="article-share-weixin" data-cmd="weixin" title="分享到微信"></a>
+    <a class="article-share-qq" data-cmd="sqq" title="分享到QQ"></a>
+    <a class="article-share-renren" data-cmd="renren" title="分享到人人网"></a>
+    <a class="article-share-more" data-cmd="more" title="更多"></a>
+  </div>
+</div>
+<script>
+  function SetShareData(cmd, config) {
+    if (shareDataTitle && shareDataUrl) {
+      config.bdText = shareDataTitle;
+      config.bdUrl = shareDataUrl;
+    }
+    return config;
+  }
+  window._bd_share_config={
+    "common":{onBeforeClick: SetShareData},
+    "share":{"bdCustomStyle":"/css/bdshare.css"}
+  };
+  with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='http://bdimg.share.baidu.com/static/api/js/share.js?cdnversion='+~(-new Date()/36e5)];
+</script>
+
+<!-- 百度分享 end -->
+
+<script src="//cdnjs.cloudflare.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+
+
+
+
+<! -- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+tex2jax: {
+          inlineMath: [ ['$$$','$$$'] ],
+                processEscapes: true
+                    
+}
+  
+        });
+</script>
+
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+tex2jax: {
+            skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+                  
+}
+    
+        });
+</script>
+
+<script type="text/x-mathjax-config">
+MathJax.Hub.Queue(function() {
+            var all = MathJax.Hub.getAllJax(), i;
+            for(i=0; i < all.length; i += 1) {
+                            all[i].SourceElement().parentNode.className += ' has-jax';
+                                    
+            }
+                
+        });
+</script>
+
+<script type="text/javascript" src="http://cdn.bootcss.com/mathjax/2.5.3/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+<script src="/js/script.js" type="text/javascript"></script>
+
+</div>
+</body>
+</html>

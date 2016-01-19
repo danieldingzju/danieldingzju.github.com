@@ -6,22 +6,25 @@
   
   <title>Zero Copy | 磐石</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="Zero Copy I: User-Mode Perspective翻译自这里
-到目前为止几乎所有的人都听说过linux下的所谓的zero-copy，但是我还是经常碰到不能完全理解这个内容的人。 基于此，我打算写一些文章深挖，剖析一下这个有用的功能。在这个文章里面，我们从user-mode（用户模式）应用这个角度来看下zero copy， 所以更详尽的kernel-level（内核）细节会被有意的">
+  <meta name="description" content="xflush，metaq都适用了zero copy技术来提高性能，多次看到这个词，却一直没有理解透彻，于是找了一些资料了解。以下此技术点知识的翻译及汇总。
+翻译自这里
+到目前为止几乎所有的人都听说过linux下的所谓的zero-copy，但是我还是经常碰到不能完全理解这个内容的人。 基于此，我打算写一些文章深挖，剖析一下这个有用的功能。在这个文章里面，我们从user-mode（用户模式）应用这个角">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Zero Copy">
 <meta property="og:url" content="https://danieldingzju.github.io/2016/01/19/Zero-Copy/index.html">
 <meta property="og:site_name" content="磐石">
-<meta property="og:description" content="Zero Copy I: User-Mode Perspective翻译自这里
-到目前为止几乎所有的人都听说过linux下的所谓的zero-copy，但是我还是经常碰到不能完全理解这个内容的人。 基于此，我打算写一些文章深挖，剖析一下这个有用的功能。在这个文章里面，我们从user-mode（用户模式）应用这个角度来看下zero copy， 所以更详尽的kernel-level（内核）细节会被有意的">
+<meta property="og:description" content="xflush，metaq都适用了zero copy技术来提高性能，多次看到这个词，却一直没有理解透彻，于是找了一些资料了解。以下此技术点知识的翻译及汇总。
+翻译自这里
+到目前为止几乎所有的人都听说过linux下的所谓的zero-copy，但是我还是经常碰到不能完全理解这个内容的人。 基于此，我打算写一些文章深挖，剖析一下这个有用的功能。在这个文章里面，我们从user-mode（用户模式）应用这个角">
 <meta property="og:image" content="http://www.linuxjournal.com/files/linuxjournal.com/linuxjournal/articles/063/6345/6345f1.jpg">
 <meta property="og:image" content="http://www.linuxjournal.com/files/linuxjournal.com/linuxjournal/articles/063/6345/6345f2.jpg">
 <meta property="og:image" content="http://www.linuxjournal.com/files/linuxjournal.com/linuxjournal/articles/063/6345/6345f4.jpg">
 <meta property="og:image" content="http://www.linuxjournal.com/files/linuxjournal.com/linuxjournal/articles/063/6345/6345f4.jpg">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Zero Copy">
-<meta name="twitter:description" content="Zero Copy I: User-Mode Perspective翻译自这里
-到目前为止几乎所有的人都听说过linux下的所谓的zero-copy，但是我还是经常碰到不能完全理解这个内容的人。 基于此，我打算写一些文章深挖，剖析一下这个有用的功能。在这个文章里面，我们从user-mode（用户模式）应用这个角度来看下zero copy， 所以更详尽的kernel-level（内核）细节会被有意的">
+<meta name="twitter:description" content="xflush，metaq都适用了zero copy技术来提高性能，多次看到这个词，却一直没有理解透彻，于是找了一些资料了解。以下此技术点知识的翻译及汇总。
+翻译自这里
+到目前为止几乎所有的人都听说过linux下的所谓的zero-copy，但是我还是经常碰到不能完全理解这个内容的人。 基于此，我打算写一些文章深挖，剖析一下这个有用的功能。在这个文章里面，我们从user-mode（用户模式）应用这个角">
   
     <link rel="alternative" href="/atom.xml" title="磐石" type="application/atom+xml">
   
@@ -100,7 +103,8 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        <h3 id="Zero_Copy_I:_User-Mode_Perspective">Zero Copy I: User-Mode Perspective</h3><p>翻译自<a href="http://www.linuxjournal.com/article/6345" target="_blank" rel="external">这里</a></p>
+        <p>xflush，metaq都适用了zero copy技术来提高性能，多次看到这个词，却一直没有理解透彻，于是找了一些资料了解。以下此技术点知识的翻译及汇总。</p>
+<p>翻译自<a href="http://www.linuxjournal.com/article/6345" target="_blank" rel="external">这里</a></p>
 <p>到目前为止几乎所有的人都听说过linux下的所谓的zero-copy，但是我还是经常碰到不能完全理解这个内容的人。 基于此，我打算写一些文章深挖，剖析一下这个有用的功能。在这个文章里面，我们从user-mode（用户模式）应用这个角度来看下zero copy， 所以更详尽的kernel-level（内核）细节会被有意的忽略。</p>
 <h4 id="What_is_Zero-Copy?">What is Zero-Copy?</h4><p>为了更好的理解一个问题的解决方案，我们首先需要的是理解问题本身。让我们了解下网络服务器进程（？network server dæmon ）为client端提供数据存储在文件中的服务的简单过程中包含了什么。一下是实例代码：</p>
 <pre><code><span class="keyword">read</span>(<span class="keyword">file</span>, tmp_buf, <span class="built_in">len</span>);
@@ -173,7 +177,59 @@
 <p>C的代码参考<a href="http://www.linuxjournal.com/article/6345" target="_blank" rel="external">这里</a></p>
 <p>以下为JAVA中如何完成zero copy，只要使用api：</p>
 <pre><code>java.nio.channel.FileChannel的transferTo(<span class="keyword">long</span> position, <span class="keyword">long</span> count, WritableByteChannel <span class="keyword">target</span>) <span class="keyword">throws</span> IOException;
-</code></pre>
+</code></pre><p>来自<a href="">参考</a>的性能数据：</p>
+<table>
+<thead>
+<tr>
+<th>File size</th>
+<th>Normal file transfer (ms)</th>
+<th>transferTo (ms)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>7MB</td>
+<td>156</td>
+<td>45</td>
+</tr>
+<tr>
+<td>21MB</td>
+<td>337</td>
+<td>128</td>
+</tr>
+<tr>
+<td>63MB</td>
+<td>843</td>
+<td>387</td>
+</tr>
+<tr>
+<td>98MB</td>
+<td>1320</td>
+<td>617</td>
+</tr>
+<tr>
+<td>200MB</td>
+<td>2124</td>
+<td>1150</td>
+</tr>
+<tr>
+<td>350MB</td>
+<td>3631</td>
+<td>1762</td>
+</tr>
+<tr>
+<td>700MB</td>
+<td>13498</td>
+<td>4422</td>
+</tr>
+<tr>
+<td>1GB</td>
+<td>18399</td>
+<td>8537</td>
+</tr>
+</tbody>
+</table>
+
       
     </div>
     <footer class="article-footer">

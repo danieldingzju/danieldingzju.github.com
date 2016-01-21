@@ -173,7 +173,7 @@
 </li>
 </ul>
 <p>因为数据实际上仍然从disk复制到了memory并且之后从memory到了wire，有人可能会说这个不是真正的 zero copy。 之前所描述的是 操作系统角度 的zero copy，因为数据没有在kernel buffers之间被复制。当使用zero copy的时候，能得到除了避免数据复制之外的性能提升，例如更少的context switches，更少的CPU data cache pollution（cpu 数据缓存污染，不需要修改cpu的缓存内容？）和 no CPU checksum calculations（这个是什么？）</p>
-<p>现在我们知道了什么是zero copy，让我们实践下理论并且写一些代码吧。</p>
+<h4 id="How_to_use_Zero-Copy?">How to use Zero-Copy?</h4><p>现在我们知道了什么是zero copy，让我们实践下理论并且写一些代码吧。</p>
 <p>C的代码参考<a href="http://www.linuxjournal.com/article/6345" target="_blank" rel="external">这里</a></p>
 <p>以下为JAVA中如何完成zero copy，只要使用api：</p>
 <pre><code>java.nio.channel.FileChannel的transferTo(<span class="keyword">long</span> position, <span class="keyword">long</span> count, WritableByteChannel <span class="keyword">target</span>) <span class="keyword">throws</span> IOException;

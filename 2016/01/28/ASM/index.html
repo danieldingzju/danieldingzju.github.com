@@ -4,24 +4,33 @@
 <head>
   <meta charset="utf-8">
   
-  <title>JavaBeans(TM) | 磐石</title>
+  <title>ASM | 磐石</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="JavaBeans是为了定义出最小的可复用的组件，具备移植性和复用性，类似com+组件。
-Java Bean由properties，event，method(listen methods)组成。
-JavaBeans定义了一堆规范和利用了listener design pattern来完成properties变化事件和自定义事件的监听。">
+  <meta name="description" content="ASM 使用小记ASM是个2002年就开始的项目，真是古老至极。许多流行且包含了动态代理功能的框架应该直接或者间接使用了asm（cglib是基于asm做的二次开发）。
+在最近的项目中使用到了asm，所以做了一些小记，内容有翻译，有摘录，有总结。
+ASM 模型ASM提供了两套API：
+
+core API : 提供 event-based 字节码控制。
+  asm通过JVMS定义的字节码结构把字节码中">
 <meta property="og:type" content="article">
-<meta property="og:title" content="JavaBeans(TM)">
-<meta property="og:url" content="https://danieldingzju.github.io/2015/04/09/JavaBeans-TM/index.html">
+<meta property="og:title" content="ASM">
+<meta property="og:url" content="https://danieldingzju.github.io/2016/01/28/ASM/index.html">
 <meta property="og:site_name" content="磐石">
-<meta property="og:description" content="JavaBeans是为了定义出最小的可复用的组件，具备移植性和复用性，类似com+组件。
-Java Bean由properties，event，method(listen methods)组成。
-JavaBeans定义了一堆规范和利用了listener design pattern来完成properties变化事件和自定义事件的监听。">
-<meta property="og:image" content="http://tempwork.qiniudn.com/beans.jpg">
+<meta property="og:description" content="ASM 使用小记ASM是个2002年就开始的项目，真是古老至极。许多流行且包含了动态代理功能的框架应该直接或者间接使用了asm（cglib是基于asm做的二次开发）。
+在最近的项目中使用到了asm，所以做了一些小记，内容有翻译，有摘录，有总结。
+ASM 模型ASM提供了两套API：
+
+core API : 提供 event-based 字节码控制。
+  asm通过JVMS定义的字节码结构把字节码中">
+<meta property="og:image" content="http://img.blog.csdn.net/20140809214609558?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQveHlzbWlyYWNsZQ==/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="JavaBeans(TM)">
-<meta name="twitter:description" content="JavaBeans是为了定义出最小的可复用的组件，具备移植性和复用性，类似com+组件。
-Java Bean由properties，event，method(listen methods)组成。
-JavaBeans定义了一堆规范和利用了listener design pattern来完成properties变化事件和自定义事件的监听。">
+<meta name="twitter:title" content="ASM">
+<meta name="twitter:description" content="ASM 使用小记ASM是个2002年就开始的项目，真是古老至极。许多流行且包含了动态代理功能的框架应该直接或者间接使用了asm（cglib是基于asm做的二次开发）。
+在最近的项目中使用到了asm，所以做了一些小记，内容有翻译，有摘录，有总结。
+ASM 模型ASM提供了两套API：
+
+core API : 提供 event-based 字节码控制。
+  asm通过JVMS定义的字节码结构把字节码中">
   
     <link rel="alternative" href="/atom.xml" title="磐石" type="application/atom+xml">
   
@@ -78,10 +87,10 @@ JavaBeans定义了一堆规范和利用了listener design pattern来完成proper
   </div>
 </header>
     <div class="outer">
-      <section id="main"><article id="post-JavaBeans-TM" class="article article-type-post" itemscope itemprop="blogPost">
+      <section id="main"><article id="post-ASM" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
-    <a href="/2015/04/09/JavaBeans-TM/" class="article-date">
-  <time datetime="2015-04-09T02:12:55.000Z" itemprop="datePublished">4月 9 2015</time>
+    <a href="/2016/01/28/ASM/" class="article-date">
+  <time datetime="2016-01-28T07:22:34.000Z" itemprop="datePublished">1月 28 2016</time>
 </a>
     
   </div>
@@ -92,7 +101,7 @@ JavaBeans定义了一堆规范和利用了listener design pattern来完成proper
         
   
     <h1 class="article-title" itemprop="name">
-      JavaBeans(TM)
+      ASM
     </h1>
   
 
@@ -100,22 +109,81 @@ JavaBeans定义了一堆规范和利用了listener design pattern来完成proper
     
     <div class="article-entry" itemprop="articleBody">
       
-        <p>JavaBeans是为了定义出最小的可复用的组件，具备移植性和复用性，类似com+组件。</p>
-<p>Java Bean由properties，event，method(listen methods)组成。</p>
-<p>JavaBeans定义了一堆规范和利用了listener design pattern来完成properties变化事件和自定义事件的监听。</p>
-<p><img src="http://tempwork.qiniudn.com/beans.jpg" alt="JavaBeans交互图"></p>
+        <h3 id="ASM_使用小记">ASM 使用小记</h3><p>ASM是个2002年就开始的项目，真是古老至极。许多流行且包含了动态代理功能的框架应该直接或者间接使用了asm（cglib是基于asm做的二次开发）。</p>
+<p>在最近的项目中使用到了asm，所以做了一些小记，内容有翻译，有摘录，有总结。</p>
+<h4 id="ASM_模型">ASM 模型</h4><p>ASM提供了两套API：</p>
+<ul>
+<li><p>core API : 提供 event-based 字节码控制。</p>
+<p>  asm通过JVMS定义的字节码结构把字节码中的如field，method 声明，指令等变成event，然后操纵event以达成修改字节码的目的。</p>
+<p>  相关主要类：ClassVisitor, MethodVisitor (4.0之前还有基于这两个类的如 ClassAdapter 类等)</p>
+</li>
+<li><p>tree API : 提供 tree-based 字节码控制</p>
+<p>  基于event-based的模型，继续抽象了下，用一棵树的形式展现字节码。</p>
+<p>  相关主要类：ClassNode, MethodNode</p>
+</li>
+</ul>
+<p>在<a href="file:///Users/tingjieding/Dropbox/See%20my%20life%20here/%E5%AD%A6%E4%B9%A0%E8%B5%84%E6%96%99/asm4-guide.pdf" target="_blank" rel="external">此文</a>中就拿了SAX 和 DOM 来描述解析xml的比较 来 类比 core API 和 tree API 的比较：</p>
+<ul>
+<li><p>core API 比 tree API 占用更少的系统资源。从内存的角度看：tree API 由于要把字节码抽象成tree，在内存中会占用跟多的空间</p>
+</li>
+<li><p>core API 比 tree API 更难用，每次只能操作一个指令，需要非常了解字节码相关规范，写起来要小心翼翼。</p>
+</li>
+</ul>
+<h4 id="ASM_架构">ASM 架构</h4><p>经典图如下：<br><img src="http://img.blog.csdn.net/20140809214609558?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQveHlzbWlyYWNsZQ==/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center" alt="经典图"></p>
+<p>使用了经典的 producer-consumer 模型，中间的白框都是filter。</p>
+<pre><code><span class="comment">producer</span> <span class="literal">-</span><span class="literal">-</span>&gt; <span class="comment">filters</span> <span class="literal">-</span><span class="literal">-</span>&gt; <span class="comment">consumer:</span>
+</code></pre><p>对于Class：</p>
+<pre><code>ClassReader 是 producer，<span class="built_in">filter</span> 都是 ClassVisitor 的实现类，ClassWriter 作为 consumer。
+</code></pre><p>对于Method：</p>
+<pre><code>ClassReader 是 producer, <span class="built_in">filter</span> 是 MethodVistor 的实现类, MethodWriter 作为consumer。
+</code></pre><p>对于Field：</p>
+<pre><code>ClassReader 是 producer， <span class="built_in">filter</span> 是 FieldVistor 的实现类， FieldWriter 作为consumer。
+</code></pre><h4 id="ASM_实例">ASM 实例</h4><p>添加System.out.println(“here I am”); 代码到方法中:</p>
+<ul>
+<li><p>core api使用方法如下：</p>
+<pre><code>ClassReader cr <span class="subst">=</span> <span class="literal">new</span> ClassReader(<span class="built_in">bytes</span>);
+ClassWriter cw <span class="subst">=</span> <span class="literal">new</span> ClassWriter(cr, COMPUTE_FRAMES <span class="subst">|</span> COMPUTE_MAXS); <span class="comment">//cr只是定义来源reader，无用。</span>
+ClassVisitor cv <span class="subst">=</span> <span class="literal">new</span> ClassVisitor(Opcodes<span class="built_in">.</span>ASM5, cw){
+    <span class="attribute">...</span><span class="built_in">.
+</span>}
+cr<span class="built_in">.</span>accept(cv, ClassReader<span class="built_in">.</span>EXPAND_FRAMES);                
+<span class="keyword">return</span> cw<span class="built_in">.</span>toByteArray();
+
+<span class="comment">//cr--&gt;cv--&gt;cw</span>
+</code></pre></li>
+<li><p>tree api使用方法如下：</p>
+<pre><code><span class="type">ClassReader</span> cr = new <span class="type">ClassReader</span>(bytecode);
+<span class="type">ClassNode</span> cn = new <span class="type">ClassNode</span>();
+cr.accept(cn, <span class="type">ClassReader</span>.<span class="type">SKIP_DEBUG</span>);
+
+<span class="type">List</span> methods = cn.methods;
+<span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>; i &lt; methods.size(); ++i) {
+    <span class="type">MethodNode</span> <span class="keyword">method</span> = (<span class="type">MethodNode</span>) methods.get(i);
+    <span class="keyword">if</span> (<span class="keyword">method</span>.instructions.size() &gt; <span class="number">0</span>) {                   instructions.insert(new <span class="type">FieldInsnNode</span>(<span class="type">Opcodes</span>.<span class="type">GETSTATIC</span>, <span class="string">"java/lang/System"</span>, <span class="string">"out"</span>, <span class="string">"Ljava/io/PrintStream;"</span>)); 
+        instructions.insert(new <span class="type">LdcInsnNode</span>(<span class="string">"hi, here I am!"</span>));
+        instructions.insert(new <span class="type">MethodInsnNode</span>(<span class="type">Opcodes</span>.<span class="type">INVOKEVIRTUAL</span>, <span class="string">"java/io/PrintStream"</span>, <span class="string">"println"</span>, <span class="string">"(Ljava/lang/String;)V"</span>, <span class="literal">false</span>))
+    }
+}
+<span class="type">ClassWriter</span> cw = new <span class="type">ClassWriter</span>(<span class="type">COMPUTE_FRAMES</span> | <span class="type">COMPUTE_MAXS</span>);
+cn.accept(c);
+<span class="keyword">return</span> cw.toByteArray();
+
+//cr--&gt;cn--&gt;cw
+</code></pre></li>
+</ul>
+<p>PS：推荐在IDE上面安装<a href="https://plugins.jetbrains.com/plugin/5918?pr=idea" target="_blank" rel="external">ASM字节码工具</a>，正常在一个类里面写完代码以后，用工具一转，可以参考转出的字节码，开始写asm相关代码了。</p>
 
       
     </div>
     <footer class="article-footer">
       
-        <a data-url="https://danieldingzju.github.io/2015/04/09/JavaBeans-TM/" data-id="cijxxpmve000gwebu326sn8z4" class="article-share-link" data-share="baidu" data-title="JavaBeans(TM)">分享到</a>
+        <a data-url="https://danieldingzju.github.io/2016/01/28/ASM/" data-id="cijxxpmvl000mwebuo5xgkvkh" class="article-share-link" data-share="baidu" data-title="ASM">分享到</a>
       
 
       
 
       
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Java/">Java</a></li></ul>
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/JAVA/">JAVA</a></li></ul>
 
     </footer>
   </div>
@@ -123,19 +191,10 @@ JavaBeans定义了一堆规范和利用了listener design pattern来完成proper
     
 <nav id="article-nav">
   
-    <a href="/2015/04/09/Dynamic-Bean/" id="article-nav-newer" class="article-nav-link-wrap">
-      <strong class="article-nav-caption">下一篇</strong>
-      <div class="article-nav-title">
-        
-          Dynamic Bean
-        
-      </div>
-    </a>
   
-  
-    <a href="/2015/03/24/hello-world/" id="article-nav-older" class="article-nav-link-wrap">
+    <a href="/2016/01/19/Zero-Copy/" id="article-nav-older" class="article-nav-link-wrap">
       <strong class="article-nav-caption">上一篇</strong>
-      <div class="article-nav-title">Hello World</div>
+      <div class="article-nav-title">Zero Copy</div>
     </a>
   
 </nav>

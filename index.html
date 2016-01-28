@@ -158,6 +158,25 @@ cn.accept(c);
 </code></pre></li>
 </ul>
 <p>PS：推荐在IDE上面安装<a href="https://plugins.jetbrains.com/plugin/5918?pr=idea" target="_blank" rel="external">ASM字节码工具</a>，在一个正常类里面写完代码以后，用工具一转，可以参考转出的字节码，开始写asm相关代码了。</p>
+<h3 id="ASM其他">ASM其他</h3><h4 id="ASM_core_api">ASM core api</h4><ul>
+<li><p>TraceClassVisitor:</p>
+<p>  通过 <strong>PrintWriter</strong> 实例打印可读的字节码信息。</p>
+</li>
+<li><p>CheckClassAdapter</p>
+<p>  在被JVM拒绝之前检测修改后的字节码是否合法。</p>
+</li>
+<li><p>AnalyzerAdapter</p>
+<p>  可以自动计算stack的深度，感觉没太大作用，在ClassWriter的option里面有两个选项：<strong>COMPUTE_FRAMES, COMPUTE_MAXS</strong></p>
+</li>
+<li><p>LocalVariablesSorter</p>
+<p>  有newLocal方法可以添加local variable，自动维护local variable数量变化，引起的local variable对应的index变化的问题。</p>
+</li>
+<li><p>AdviceAdapter</p>
+<p>  有onMethodEnter()和onMethodExit()方法，可以在方法最开始和RETURN 或者 ATHROW指令之前插入指令。</p>
+</li>
+</ul>
+<p>Metadata 相关 vistor：SignatureVisitor， AnnotationVisitor。这两个还没有用过，暂做记录。</p>
+<h4 id="ASM_tree_api">ASM tree api</h4><p>实际使用的时候，碰到了问题，没有细看，暂做记录。</p>
 
       
     </div>

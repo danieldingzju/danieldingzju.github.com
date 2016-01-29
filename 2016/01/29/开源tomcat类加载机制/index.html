@@ -4,17 +4,19 @@
 <head>
   <meta charset="utf-8">
   
-  <title>磐石</title>
+  <title>开源tomcat类加载机制 | 磐石</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="danielding&apos;s blog | java | bi">
-<meta property="og:type" content="website">
-<meta property="og:title" content="磐石">
-<meta property="og:url" content="https://danieldingzju.github.io/archives/2016/01/index.html">
+  <meta name="description" content="PS：tomcat7 和tomcat8有一个StandardClossLoader的区别，如下：">
+<meta property="og:type" content="article">
+<meta property="og:title" content="开源tomcat类加载机制">
+<meta property="og:url" content="https://danieldingzju.github.io/2016/01/29/开源tomcat类加载机制/index.html">
 <meta property="og:site_name" content="磐石">
-<meta property="og:description" content="danielding&apos;s blog | java | bi">
+<meta property="og:description" content="PS：tomcat7 和tomcat8有一个StandardClossLoader的区别，如下：">
+<meta property="og:image" content="http://tempwork.qiniudn.com/opensource-tomcat1.jpg">
+<meta property="og:image" content="http://tempwork.qiniudn.com/opensource-tomcat2.jpg">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="磐石">
-<meta name="twitter:description" content="danielding&apos;s blog | java | bi">
+<meta name="twitter:title" content="开源tomcat类加载机制">
+<meta name="twitter:description" content="PS：tomcat7 和tomcat8有一个StandardClossLoader的区别，如下：">
   
     <link rel="alternative" href="/atom.xml" title="磐石" type="application/atom+xml">
   
@@ -71,77 +73,60 @@
   </div>
 </header>
     <div class="outer">
-      <section id="main">
-  
-  
-    
-    
-      
-      
-      <section class="archives-wrap">
-        <div class="archive-year-wrap">
-          <a href="/archives/2016" class="archive-year">2016</a>
-        </div>
-        <div class="archives">
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      <a href="/2016/01/29/开源tomcat类加载机制/" class="archive-article-date">
-  <time datetime="2016-01-29T08:56:44.000Z" itemprop="datePublished">1月 29</time>
+      <section id="main"><article id="post-开源tomcat类加载机制" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2016/01/29/开源tomcat类加载机制/" class="article-date">
+  <time datetime="2016-01-29T08:56:44.000Z" itemprop="datePublished">1月 29 2016</time>
 </a>
-      
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
   
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2016/01/29/开源tomcat类加载机制/">开源tomcat类加载机制</a>
+    <h1 class="article-title" itemprop="name">
+      开源tomcat类加载机制
     </h1>
   
 
-    </header>
-  </div>
-</article>
-  
+      </header>
     
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      <a href="/2016/01/28/ASM/" class="archive-article-date">
-  <time datetime="2016-01-28T07:22:34.000Z" itemprop="datePublished">1月 28</time>
-</a>
+    <div class="article-entry" itemprop="articleBody">
       
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2016/01/28/ASM/">ASM</a>
-    </h1>
-  
+        <p><img src="http://tempwork.qiniudn.com/opensource-tomcat1.jpg" alt="initClassLoaders"></p>
+<p>PS：tomcat7 和tomcat8有一个<strong>StandardClossLoader</strong>的区别，如下：<br><img src="http://tempwork.qiniudn.com/opensource-tomcat2.jpg" alt="StandardClossLoader"></p>
 
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      <a href="/2016/01/19/Zero-Copy/" class="archive-article-date">
-  <time datetime="2016-01-19T03:51:02.000Z" itemprop="datePublished">1月 19</time>
-</a>
       
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2016/01/19/Zero-Copy/">Zero Copy</a>
-    </h1>
-  
+    </div>
+    <footer class="article-footer">
+      
+        <a data-url="https://danieldingzju.github.io/2016/01/29/开源tomcat类加载机制/" data-id="cijzghyv4000a0abujtchthk5" class="article-share-link" data-share="baidu" data-title="开源tomcat类加载机制">分享到</a>
+      
 
-    </header>
+      
+
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/JAVA/">JAVA</a></li></ul>
+
+    </footer>
   </div>
+  
+    
+<nav id="article-nav">
+  
+  
+    <a href="/2016/01/28/ASM/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">上一篇</strong>
+      <div class="article-nav-title">ASM</div>
+    </a>
+  
+</nav>
+
+  
 </article>
-  
-  
-    </div></section>
-  
+
 </section>
       
       <aside id="sidebar">

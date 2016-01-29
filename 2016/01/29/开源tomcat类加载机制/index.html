@@ -6,17 +6,23 @@
   
   <title>开源tomcat类加载机制 | 磐石</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="PS：tomcat7 和tomcat8有一个StandardClossLoader的区别，如下：">
+  <meta name="description" content="经典阅读tomcat源码的方式是从Bootstrap类开始。
+
+PS：tomcat7 和tomcat8有一个StandardClossLoader的区别，如下：">
 <meta property="og:type" content="article">
 <meta property="og:title" content="开源tomcat类加载机制">
 <meta property="og:url" content="https://danieldingzju.github.io/2016/01/29/开源tomcat类加载机制/index.html">
 <meta property="og:site_name" content="磐石">
-<meta property="og:description" content="PS：tomcat7 和tomcat8有一个StandardClossLoader的区别，如下：">
+<meta property="og:description" content="经典阅读tomcat源码的方式是从Bootstrap类开始。
+
+PS：tomcat7 和tomcat8有一个StandardClossLoader的区别，如下：">
 <meta property="og:image" content="http://tempwork.qiniudn.com/opensource-tomcat3.jpg">
 <meta property="og:image" content="http://tempwork.qiniudn.com/opensource-tomcat2.jpg">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="开源tomcat类加载机制">
-<meta name="twitter:description" content="PS：tomcat7 和tomcat8有一个StandardClossLoader的区别，如下：">
+<meta name="twitter:description" content="经典阅读tomcat源码的方式是从Bootstrap类开始。
+
+PS：tomcat7 和tomcat8有一个StandardClossLoader的区别，如下：">
   
     <link rel="alternative" href="/atom.xml" title="磐石" type="application/atom+xml">
   
@@ -95,8 +101,10 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        <p><img src="http://tempwork.qiniudn.com/opensource-tomcat3.jpg" alt="initClassLoaders"></p>
-<p>PS：tomcat7 和tomcat8有一个<strong>StandardClossLoader</strong>的区别，如下：<br><img src="http://tempwork.qiniudn.com/opensource-tomcat2.jpg" alt="StandardClossLoader"></p>
+        <p>经典阅读tomcat源码的方式是从Bootstrap类开始。</p>
+<p><img src="http://tempwork.qiniudn.com/opensource-tomcat3.jpg" alt="initClassLoaders"></p>
+<p>PS：tomcat7 和tomcat8有一个<strong>StandardClossLoader</strong>的区别，如下：</p>
+<p><img src="http://tempwork.qiniudn.com/opensource-tomcat2.jpg" alt="StandardClossLoader"></p>
 
       
     </div>

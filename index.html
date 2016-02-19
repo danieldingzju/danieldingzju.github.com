@@ -133,7 +133,7 @@ ps H -eo user,pid,ppid,tid,time,%cpu --sort=%cpu --no-headers \
         awk -v <span class="string">"cpu=<span class="variable">${cpu}</span>"</span> <span class="string">'/nid='</span><span class="string">"<span class="variable">${nid}</span>"</span><span class="string">'/,/^$/{print $0"\t"(isF+    +?"":"cpu="cpu"%");}'</span> <span class="variable">${tmp_file}</span> &gt;&gt; <span class="variable">${stack_file}</span>
 <span class="keyword">done</span>
 </code></pre><p>发现从top 10的cpu占用的栈信息上面看不出来啥。应该不满足  <strong>固定生命周期长线程</strong>  前提。</p>
-<h4 id="第二次尝试">第二次尝试</h4><p>用 @沉思 所写的oncrash脚本收集所有的信息（之前没用是觉得略重），脚本如下：</p>
+<h4 id="第二次尝试">第二次尝试</h4><p>用 @沉思 所写的oncrash脚本收集所有的信息，脚本如下：</p>
 <pre><code><span class="keyword">mkdir</span> dumpdir
 <span class="keyword">cd</span> dumpdir
 echo '

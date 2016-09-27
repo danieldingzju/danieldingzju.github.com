@@ -73,6 +73,150 @@
     <div class="outer">
       <section id="main">
   
+    <article id="post-hacking-phoenix" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2016/09/27/hacking-phoenix/" class="article-date">
+  <time datetime="2016-09-27T11:51:50.000Z" itemprop="datePublished">9月 27 2016</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2016/09/27/hacking-phoenix/">hacking phoenix</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>因为微服务使用了springboot，并且用使用了phoenix 来写入数据，应用经常超过1000的线程数量。</p>
+<hr>
+<h4 id="分析_stack：">分析 stack：</h4><p>自己管理了400个线程的线程池，phoenix-1-thread 有128个，HConnection的线程有256个，再加上一些tomcat的http线程，轻松就能到1000个线程。</p>
+<p>略多，希望把phoenix和HConnection相关线程干掉。官方文档没有提到怎么设置，网上也没有资料。</p>
+<p>那么，看源码吧。</p>
+<hr>
+<h4 id="解剖代码：">解剖代码：</h4><ol>
+<li><p>JobManager 创建了 <code>phoenix-{index}-thread</code> ，JobManager 初始化是由<code>QueryServicesImpl</code>完成的(使用了<code>QueryServicesOptions</code>)</p>
+<p> <img src="http://tempwork.qiniudn.com/Snip20160926_118.png" alt="图片"></p>
+</li>
+<li><p>JobManager.JobCallable 被 <code>ServerCacheClient</code> 使用。</p>
+</li>
+<li>ServerCacheClient 被 <code>MutationState</code>的方法<code>send(Iterator&lt;TableRef&gt; tableRefIterator)</code> 使用。</li>
+<li>MutationState 被 <code>PhoenixConnection</code>的方法<code>commit()</code>使用。</li>
+</ol>
+<p>恩，到这里，逻辑已经串联起来了。</p>
+<hr>
+<h4 id="分析问题：">分析问题：</h4><p>PhoenixDriver 获取 connection 的时候可以使用方法 <code>Connection connect(String url, Properties info)</code>, info 按理是我们的自定义配置，但是实际却不能生效。<a href="https://phoenix.apache.org/tuning.html" target="_blank" rel="external">配置项参考</a></p>
+<p>但是我们发现 PhoenixDriver.getQueryServices() 创建了 QueryServicesImpl</p>
+<ol>
+<li>PhoenixEmbeddedDriver 定义了函数 <code>abstract public QueryServices getQueryServices() throws SQLException;</code> 参数列表竟然是空的！</li>
+<li><code>QueryServicesImpl</code>使用了一个默认的参数配置！</li>
+</ol>
+<p><img src="http://tempwork.qiniudn.com/Snip20160926_119.png" alt="图片"></p>
+<hr>
+<h4 id="第一次尝试：">第一次尝试：</h4><p>所以修改 <code>PhoenixEmbeddedDriver</code> 定义 ， <code>PhoenixDriver</code> 的实现：</p>
+<ol>
+<li><p>PhoenixEmbeddedDriver</p>
+<pre><code><span class="keyword">abstract</span> <span class="keyword">public</span> <span class="function">QueryServices <span class="title">getQueryServices</span><span class="params">(Properties properties)</span> <span class="keyword">throws</span> SQLException</span>;
+</code></pre></li>
+<li><p>PhoenixDriver</p>
+<pre><code>@<span class="type">Override</span>
+public <span class="type">QueryServices</span> getQueryServices(<span class="type">Properties</span> properties) throws <span class="type">SQLException</span> {
+    <span class="keyword">try</span> {
+        lockInterruptibly(<span class="type">LockMode</span>.<span class="type">READ</span>);
+        checkClosed();
+        // <span class="type">Lazy</span> initialize <span class="type">QueryServices</span> so that we only attempt to create an <span class="type">HBase</span> <span class="type">Configuration</span>
+        // <span class="keyword">object</span> upon the first attempt to connect to <span class="type">any</span> cluster. <span class="type">Otherwise</span>, an attempt will be
+        // made at driver initialization time which <span class="keyword">is</span> too early <span class="keyword">for</span> some systems.
+        <span class="type">QueryServices</span> <span class="literal">result</span> = services;
+        <span class="keyword">if</span> (<span class="literal">result</span> == null) {
+            synchronized(this) {
+                   <span class="literal">result</span> = services;
+                <span class="keyword">if</span>(<span class="literal">result</span> == null) {
+                    services = <span class="literal">result</span> = new <span class="type">QueryServicesImpl</span>( getDefaultProps().addAll(properties) );
+                }
+            }
+        }
+        <span class="keyword">return</span> <span class="literal">result</span>;
+    } <span class="keyword">finally</span> {
+        unlock(<span class="type">LockMode</span>.<span class="type">READ</span>);
+    }
+}
+</code></pre></li>
+</ol>
+<p>恩，到目前为止，自定义的参数能够传进去了。这个时候我实验了下，还是没有设置成功！</p>
+<hr>
+<h4 id="第二次尝试：">第二次尝试：</h4><p>继续看QueryServicesImpl是怎么处理我们传进去的自定义的 配置的。竟然是这样的：</p>
+<pre><code><span class="function"><span class="title">super</span><span class="params">(defaultProps, QueryServicesOptions.withDefaults()</span></span>)
+</code></pre><p>QueryServiceOptions也是默认的。传入的defaultProps啥用都没有。ok，我们改造下：</p>
+<pre><code>super<span class="comment">(defaultProps, QueryServicesOptions.withDefaults()</span>.setAll<span class="comment">(defaultProps)</span>);
+</code></pre><p>这下看起来对了，在实验下，还是没有成功！这个坑真深。再看下setAll方法，看到<code>ReadOnlyProps</code>对象。发现内部包了<code>props</code>，<code>overrideProps</code>。 同时<code>isEmpty</code>，<code>asMap</code>和<code>iterator</code>实现的时候都只考虑到了<code>props</code>, 但是我们可以看到<code>getRaw</code>方法其实把两个map都考虑到了，我姑且认为实现这个类的人，忘记了修正<code>asMap</code>，<code>iterator</code>和<code>isEmpty</code>，那么我们自己来修改吧，实现好的如下：</p>
+<pre><code>public <span class="type">Map</span>&lt;<span class="type">String</span>,<span class="type">String</span>&gt; asMap() {
+    <span class="type">Map</span>&lt;<span class="type">String</span>, <span class="type">String</span>&gt; mergedMap = new <span class="type">HashMap</span>&lt;<span class="type">String</span>, <span class="type">String</span>&gt;();
+    mergedMap.putAll(props);
+    mergedMap.putAll(overrideProps);
+    <span class="keyword">return</span> mergedMap;
+}
+
+@<span class="type">Override</span>
+public <span class="type">Iterator</span>&lt;<span class="type">Entry</span>&lt;<span class="type">String</span>, <span class="type">String</span>&gt;&gt; <span class="keyword">iterator</span>() {
+    <span class="keyword">return</span> this.asMap().entrySet().<span class="keyword">iterator</span>();
+}
+
+public boolean isEmpty() {
+    <span class="keyword">return</span> props.isEmpty() &amp;&amp; overrideProps.isEmpty();
+}
+</code></pre><p>好的，再实验一下，终于好了～～～～～</p>
+<p>可配置参数请参考<code>QueryServices</code>，附带使用方式：</p>
+<pre><code><span class="keyword">Properties</span> properties = new <span class="keyword">Properties</span>();
+properties.setProperty(QueryServices.THREAD_POOL_SIZE_ATTRIB, <span class="string">"32"</span>);
+conn = DriverManager.getConnection(phoenixUrl, properties);
+</code></pre><p>那么现在也修改下HConnection的连接数。</p>
+<p>HConnection是由HConnectionFactory创建，实际也是用了HConnectionManager。</p>
+<p>一路跟下去，可以看到ConnectionManager管理了一个pool，通过getBatchPool可以看到参数有：</p>
+<pre><code>hbase<span class="class">.hconnection</span><span class="class">.threads</span><span class="class">.max</span>
+hbase<span class="class">.hconnection</span><span class="class">.threads</span><span class="class">.core</span>
+</code></pre><p>默认都是256。</p>
+<p>好，那我们修改下，都改成 128：</p>
+<pre><code>properties.setProperty(QueryServices.HCONNECTION_POOL_CORE_SIZE, <span class="string">"128"</span>);
+properties.setProperty(QueryServices.HCONNECTION_POOL_MAX_SIZE, <span class="string">"128"</span>);
+</code></pre><p>最后都搞定了！</p>
+<hr>
+<p>回过头来，既然已经解决问题了，就了解了下这两个线程池都是干嘛用的。</p>
+<ol>
+<li><p>phoenix-1-thread 用来：</p>
+<p> 缓存了HTable 和 HRegionLocation 的关系， Callable 任务是 thrift 的RPC调用。</p>
+</li>
+<li><p>HConnection 线程池用来：</p>
+<p> 缓存复用，减少创建开销。</p>
+</li>
+</ol>
+
+      
+    </div>
+    <footer class="article-footer">
+      
+        <a data-url="https://danieldingzju.github.io/2016/09/27/hacking-phoenix/" data-id="citlfbskg000j8rbu82g045e8" class="article-share-link" data-share="baidu" data-title="hacking phoenix">分享到</a>
+      
+
+      
+
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Java/">Java</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
     <article id="post-性能优化-ClassLoader" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
     <a href="/2016/02/19/性能优化-ClassLoader/" class="article-date">
@@ -225,7 +369,7 @@ echo
     </div>
     <footer class="article-footer">
       
-        <a data-url="https://danieldingzju.github.io/2016/02/19/性能优化-ClassLoader/" data-id="cikt1ztbe000akvbu80rd5lnm" class="article-share-link" data-share="baidu" data-title="性能优化-ClassLoader">分享到</a>
+        <a data-url="https://danieldingzju.github.io/2016/02/19/性能优化-ClassLoader/" data-id="citlfbsk9000a8rbu9guuvi8j" class="article-share-link" data-share="baidu" data-title="性能优化-ClassLoader">分享到</a>
       
 
       
@@ -271,7 +415,7 @@ echo
     </div>
     <footer class="article-footer">
       
-        <a data-url="https://danieldingzju.github.io/2016/01/29/开源tomcat类加载机制/" data-id="cikt1ztbf000dkvbuwrojzu3i" class="article-share-link" data-share="baidu" data-title="开源tomcat类加载机制">分享到</a>
+        <a data-url="https://danieldingzju.github.io/2016/01/29/开源tomcat类加载机制/" data-id="citlfbska000d8rbuu7rk3h1g" class="article-share-link" data-share="baidu" data-title="开源tomcat类加载机制">分享到</a>
       
 
       
@@ -395,7 +539,7 @@ cn.accept(c);
     </div>
     <footer class="article-footer">
       
-        <a data-url="https://danieldingzju.github.io/2016/01/28/ASM/" data-id="cikt1ztbu000rkvbuznxx3wni" class="article-share-link" data-share="baidu" data-title="ASM">分享到</a>
+        <a data-url="https://danieldingzju.github.io/2016/01/28/ASM/" data-id="citlfbskq000t8rbubvhpdscg" class="article-share-link" data-share="baidu" data-title="ASM">分享到</a>
       
 
       
@@ -563,7 +707,7 @@ cn.accept(c);
     </div>
     <footer class="article-footer">
       
-        <a data-url="https://danieldingzju.github.io/2016/01/19/Zero-Copy/" data-id="cikt1ztbl000jkvbuqo4vijx3" class="article-share-link" data-share="baidu" data-title="Zero Copy">分享到</a>
+        <a data-url="https://danieldingzju.github.io/2016/01/19/Zero-Copy/" data-id="citlfbski000l8rbu7wphhqf7" class="article-share-link" data-share="baidu" data-title="Zero Copy">分享到</a>
       
 
       
@@ -676,7 +820,7 @@ cn.accept(c);
     </div>
     <footer class="article-footer">
       
-        <a data-url="https://danieldingzju.github.io/2015/12/26/认识java-agent/" data-id="cikt1ztb50002kvbutoq6pbn4" class="article-share-link" data-share="baidu" data-title="认识java agent">分享到</a>
+        <a data-url="https://danieldingzju.github.io/2015/12/26/认识java-agent/" data-id="citlfbsjz00028rbuixpvwdkt" class="article-share-link" data-share="baidu" data-title="认识java agent">分享到</a>
       
 
       
@@ -910,7 +1054,7 @@ signature polymorphic（MethodHandler）这个也是JDK7加入的，为了实现
     </div>
     <footer class="article-footer">
       
-        <a data-url="https://danieldingzju.github.io/2015/12/20/JVMS7笔记/" data-id="cikt1ztbo000nkvbufzajgll1" class="article-share-link" data-share="baidu" data-title="JVMS7笔记">分享到</a>
+        <a data-url="https://danieldingzju.github.io/2015/12/20/JVMS7笔记/" data-id="citlfbskm000p8rbu0sznqqtl" class="article-share-link" data-share="baidu" data-title="JVMS7笔记">分享到</a>
       
 
       
@@ -1001,7 +1145,7 @@ signature polymorphic（MethodHandler）这个也是JDK7加入的，为了实现
     </div>
     <footer class="article-footer">
       
-        <a data-url="https://danieldingzju.github.io/2015/11/21/理解CPU-steal-time/" data-id="cikt1ztba0005kvbun5xaw3hi" class="article-share-link" data-share="baidu" data-title="理解CPU steal time">分享到</a>
+        <a data-url="https://danieldingzju.github.io/2015/11/21/理解CPU-steal-time/" data-id="citlfbsk500058rbu0o5dlaks" class="article-share-link" data-share="baidu" data-title="理解CPU steal time">分享到</a>
       
 
       
@@ -1063,7 +1207,7 @@ signature polymorphic（MethodHandler）这个也是JDK7加入的，为了实现
     </div>
     <footer class="article-footer">
       
-        <a data-url="https://danieldingzju.github.io/2015/10/06/亲身经历icloud账号被黑事件/" data-id="cikt1ztbh000fkvbu7e25c4ur" class="article-share-link" data-share="baidu" data-title="亲身经历icloud账号被黑事件">分享到</a>
+        <a data-url="https://danieldingzju.github.io/2015/10/06/亲身经历icloud账号被黑事件/" data-id="citlfbskb000f8rbu50muts6x" class="article-share-link" data-share="baidu" data-title="亲身经历icloud账号被黑事件">分享到</a>
       
 
       
@@ -1355,105 +1499,7 @@ cacheManager.addCache(cache1Name);
     </div>
     <footer class="article-footer">
       
-        <a data-url="https://danieldingzju.github.io/2015/09/04/本地缓存组件选型/" data-id="cikt1ztbc0008kvbu4orinsmm" class="article-share-link" data-share="baidu" data-title="本地缓存组件选型">分享到</a>
-      
-
-      
-
-      
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Java/">Java</a></li></ul>
-
-    </footer>
-  </div>
-  
-</article>
-
-
-  
-    <article id="post-Dynamic-Bean" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2015/04/09/Dynamic-Bean/" class="article-date">
-  <time datetime="2015-04-09T02:19:28.000Z" itemprop="datePublished">4月 9 2015</time>
-</a>
-    
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2015/04/09/Dynamic-Bean/">Dynamic Bean</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>突然对一些基础类库的代码感了兴趣，于是最先看起了Apache的commons-beanutils这个包，然后顺藤摸瓜式的了解JavaBeans和Dynamic Bean相关的知识。</p>
-<h3 id="common-beanutils-1-9-2">common-beanutils-1.9.2</h3><p>此包主要功能如下：</p>
-<pre><code>创建动态的JavaBean及相关的util类型代码。
-</code></pre><p>主要类的关系图如下：</p>
-<p><img src="http://tempwork.qiniudn.com/apache-beanutils-class-diagram.jpg" alt="主要类图" title="Title"></p>
-<ul>
-<li><p>DynaClass, DynaProperty, DynaBean用来动态生成JavaBean, 主要使用了Java的原生包：java.lang.reflect &amp; java.beans</p>
-</li>
-<li><p>BeanUtilsBean是单例, 包含拷贝属性，克隆bean等util方法。</p>
-</li>
-</ul>
-<p>举个<a href="http://www.javadb.com/simple-dynabean-example-apache-commons-beanutils/" title="beanutils实践例子" target="_blank" rel="external">栗子</a>：</p>
-<pre><code><span class="preprocessor"><span class="keyword">import</span> org.apache.commons.beanutils.BasicDynaClass;</span>
-<span class="preprocessor"><span class="keyword">import</span> org.apache.commons.beanutils.DynaBean;</span>
-<span class="preprocessor"><span class="keyword">import</span> org.apache.commons.beanutils.DynaClass;</span>
-<span class="preprocessor"><span class="keyword">import</span> org.apache.commons.beanutils.DynaProperty;</span>
-
-<span class="comment">/**
- *
-  * @author www.javadb.com
-  */</span>
-<span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">DynaBeanExample</span> </span>{
-
-    <span class="keyword">private</span> <span class="keyword">final</span> String NR_OF_WHEELS = <span class="string">"numberOfWheels"</span>;
-
-    <span class="keyword">private</span> <span class="keyword">void</span> runExample() {
-
-        DynaClass dynaClass = <span class="keyword">new</span> BasicDynaClass(<span class="string">"Car"</span>, <span class="literal">null</span>,
-            <span class="keyword">new</span> DynaProperty[]{
-                <span class="keyword">new</span> DynaProperty(NR_OF_WHEELS, Integer.TYPE)});
-
-        <span class="keyword">try</span> {
-            DynaBean car = dynaClass.newInstance();
-            car.<span class="keyword">set</span>(NR_OF_WHEELS, <span class="number">4</span>);
-
-               System.out.println(<span class="string">"Number of wheels: "</span> + car.<span class="keyword">get</span>(NR_OF_WHEELS));
-
-            System.out.println(<span class="string">"DynaBean is instance of DynaClass: "</span> + car.getDynaClass().getName());
-
-        } <span class="keyword">catch</span> (IllegalAccessException | InstantiationException ex) {
-            System.err.println(ex.getMessage());
-        }
-    }
-
-   <span class="comment">/**
-     * @param args the command line arguments
-     */</span>
-    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> main(String[] args) {
-        DynaBeanExample ac = <span class="keyword">new</span> DynaBeanExample();
-        ac.runExample();
-    }
-}
-</code></pre><p>所以看着这个使用的方式感觉还是蛮有意思的，可以动态的生成自己想要的<em>“Java Bean”</em>。</p>
-<p>这个时候就开始好奇这个包会有什么问题呢？比如性能上面？然后就搜到了<a href="http://blog.athico.com/2006/11/just-say-no-to-dynabeans.html" title="反对使用beanutils包" target="_blank" rel="external">这个</a>。<strong>Drools</strong>很早就开始反对使用这种方式来构建<strong>Java Bean</strong>，理由很简单，系统兼容性不好，说这个包虽然实现的<strong>Dynamic Bean</strong>的功能，但是生成的DynaBean是不符合<strong>JavaBeans</strong>的规范的，将会引发一系列的代码兼容性的问题，所以不建议商业系统环境使用这个包—例如主流的ORM框架都只支持规范的<strong>JavaBeans</strong>。我们看代码可以发现<code>DynaBean</code>使用的是一个<code>Map&lt;String, DynaProperty&gt;</code>来存储属性的。</p>
-<p>那么现在问题来了，什么是<strong>JavaBeans</strong> ?</p>
-<h3 id="JavaBean">JavaBean</h3><p>参阅<a href="http://download.oracle.com/otndocs/jcp/7224-javabeans-1.01-fr-spec-oth-JSpec/" target="_blank" rel="external">JavaBeans(TM) Specification</a>官方的文档，移步<a href="http://melody-dc.com/2015/04/09/JavaBeans-TM/" target="_blank" rel="external">解读大纲</a>。所以这个包是通过使用Introspection相关的类来实现<strong>Dynamic Bean</strong>，而不是构造符合<strong>JavaBeans</strong>规范的类.所以<strong>Drools</strong>就推荐使用了cglib来实现<strong>Dynamic Bean</strong>, 移步此<a href="http://sixlegs.com/blog/java/death-to-dynabeans.html" target="_blank" rel="external">参考</a>。</p>
-
-      
-    </div>
-    <footer class="article-footer">
-      
-        <a data-url="https://danieldingzju.github.io/2015/04/09/Dynamic-Bean/" data-id="cikt1ztbr000pkvbuvhv4yd3f" class="article-share-link" data-share="baidu" data-title="Dynamic Bean">分享到</a>
+        <a data-url="https://danieldingzju.github.io/2015/09/04/本地缓存组件选型/" data-id="citlfbsk700088rbu7gfx0t3b" class="article-share-link" data-share="baidu" data-title="本地缓存组件选型">分享到</a>
       
 
       
@@ -1483,7 +1529,7 @@ cacheManager.addCache(cache1Name);
   <div class="widget-wrap">
     <h3 class="widget-title">标签</h3>
     <div class="widget">
-      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/JAVA/">JAVA</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Java/">Java</a><span class="tag-list-count">7</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Life/">Life</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Linux/">Linux</a><span class="tag-list-count">2</span></li></ul>
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/JAVA/">JAVA</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Java/">Java</a><span class="tag-list-count">8</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Life/">Life</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Linux/">Linux</a><span class="tag-list-count">2</span></li></ul>
     </div>
   </div>
 
@@ -1501,7 +1547,7 @@ cacheManager.addCache(cache1Name);
   <div class="widget-wrap">
     <h3 class="widget-title">归档</h3>
     <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/02/">二月 2016</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/01/">一月 2016</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/12/">十二月 2015</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/11/">十一月 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/10/">十月 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/09/">九月 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/04/">四月 2015</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/03/">三月 2015</a><span class="archive-list-count">1</span></li></ul>
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/09/">九月 2016</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/02/">二月 2016</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/01/">一月 2016</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/12/">十二月 2015</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/11/">十一月 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/10/">十月 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/09/">九月 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/04/">四月 2015</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/03/">三月 2015</a><span class="archive-list-count">1</span></li></ul>
     </div>
   </div>
 
@@ -1511,6 +1557,10 @@ cacheManager.addCache(cache1Name);
     <h3 class="widget-title">近期文章</h3>
     <div class="widget">
       <ul>
+        
+          <li>
+            <a href="/2016/09/27/hacking-phoenix/">hacking phoenix</a>
+          </li>
         
           <li>
             <a href="/2016/02/19/性能优化-ClassLoader/">性能优化-ClassLoader</a>
@@ -1526,10 +1576,6 @@ cacheManager.addCache(cache1Name);
         
           <li>
             <a href="/2016/01/19/Zero-Copy/">Zero Copy</a>
-          </li>
-        
-          <li>
-            <a href="/2015/12/26/认识java-agent/">认识java agent</a>
           </li>
         
       </ul>

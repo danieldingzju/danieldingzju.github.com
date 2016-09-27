@@ -6,26 +6,26 @@
   
   <title>hacking phoenix | 磐石</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="因为微服务使用了springboot，并且用使用了phoenix 来写入数据，应用经常超过1000的线程数量。
+  <meta name="description" content="因为微服务使用了springboot，并且用使用了phoenix 来读写Hbase，应用经常超过1000的线程数量。
 
 分析 stack：自己管理了400个线程的线程池，phoenix-1-thread 有128个，HConnection的线程有256个，再加上一些tomcat的http线程，轻松就能到1000个线程。
-略多，希望把phoenix和HConnection相关线程干掉。官方文档没有提到怎么">
+略多，希望把phoenix和HConnection相关线程干掉。官方文档没有提">
 <meta property="og:type" content="article">
 <meta property="og:title" content="hacking phoenix">
 <meta property="og:url" content="https://danieldingzju.github.io/2016/09/27/hacking-phoenix/index.html">
 <meta property="og:site_name" content="磐石">
-<meta property="og:description" content="因为微服务使用了springboot，并且用使用了phoenix 来写入数据，应用经常超过1000的线程数量。
+<meta property="og:description" content="因为微服务使用了springboot，并且用使用了phoenix 来读写Hbase，应用经常超过1000的线程数量。
 
 分析 stack：自己管理了400个线程的线程池，phoenix-1-thread 有128个，HConnection的线程有256个，再加上一些tomcat的http线程，轻松就能到1000个线程。
-略多，希望把phoenix和HConnection相关线程干掉。官方文档没有提到怎么">
+略多，希望把phoenix和HConnection相关线程干掉。官方文档没有提">
 <meta property="og:image" content="http://tempwork.qiniudn.com/Snip20160926_118.png">
 <meta property="og:image" content="http://tempwork.qiniudn.com/Snip20160926_119.png">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="hacking phoenix">
-<meta name="twitter:description" content="因为微服务使用了springboot，并且用使用了phoenix 来写入数据，应用经常超过1000的线程数量。
+<meta name="twitter:description" content="因为微服务使用了springboot，并且用使用了phoenix 来读写Hbase，应用经常超过1000的线程数量。
 
 分析 stack：自己管理了400个线程的线程池，phoenix-1-thread 有128个，HConnection的线程有256个，再加上一些tomcat的http线程，轻松就能到1000个线程。
-略多，希望把phoenix和HConnection相关线程干掉。官方文档没有提到怎么">
+略多，希望把phoenix和HConnection相关线程干掉。官方文档没有提">
   
     <link rel="alternative" href="/atom.xml" title="磐石" type="application/atom+xml">
   
@@ -104,7 +104,7 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        <p>因为微服务使用了springboot，并且用使用了phoenix 来写入数据，应用经常超过1000的线程数量。</p>
+        <p>因为微服务使用了springboot，并且用使用了phoenix 来读写Hbase，应用经常超过1000的线程数量。</p>
 <hr>
 <h4 id="分析_stack：">分析 stack：</h4><p>自己管理了400个线程的线程池，phoenix-1-thread 有128个，HConnection的线程有256个，再加上一些tomcat的http线程，轻松就能到1000个线程。</p>
 <p>略多，希望把phoenix和HConnection相关线程干掉。官方文档没有提到怎么设置，网上也没有资料。</p>

@@ -27,8 +27,8 @@
 <meta property="og:image" content="http://tempwork.qiniudn.com/hdfs-decommition-balancer-1.png">
 <meta property="og:image" content="http://tempwork.qiniudn.com/hdfs-decommition-balancer-2.png">
 <meta property="og:image" content="http://tempwork.qiniudn.com/hdfs-decommition-balancer-3.png">
-<meta property="og:image" content="http://tempwork.qiniudn.com/hdfs-decommition-balancer-4.png">
-<meta property="og:image" content="http://tempwork.qiniudn.com/hdfs-decommition-balancer-5.png">
+<meta property="og:image" content="http://tempwork.qiniudn.com/hdfs-decommition-balancer-4.jpg">
+<meta property="og:image" content="http://tempwork.qiniudn.com/hdfs-decommition-balancer-5.jpg">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="hdfs-case-one">
 <meta name="twitter:description" content="hdfs decommition 的时候同时开启balancer的问题这次机房迁移发现 机器长久处于decommition in prograss 的状态:
@@ -120,8 +120,8 @@
 <p>但是overview里面Number of Under-Replicated Blocks = 0。</p>
 <p>老机房机器日志如下：<br><img src="http://tempwork.qiniudn.com/hdfs-decommition-balancer-2.png" alt="hdfs-decommition-balancer-2.png"></p>
 <p>新机房机器日志如下：<br><img src="http://tempwork.qiniudn.com/hdfs-decommition-balancer-3.png" alt="hdfs-decommition-balancer-3.png"></p>
-<p>搜了一些资料：<br><img src="http://tempwork.qiniudn.com/hdfs-decommition-balancer-4.png" alt="hdfs-decommition-balancer-4.png"></p>
-<p>结合balancer的日志：<br><img src="http://tempwork.qiniudn.com/hdfs-decommition-balancer-5.png" alt="hdfs-decommition-balancer-5.png"></p>
+<p>搜了一些资料：<br><img src="http://tempwork.qiniudn.com/hdfs-decommition-balancer-4.jpg" alt="hdfs-decommition-balancer-4.jpg"></p>
+<p>结合balancer的日志：<br><img src="http://tempwork.qiniudn.com/hdfs-decommition-balancer-5.jpg" alt="hdfs-decommition-balancer-5.jps"></p>
 <p>判断是本机在decommissioning过程中只参考了本机的块是否复制成功，没有从全局去考虑(已经被balancer拷贝过了)。</p>
 <p>估计也没人在decommisioning的过程中开启balancer的, 所以这些decommissioning in progress的机器上的datanode直接kill掉了，不影响使用，不丢失数据。</p>
 

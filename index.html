@@ -73,9 +73,59 @@
     <div class="outer">
       <section id="main">
   
-    <article id="post-case-one" class="article article-type-post" itemscope itemprop="blogPost">
+    <article id="post-hdfs-case-one" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
-    <a href="/2016/12/09/case-one/" class="article-date">
+    <a href="/2016/12/09/hdfs-case-one/" class="article-date">
+  <time datetime="2016-12-09T08:42:17.000Z" itemprop="datePublished">12月 9 2016</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2016/12/09/hdfs-case-one/">hdfs-case-one</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="hdfs_decommition_的时候同时开启balancer的问题">hdfs decommition 的时候同时开启balancer的问题</h2><p>这次机房迁移发现 机器长久处于decommition in prograss 的状态:<br><img src="http://tempwork.qiniudn.com/hdfs-decommition-balancer-1.png" alt="hdfs-decommition-balancer-1.png"></p>
+<p>但是overview里面Number of Under-Replicated Blocks = 0。</p>
+<p>老机房机器日志如下：<br><img src="http://tempwork.qiniudn.com/hdfs-decommition-balancer-2.png" alt="hdfs-decommition-balancer-2.png"></p>
+<p>新机房机器日志如下：<br><img src="http://tempwork.qiniudn.com/hdfs-decommition-balancer-3.png" alt="hdfs-decommition-balancer-3.png"></p>
+<p>搜了一些资料：<br><img src="http://tempwork.qiniudn.com/hdfs-decommition-balancer-4.png" alt="hdfs-decommition-balancer-4.png"></p>
+<p>结合balancer的日志：<br><img src="http://tempwork.qiniudn.com/hdfs-decommition-balancer-5.png" alt="hdfs-decommition-balancer-5.png"></p>
+<p>判断是本机在decommissioning过程中只参考了本机的块是否复制成功，没有从全局去考虑(已经被balancer拷贝过了)。</p>
+<p>估计也没人在decommisioning的过程中开启balancer的, 所以这些decommissioning in progress的机器上的datanode直接kill掉了，不影响使用，不丢失数据。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      
+        <a data-url="https://danieldingzju.github.io/2016/12/09/hdfs-case-one/" data-id="ciwhjx3sl000mutbubudeh1sm" class="article-share-link" data-share="baidu" data-title="hdfs-case-one">分享到</a>
+      
+
+      
+
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/problem/">problem</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-zeppelin-case-one" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2016/12/09/zeppelin-case-one/" class="article-date">
   <time datetime="2016-12-09T08:18:43.000Z" itemprop="datePublished">12月 9 2016</time>
 </a>
     
@@ -87,7 +137,7 @@
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2016/12/09/case-one/">case-one</a>
+      <a class="article-title" href="/2016/12/09/zeppelin-case-one/">zeppelin-case-one</a>
     </h1>
   
 
@@ -134,7 +184,7 @@
     </div>
     <footer class="article-footer">
       
-        <a data-url="https://danieldingzju.github.io/2016/12/09/case-one/" data-id="ciwhj2zhv000lqlbuj513ueml" class="article-share-link" data-share="baidu" data-title="case-one">分享到</a>
+        <a data-url="https://danieldingzju.github.io/2016/12/09/zeppelin-case-one/" data-id="ciwhjx3sf000iutbu1ge6mbgx" class="article-share-link" data-share="baidu" data-title="zeppelin-case-one">分享到</a>
       
 
       
@@ -278,7 +328,7 @@ properties.setProperty(QueryServices.HCONNECTION_POOL_MAX_SIZE, <span class="str
     </div>
     <footer class="article-footer">
       
-        <a data-url="https://danieldingzju.github.io/2016/09/27/hacking-phoenix/" data-id="ciwhj2zht000jqlbugr0jeuh9" class="article-share-link" data-share="baidu" data-title="hacking phoenix">分享到</a>
+        <a data-url="https://danieldingzju.github.io/2016/09/27/hacking-phoenix/" data-id="ciwhjx3so000outbu3d7zydud" class="article-share-link" data-share="baidu" data-title="hacking phoenix">分享到</a>
       
 
       
@@ -445,7 +495,7 @@ echo
     </div>
     <footer class="article-footer">
       
-        <a data-url="https://danieldingzju.github.io/2016/02/19/性能优化-ClassLoader/" data-id="ciwhj2zhn000aqlbunims4dlt" class="article-share-link" data-share="baidu" data-title="hacking fastjson">分享到</a>
+        <a data-url="https://danieldingzju.github.io/2016/02/19/性能优化-ClassLoader/" data-id="ciwhjx3sa000autbuu4y3bhty" class="article-share-link" data-share="baidu" data-title="hacking fastjson">分享到</a>
       
 
       
@@ -491,7 +541,7 @@ echo
     </div>
     <footer class="article-footer">
       
-        <a data-url="https://danieldingzju.github.io/2016/01/29/开源tomcat类加载机制/" data-id="ciwhj2zho000dqlbu5lm2vujm" class="article-share-link" data-share="baidu" data-title="开源tomcat类加载机制">分享到</a>
+        <a data-url="https://danieldingzju.github.io/2016/01/29/开源tomcat类加载机制/" data-id="ciwhjx3sb000dutbut6mb52l3" class="article-share-link" data-share="baidu" data-title="开源tomcat类加载机制">分享到</a>
       
 
       
@@ -615,7 +665,7 @@ cn.accept(c);
     </div>
     <footer class="article-footer">
       
-        <a data-url="https://danieldingzju.github.io/2016/01/28/ASM/" data-id="ciwhj2zi7000wqlbun6g7a1la" class="article-share-link" data-share="baidu" data-title="ASM">分享到</a>
+        <a data-url="https://danieldingzju.github.io/2016/01/28/ASM/" data-id="ciwhjx3sw000yutbu0gyf0lr7" class="article-share-link" data-share="baidu" data-title="ASM">分享到</a>
       
 
       
@@ -783,7 +833,7 @@ cn.accept(c);
     </div>
     <footer class="article-footer">
       
-        <a data-url="https://danieldingzju.github.io/2016/01/19/Zero-Copy/" data-id="ciwhj2zhy000oqlbubrd627rb" class="article-share-link" data-share="baidu" data-title="Zero Copy">分享到</a>
+        <a data-url="https://danieldingzju.github.io/2016/01/19/Zero-Copy/" data-id="ciwhjx3sq000qutbuzakaca4o" class="article-share-link" data-share="baidu" data-title="Zero Copy">分享到</a>
       
 
       
@@ -896,7 +946,7 @@ cn.accept(c);
     </div>
     <footer class="article-footer">
       
-        <a data-url="https://danieldingzju.github.io/2015/12/26/认识java-agent/" data-id="ciwhj2zhd0002qlbu38jd772m" class="article-share-link" data-share="baidu" data-title="认识java agent">分享到</a>
+        <a data-url="https://danieldingzju.github.io/2015/12/26/认识java-agent/" data-id="ciwhjx3s10002utbumju9q5fh" class="article-share-link" data-share="baidu" data-title="认识java agent">分享到</a>
       
 
       
@@ -1130,7 +1180,7 @@ signature polymorphic（MethodHandler）这个也是JDK7加入的，为了实现
     </div>
     <footer class="article-footer">
       
-        <a data-url="https://danieldingzju.github.io/2015/12/20/JVMS7笔记/" data-id="ciwhj2zi3000sqlbuue07trty" class="article-share-link" data-share="baidu" data-title="JVMS7笔记">分享到</a>
+        <a data-url="https://danieldingzju.github.io/2015/12/20/JVMS7笔记/" data-id="ciwhjx3st000uutbulo6m8uyg" class="article-share-link" data-share="baidu" data-title="JVMS7笔记">分享到</a>
       
 
       
@@ -1221,75 +1271,13 @@ signature polymorphic（MethodHandler）这个也是JDK7加入的，为了实现
     </div>
     <footer class="article-footer">
       
-        <a data-url="https://danieldingzju.github.io/2015/11/21/理解CPU-steal-time/" data-id="ciwhj2zhi0005qlbuxalywww9" class="article-share-link" data-share="baidu" data-title="理解CPU steal time">分享到</a>
+        <a data-url="https://danieldingzju.github.io/2015/11/21/理解CPU-steal-time/" data-id="ciwhjx3s60005utbugpovlzy5" class="article-share-link" data-share="baidu" data-title="理解CPU steal time">分享到</a>
       
 
       
 
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Linux/">Linux</a></li></ul>
-
-    </footer>
-  </div>
-  
-</article>
-
-
-  
-    <article id="post-亲身经历icloud账号被黑事件" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2015/10/06/亲身经历icloud账号被黑事件/" class="article-date">
-  <time datetime="2015-10-06T02:04:00.000Z" itemprop="datePublished">10月 6 2015</time>
-</a>
-    
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2015/10/06/亲身经历icloud账号被黑事件/">亲身经历icloud账号被黑事件</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h3 id="2015-10-05">2015-10-05</h3><p><strong>下午3点</strong>：当时在高速上面聊天，老婆手机被无故重启，重启以后屏幕内容如下：<br>         XXX，如需解锁请在24小时内联系QQ：2075633961</p>
-<p><strong>下午4点半</strong>：下高速直奔杭州平海路的apple销售点，找天才吧的技术人员解决，得到答复：他们无法解决，请打4006272273 解决。打了近1个小时的电话，由于换电话号码，忘记提示问题，一直没有成功。</p>
-<p><strong>下午6点半</strong>：驱车回家，在家里面打开电脑，这个时候完了，电脑因为使用了同一个appId，也被锁了。老婆明天还要使用电脑办公，如何解决？打电话给4006272273，通过耐心尝试提示问题，终于想起来了2个，解决了icloud的密码问题，icloud账号重新找回了并且修改了密码。手机能够重新激活了，但是数据被抹掉了，算了，大不了，花半个小时重装软件。问题是现在电脑如何解决？还是需要4位的pin码啊。继续4006272273转到mac部门沟通，说是要到实体店售后解决。接着我就电话给实体店售后，售后告诉我不能解决，要4006272273有更高的权限解决。</p>
-<pre><code>400热线的客服的让我找实体店技术人员解决，实体店技术人员让我找400热线的客服解决？ 所以这个就是个死循环了？ 这个是什么情况？？？
-</code></pre><p>带着不解和火气直奔了苹果的实体店，很理性的询问了技术人员，咨询情况，经过近15分钟的沟通，然后得到的答复是：先要预约，然后要购买凭证，最后电脑的数据会被抹掉。总结下就是：</p>
-<pre><code>处理周期是7-15天，然后数据会被抹掉，不能恢复！
-</code></pre><p>我心里就明白了：苹果天才吧的技术人员 是 根本不能解决这个问题，然后才和400热线的客服人员进行推脱的！苹果的售后竟然存在如此大的问题，最让人受不了的方式就是这种推诿，浪费消费者的时间和精力。如果早点告诉我们：我们解决不了。我们就会找另外的方案解决了。</p>
-<p>最后的结果就是，理性的接受勒索，和对应的QQ ID沟通，支付宝200，然后得到pin码，电脑解锁，保全数据，重装系统，对所有相关邮箱账号都重置了密码和绑定了手机，开启二次验证。icloud账号也开启了二次验证，3天后生效。</p>
-<pre><code>虽然icloud账号开启了二次验证，也只是防止被修改密码，如果icloud账号泄露，那么电脑一样可以被锁和抹掉数据！！！
-</code></pre><p>总结有两种解决办公电脑不受icloud账号影响的方式：</p>
-<ol>
-<li>最安全方案：关闭mac上的找回我的mac功能。代价是人肉保证电脑不被偷。</li>
-<li>次优方案：软件都使用正版。这种方式最大程度上面减少电脑方面泄露icloud信息，但是不能保证解决icloud相关邮箱和手机icloud信息泄露的情况。</li>
-</ol>
-<p>小计这件事情的目的：</p>
-<ol>
-<li>是提醒身边使用mac的朋友，当心icloud账号被人盯上了。</li>
-<li>原来apple的售后也是有这么无力的时候，但是却又极力的不想表现出来，让人恶心，基本的诚实也没有。</li>
-<li>之前都是听安全部的同事分享黑客和黑产内容，现在算是亲身经历了。2075633961 这个QQ号和他聊天的感觉，看起来是一个专业的客服人员，举报或许有点用吧，现在po一下这个QQ。</li>
-</ol>
-
-      
-    </div>
-    <footer class="article-footer">
-      
-        <a data-url="https://danieldingzju.github.io/2015/10/06/亲身经历icloud账号被黑事件/" data-id="ciwhj2zhq000fqlbuh4kkdhre" class="article-share-link" data-share="baidu" data-title="亲身经历icloud账号被黑事件">分享到</a>
-      
-
-      
-
-      
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Life/">Life</a></li></ul>
 
     </footer>
   </div>
@@ -1313,7 +1301,7 @@ signature polymorphic（MethodHandler）这个也是JDK7加入的，为了实现
   <div class="widget-wrap">
     <h3 class="widget-title">标签</h3>
     <div class="widget">
-      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/JAVA/">JAVA</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Java/">Java</a><span class="tag-list-count">8</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Life/">Life</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Linux/">Linux</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/problem/">problem</a><span class="tag-list-count">1</span></li></ul>
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/JAVA/">JAVA</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Java/">Java</a><span class="tag-list-count">8</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Life/">Life</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Linux/">Linux</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/problem/">problem</a><span class="tag-list-count">2</span></li></ul>
     </div>
   </div>
 
@@ -1322,7 +1310,7 @@ signature polymorphic（MethodHandler）这个也是JDK7加入的，为了实现
   <div class="widget-wrap">
     <h3 class="widget-title">标签云</h3>
     <div class="widget tagcloud">
-      <a href="/tags/JAVA/" style="font-size: 10px;">JAVA</a><a href="/tags/Java/" style="font-size: 20px;">Java</a><a href="/tags/Life/" style="font-size: 10px;">Life</a><a href="/tags/Linux/" style="font-size: 15px;">Linux</a><a href="/tags/problem/" style="font-size: 10px;">problem</a>
+      <a href="/tags/JAVA/" style="font-size: 10px;">JAVA</a><a href="/tags/Java/" style="font-size: 20px;">Java</a><a href="/tags/Life/" style="font-size: 10px;">Life</a><a href="/tags/Linux/" style="font-size: 15px;">Linux</a><a href="/tags/problem/" style="font-size: 15px;">problem</a>
     </div>
   </div>
 
@@ -1331,7 +1319,7 @@ signature polymorphic（MethodHandler）这个也是JDK7加入的，为了实现
   <div class="widget-wrap">
     <h3 class="widget-title">归档</h3>
     <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/12/">十二月 2016</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/09/">九月 2016</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/02/">二月 2016</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/01/">一月 2016</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/12/">十二月 2015</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/11/">十一月 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/10/">十月 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/09/">九月 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/04/">四月 2015</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/03/">三月 2015</a><span class="archive-list-count">1</span></li></ul>
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/12/">十二月 2016</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/09/">九月 2016</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/02/">二月 2016</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/01/">一月 2016</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/12/">十二月 2015</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/11/">十一月 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/10/">十月 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/09/">九月 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/04/">四月 2015</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/03/">三月 2015</a><span class="archive-list-count">1</span></li></ul>
     </div>
   </div>
 
@@ -1343,7 +1331,11 @@ signature polymorphic（MethodHandler）这个也是JDK7加入的，为了实现
       <ul>
         
           <li>
-            <a href="/2016/12/09/case-one/">case-one</a>
+            <a href="/2016/12/09/hdfs-case-one/">hdfs-case-one</a>
+          </li>
+        
+          <li>
+            <a href="/2016/12/09/zeppelin-case-one/">zeppelin-case-one</a>
           </li>
         
           <li>
@@ -1356,10 +1348,6 @@ signature polymorphic（MethodHandler）这个也是JDK7加入的，为了实现
         
           <li>
             <a href="/2016/01/29/开源tomcat类加载机制/">开源tomcat类加载机制</a>
-          </li>
-        
-          <li>
-            <a href="/2016/01/28/ASM/">ASM</a>
           </li>
         
       </ul>

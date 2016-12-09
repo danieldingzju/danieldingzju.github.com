@@ -4,17 +4,52 @@
 <head>
   <meta charset="utf-8">
   
-  <title>磐石</title>
+  <title>case-one | 磐石</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="danielding&apos;s blog | java | bi">
-<meta property="og:type" content="website">
-<meta property="og:title" content="磐石">
-<meta property="og:url" content="https://danieldingzju.github.io/archives/2015/12/index.html">
+  <meta name="description" content="最近频繁发现 zeppelin刷新页面无法展示页面，从前端看是websocket一直hold。
+
+2016-12-09 下午2点半左右重现。
+
+重启zeppelin的时候发现 NIO Exception：too many file 问题提示，但是还是能够正常使用zeppelin。
+
+在系统中执行命令有如下提示：
+
+
+
+猜测是zeppelin相关进程开启文件过多，zeppelin-server，ze">
+<meta property="og:type" content="article">
+<meta property="og:title" content="case-one">
+<meta property="og:url" content="https://danieldingzju.github.io/2016/12/09/case-one/index.html">
 <meta property="og:site_name" content="磐石">
-<meta property="og:description" content="danielding&apos;s blog | java | bi">
+<meta property="og:description" content="最近频繁发现 zeppelin刷新页面无法展示页面，从前端看是websocket一直hold。
+
+2016-12-09 下午2点半左右重现。
+
+重启zeppelin的时候发现 NIO Exception：too many file 问题提示，但是还是能够正常使用zeppelin。
+
+在系统中执行命令有如下提示：
+
+
+
+猜测是zeppelin相关进程开启文件过多，zeppelin-server，ze">
+<meta property="og:image" content="http://tempwork.qiniudn.com/zeppelin-case-1-1.png">
+<meta property="og:image" content="http://tempwork.qiniudn.com/zeppelin-case-1-2.png">
+<meta property="og:image" content="http://tempwork.qiniudn.com/zeppelin-case-1-3.png">
+<meta property="og:image" content="http://tempwork.qiniudn.com/zeppelin-case-1-4.png">
+<meta property="og:image" content="http://tempwork.qiniudn.com/zeppelin-case-1-5.png">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="磐石">
-<meta name="twitter:description" content="danielding&apos;s blog | java | bi">
+<meta name="twitter:title" content="case-one">
+<meta name="twitter:description" content="最近频繁发现 zeppelin刷新页面无法展示页面，从前端看是websocket一直hold。
+
+2016-12-09 下午2点半左右重现。
+
+重启zeppelin的时候发现 NIO Exception：too many file 问题提示，但是还是能够正常使用zeppelin。
+
+在系统中执行命令有如下提示：
+
+
+
+猜测是zeppelin相关进程开启文件过多，zeppelin-server，ze">
   
     <link rel="alternative" href="/atom.xml" title="磐石" type="application/atom+xml">
   
@@ -71,58 +106,86 @@
   </div>
 </header>
     <div class="outer">
-      <section id="main">
-  
-  
-    
-    
-      
-      
-      <section class="archives-wrap">
-        <div class="archive-year-wrap">
-          <a href="/archives/2015" class="archive-year">2015</a>
-        </div>
-        <div class="archives">
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      <a href="/2015/12/26/认识java-agent/" class="archive-article-date">
-  <time datetime="2015-12-26T14:25:02.000Z" itemprop="datePublished">12月 26</time>
+      <section id="main"><article id="post-case-one" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2016/12/09/case-one/" class="article-date">
+  <time datetime="2016-12-09T08:18:43.000Z" itemprop="datePublished">12月 9 2016</time>
 </a>
-      
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
   
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2015/12/26/认识java-agent/">认识java agent</a>
+    <h1 class="article-title" itemprop="name">
+      case-one
     </h1>
   
 
-    </header>
-  </div>
-</article>
-  
+      </header>
     
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      <a href="/2015/12/20/JVMS7笔记/" class="archive-article-date">
-  <time datetime="2015-12-20T08:07:58.000Z" itemprop="datePublished">12月 20</time>
-</a>
+    <div class="article-entry" itemprop="articleBody">
       
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2015/12/20/JVMS7笔记/">JVMS7笔记</a>
-    </h1>
-  
+        <p>最近频繁发现 zeppelin刷新页面无法展示页面，从前端看是websocket一直hold。</p>
+<hr>
+<p>2016-12-09 下午2点半左右重现。</p>
+<ul>
+<li><p>重启zeppelin的时候发现 NIO Exception：too many file 问题提示，但是还是能够正常使用zeppelin。</p>
+</li>
+<li><p>在系统中执行命令有如下提示：<br><img src="http://tempwork.qiniudn.com/zeppelin-case-1-1.png" alt="zeppelin-case-1-1.png"></p>
+</li>
+</ul>
+<ol>
+<li><p>猜测是zeppelin相关进程开启文件过多，zeppelin-server，zeppelin-interpriter对应的进程hold的文件数量如下：</p>
+<p> <img src="http://tempwork.qiniudn.com/zeppelin-case-1-2.png" alt="zeppelin-case-1-2.png"></p>
+<p> <img src="http://tempwork.qiniudn.com/zeppelin-case-1-3.png" alt="zeppelin-case-1-3.png"></p>
+</li>
+<li><p>猜测是操作系统层面问题，找到系统日志如下：</p>
+<p> <img src="http://tempwork.qiniudn.com/zeppelin-case-1-4.png" alt="zeppelin-case-1-4.png"></p>
+</li>
+<li><p>经@万两 回忆 VFS 跟zeppelin的配置有关，zeppelin.notebook.storage 使用的类和VFS有关，默认类如下：</p>
+<p> <img src="http://tempwork.qiniudn.com/zeppelin-case-1-5.png" alt="zeppelin-case-1-5.png"></p>
+<p> 然后之前定制过一个这个repo类，自动进行commit notebook。</p>
+</li>
+<li><p>经@金砖猜测git文件太多。然后查看了<figure class="highlight"><table><tr><td class="code"><pre><span class="line">&#10;5. &#23450;&#20301;&#23436;&#25104;&#65292;&#22238;&#28378;&#21040;&#40664;&#35748;&#37197;&#32622;&#65292;&#21024;&#38500;```.git```&#25991;&#20214;&#22841;&#10;&#10;---&#10;&#10;&#26696;&#20363;&#32467;&#26463;&#20102;&#12290;&#37027;&#20040;&#34893;&#29983;&#19968;&#19979;&#65306;&#10;&#10;&#26597;&#30475;&#26412;&#26426;&#24403;&#21069;&#29992;&#25143;&#30340;&#20855;&#26564;&#25968;&#37327;&#29992;&#65306; ```ulimit -u``` &#20026;&#65306;```257395</span><br></pre></td></tr></table></figure></p>
+</li>
+</ol>
+<p>查看本机最大文件数量：<code>cat /proc/sys/fs/file-max</code> 为：<code>209708</code></p>
+<p>具柄和 最大文件数量怎么不匹配呢？</p>
+<p>据资料表明： file-max是系统所有进程总和能够有的最大的文件数量；而ulimit -u 是对单个用户限制的最大文件数量。</p>
+<p>所以这个系统的这两个参数配置也是有问题的。</p>
 
-    </header>
+      
+    </div>
+    <footer class="article-footer">
+      
+        <a data-url="https://danieldingzju.github.io/2016/12/09/case-one/" data-id="ciwhj2zhv000lqlbuj513ueml" class="article-share-link" data-share="baidu" data-title="case-one">分享到</a>
+      
+
+      
+
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/program/">program</a></li></ul>
+
+    </footer>
   </div>
+  
+    
+<nav id="article-nav">
+  
+  
+    <a href="/2016/09/27/hacking-phoenix/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">上一篇</strong>
+      <div class="article-nav-title">hacking phoenix</div>
+    </a>
+  
+</nav>
+
+  
 </article>
-  
-  
-    </div></section>
-  
+
 </section>
       
       <aside id="sidebar">

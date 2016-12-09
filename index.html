@@ -73,6 +73,76 @@
     <div class="outer">
       <section id="main">
   
+    <article id="post-case-one" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2016/12/09/case-one/" class="article-date">
+  <time datetime="2016-12-09T08:18:43.000Z" itemprop="datePublished">12月 9 2016</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2016/12/09/case-one/">case-one</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>最近频繁发现 zeppelin刷新页面无法展示页面，从前端看是websocket一直hold。</p>
+<hr>
+<p>2016-12-09 下午2点半左右重现。</p>
+<ul>
+<li><p>重启zeppelin的时候发现 NIO Exception：too many file 问题提示，但是还是能够正常使用zeppelin。</p>
+</li>
+<li><p>在系统中执行命令有如下提示：<br><img src="http://tempwork.qiniudn.com/zeppelin-case-1-1.png" alt="zeppelin-case-1-1.png"></p>
+</li>
+</ul>
+<ol>
+<li><p>猜测是zeppelin相关进程开启文件过多，zeppelin-server，zeppelin-interpriter对应的进程hold的文件数量如下：</p>
+<p> <img src="http://tempwork.qiniudn.com/zeppelin-case-1-2.png" alt="zeppelin-case-1-2.png"></p>
+<p> <img src="http://tempwork.qiniudn.com/zeppelin-case-1-3.png" alt="zeppelin-case-1-3.png"></p>
+</li>
+<li><p>猜测是操作系统层面问题，找到系统日志如下：</p>
+<p> <img src="http://tempwork.qiniudn.com/zeppelin-case-1-4.png" alt="zeppelin-case-1-4.png"></p>
+</li>
+<li><p>经@万两 回忆 VFS 跟zeppelin的配置有关，zeppelin.notebook.storage 使用的类和VFS有关，默认类如下：</p>
+<p> <img src="http://tempwork.qiniudn.com/zeppelin-case-1-5.png" alt="zeppelin-case-1-5.png"></p>
+<p> 然后之前定制过一个这个repo类，自动进行commit notebook。</p>
+</li>
+<li><p>经@金砖猜测git文件太多。然后查看了<figure class="highlight"><table><tr><td class="code"><pre><span class="line">&#10;5. &#23450;&#20301;&#23436;&#25104;&#65292;&#22238;&#28378;&#21040;&#40664;&#35748;&#37197;&#32622;&#65292;&#21024;&#38500;```.git```&#25991;&#20214;&#22841;&#10;&#10;---&#10;&#10;&#26696;&#20363;&#32467;&#26463;&#20102;&#12290;&#37027;&#20040;&#34893;&#29983;&#19968;&#19979;&#65306;&#10;&#10;&#26597;&#30475;&#26412;&#26426;&#24403;&#21069;&#29992;&#25143;&#30340;&#20855;&#26564;&#25968;&#37327;&#29992;&#65306; ```ulimit -u``` &#20026;&#65306;```257395</span><br></pre></td></tr></table></figure></p>
+</li>
+</ol>
+<p>查看本机最大文件数量：<code>cat /proc/sys/fs/file-max</code> 为：<code>209708</code></p>
+<p>具柄和 最大文件数量怎么不匹配呢？</p>
+<p>据资料表明： file-max是系统所有进程总和能够有的最大的文件数量；而ulimit -u 是对单个用户限制的最大文件数量。</p>
+<p>所以这个系统的这两个参数配置也是有问题的。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      
+        <a data-url="https://danieldingzju.github.io/2016/12/09/case-one/" data-id="ciwhj2zhv000lqlbuj513ueml" class="article-share-link" data-share="baidu" data-title="case-one">分享到</a>
+      
+
+      
+
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/program/">program</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
     <article id="post-hacking-phoenix" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
     <a href="/2016/09/27/hacking-phoenix/" class="article-date">
@@ -202,7 +272,7 @@ properties.setProperty(QueryServices.HCONNECTION_POOL_MAX_SIZE, <span class="str
     </div>
     <footer class="article-footer">
       
-        <a data-url="https://danieldingzju.github.io/2016/09/27/hacking-phoenix/" data-id="citlfbskg000j8rbu82g045e8" class="article-share-link" data-share="baidu" data-title="hacking phoenix">分享到</a>
+        <a data-url="https://danieldingzju.github.io/2016/09/27/hacking-phoenix/" data-id="ciwhj2zht000jqlbugr0jeuh9" class="article-share-link" data-share="baidu" data-title="hacking phoenix">分享到</a>
       
 
       
@@ -231,7 +301,7 @@ properties.setProperty(QueryServices.HCONNECTION_POOL_MAX_SIZE, <span class="str
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2016/02/19/性能优化-ClassLoader/">性能优化-ClassLoader</a>
+      <a class="article-title" href="/2016/02/19/性能优化-ClassLoader/">hacking fastjson</a>
     </h1>
   
 
@@ -239,7 +309,7 @@ properties.setProperty(QueryServices.HCONNECTION_POOL_MAX_SIZE, <span class="str
     
     <div class="article-entry" itemprop="articleBody">
       
-        <p>gent横向收集一些日志，在上线老应用servicemanager的时候，cpu和load飙升。</p>
+        <p>使用 java agent 横向收集一些日志，在上线老应用servicemanager的时候，cpu和load飙升。</p>
 <h4 id="第一次尝试">第一次尝试</h4><p>先用了这个脚本跑了下获取cpu最高的几个线程对应的jstack（此脚本适用于由固定生命周期长的线程引起的cpu飙升）：</p>
 <pre><code><span class="shebang">#!/bin/bash
 </span>
@@ -369,7 +439,7 @@ echo
     </div>
     <footer class="article-footer">
       
-        <a data-url="https://danieldingzju.github.io/2016/02/19/性能优化-ClassLoader/" data-id="citlfbsk9000a8rbu9guuvi8j" class="article-share-link" data-share="baidu" data-title="性能优化-ClassLoader">分享到</a>
+        <a data-url="https://danieldingzju.github.io/2016/02/19/性能优化-ClassLoader/" data-id="ciwhj2zhn000aqlbunims4dlt" class="article-share-link" data-share="baidu" data-title="hacking fastjson">分享到</a>
       
 
       
@@ -415,7 +485,7 @@ echo
     </div>
     <footer class="article-footer">
       
-        <a data-url="https://danieldingzju.github.io/2016/01/29/开源tomcat类加载机制/" data-id="citlfbska000d8rbuu7rk3h1g" class="article-share-link" data-share="baidu" data-title="开源tomcat类加载机制">分享到</a>
+        <a data-url="https://danieldingzju.github.io/2016/01/29/开源tomcat类加载机制/" data-id="ciwhj2zho000dqlbu5lm2vujm" class="article-share-link" data-share="baidu" data-title="开源tomcat类加载机制">分享到</a>
       
 
       
@@ -539,7 +609,7 @@ cn.accept(c);
     </div>
     <footer class="article-footer">
       
-        <a data-url="https://danieldingzju.github.io/2016/01/28/ASM/" data-id="citlfbskq000t8rbubvhpdscg" class="article-share-link" data-share="baidu" data-title="ASM">分享到</a>
+        <a data-url="https://danieldingzju.github.io/2016/01/28/ASM/" data-id="ciwhj2zi7000wqlbun6g7a1la" class="article-share-link" data-share="baidu" data-title="ASM">分享到</a>
       
 
       
@@ -707,7 +777,7 @@ cn.accept(c);
     </div>
     <footer class="article-footer">
       
-        <a data-url="https://danieldingzju.github.io/2016/01/19/Zero-Copy/" data-id="citlfbski000l8rbu7wphhqf7" class="article-share-link" data-share="baidu" data-title="Zero Copy">分享到</a>
+        <a data-url="https://danieldingzju.github.io/2016/01/19/Zero-Copy/" data-id="ciwhj2zhy000oqlbubrd627rb" class="article-share-link" data-share="baidu" data-title="Zero Copy">分享到</a>
       
 
       
@@ -820,7 +890,7 @@ cn.accept(c);
     </div>
     <footer class="article-footer">
       
-        <a data-url="https://danieldingzju.github.io/2015/12/26/认识java-agent/" data-id="citlfbsjz00028rbuixpvwdkt" class="article-share-link" data-share="baidu" data-title="认识java agent">分享到</a>
+        <a data-url="https://danieldingzju.github.io/2015/12/26/认识java-agent/" data-id="ciwhj2zhd0002qlbu38jd772m" class="article-share-link" data-share="baidu" data-title="认识java agent">分享到</a>
       
 
       
@@ -1054,7 +1124,7 @@ signature polymorphic（MethodHandler）这个也是JDK7加入的，为了实现
     </div>
     <footer class="article-footer">
       
-        <a data-url="https://danieldingzju.github.io/2015/12/20/JVMS7笔记/" data-id="citlfbskm000p8rbu0sznqqtl" class="article-share-link" data-share="baidu" data-title="JVMS7笔记">分享到</a>
+        <a data-url="https://danieldingzju.github.io/2015/12/20/JVMS7笔记/" data-id="ciwhj2zi3000sqlbuue07trty" class="article-share-link" data-share="baidu" data-title="JVMS7笔记">分享到</a>
       
 
       
@@ -1145,7 +1215,7 @@ signature polymorphic（MethodHandler）这个也是JDK7加入的，为了实现
     </div>
     <footer class="article-footer">
       
-        <a data-url="https://danieldingzju.github.io/2015/11/21/理解CPU-steal-time/" data-id="citlfbsk500058rbu0o5dlaks" class="article-share-link" data-share="baidu" data-title="理解CPU steal time">分享到</a>
+        <a data-url="https://danieldingzju.github.io/2015/11/21/理解CPU-steal-time/" data-id="ciwhj2zhi0005qlbuxalywww9" class="article-share-link" data-share="baidu" data-title="理解CPU steal time">分享到</a>
       
 
       
@@ -1207,305 +1277,13 @@ signature polymorphic（MethodHandler）这个也是JDK7加入的，为了实现
     </div>
     <footer class="article-footer">
       
-        <a data-url="https://danieldingzju.github.io/2015/10/06/亲身经历icloud账号被黑事件/" data-id="citlfbskb000f8rbu50muts6x" class="article-share-link" data-share="baidu" data-title="亲身经历icloud账号被黑事件">分享到</a>
+        <a data-url="https://danieldingzju.github.io/2015/10/06/亲身经历icloud账号被黑事件/" data-id="ciwhj2zhq000fqlbuh4kkdhre" class="article-share-link" data-share="baidu" data-title="亲身经历icloud账号被黑事件">分享到</a>
       
 
       
 
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Life/">Life</a></li></ul>
-
-    </footer>
-  </div>
-  
-</article>
-
-
-  
-    <article id="post-本地缓存组件选型" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2015/09/04/本地缓存组件选型/" class="article-date">
-  <time datetime="2015-09-04T03:30:53.000Z" itemprop="datePublished">9月 4 2015</time>
-</a>
-    
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2015/09/04/本地缓存组件选型/">本地缓存组件选型</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>需求： 记录系统执行数据，能持久化，容错。</p>
-<h2 id="Guava">Guava</h2><p>官网就没有说有persistent的功能，直接略过。</p>
-<h2 id="ehcache">ehcache</h2><p>企业版需要缴费，然后持久化功能和保证重启可用的功能都需要缴费。</p>
-<p>看看开源版ehcache的是否可以满足，现状是：可以在只是DiskStore相关配置，让cache把内容序列化后直接overflow到文件。<br>现在问题是：</p>
-<h4 id="重启">重启</h4><p>重启以后，是重新新建文件并覆盖同名文件—也就是之前同名cache生成的文件。尝试出使用自己实现的RebootCacheLoaderFactory implemets BootstrapCacheLoaderFactory可以来创建 RebootCacheLoader implements BootstrapCacheLoader来实现内容。</p>
-<p>RootbootCacheLoaderFactory：</p>
-<pre><code>public <span class="class"><span class="keyword">class</span> <span class="title">RebootCacheLoaderFactory</span> <span class="keyword"><span class="keyword">extends</span></span> <span class="title">BootstrapCacheLoaderFactory</span> {</span>
-    <span class="annotation">@Override</span>
-    public <span class="type">BootstrapCacheLoader</span> createBootstrapCacheLoader(<span class="type">Properties</span> properties) {
-        <span class="keyword">return</span> <span class="keyword">new</span> <span class="type">RebootCacheLoader</span>();
-    }
-}
-</code></pre><p>RebootCacheLoader：</p>
-<pre><code><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">RebootCacheLoader</span> <span class="keyword">implements</span> <span class="title">BootstrapCacheLoader</span> </span>{
-
-    <span class="annotation">@Override</span>
-    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">load</span><span class="params">(Ehcache cache)</span> <span class="keyword">throws</span> CacheException </span>{
-        cache.put(<span class="keyword">new</span> Element(<span class="string">"haha"</span>+Math.random(), Math.random()));
-    }
-
-    <span class="annotation">@Override</span>
-    <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">isAsynchronous</span><span class="params">()</span> </span>{
-        <span class="keyword">return</span> <span class="keyword">true</span>;
-    }
-
-    <span class="function"><span class="keyword">public</span> Object <span class="title">clone</span><span class="params">()</span></span>{
-        <span class="keyword">return</span> <span class="keyword">new</span> RebootCacheLoader();
-    }
-}
-</code></pre><p>Main：</p>
-<pre><code><span class="typename">String</span> path = <span class="string">"/tmp/ehcache/"</span>;
-<span class="typename">String</span> cacheManagerName = <span class="string">"cacheManagerName"</span>;
-Long diskSizeBytes = <span class="number">4</span> * <span class="number">1024</span> * <span class="number">1024</span> * <span class="number">1024</span>L;
-<span class="typename">String</span> cache1Name = <span class="string">"40006_1232131231312"</span>;
-<span class="typename">String</span> cache2Name = <span class="string">"40002_1232131231312"</span>;
-
-<span class="keyword">Configuration</span> <span class="keyword">configuration</span> = <span class="keyword">new</span> <span class="keyword">Configuration</span>();
-<span class="keyword">configuration</span>.setName(cacheManagerName);
-CacheConfiguration defaultCacheConfiguration = <span class="keyword">new</span> CacheConfiguration();
-defaultCacheConfiguration.overflowToOffHeap(false);
-defaultCacheConfiguration.overflowToDisk(true);
-defaultCacheConfiguration.maxEntriesLocalHeap(<span class="number">1</span>); //<span class="number">0</span> <span class="keyword">is</span> <span class="keyword">not</span> limited, DiskStore, MemStore will <span class="keyword">all</span> have the element; <span class="number">1</span> means just the last element will be <span class="keyword">in</span> memory.
-defaultCacheConfiguration.maxBytesLocalDisk(<span class="number">2</span>, MemoryUnit.MEGABYTES); //模糊的界定，异步写入，主线程结束了，还有一些记录没有记录的，会丢失数据。
-defaultCacheConfiguration.addBootstrapCacheLoaderFactory(<span class="keyword">new</span> CacheConfiguration.BootstrapCacheLoaderFactoryConfiguration().className(
-            <span class="string">"com.daniel.test.RebootCacheLoaderFactory"</span>
-    ));
-
-<span class="keyword">configuration</span>.setDefaultCacheConfiguration(defaultCacheConfiguration);
-
-CacheManager cacheManager = <span class="keyword">new</span> CacheManager(<span class="keyword">configuration</span>);
-
-cacheManager.addCache(cache1Name);
-</code></pre><p>在<strong>cacheManager.addCache(cache1Name)</strong>方法里面clone一个defaultCache，然后改个名字，然后initialize cache完成之后，调用cache.bootstrap()方法：</p>
-<pre><code><span class="keyword">public</span> <span class="function"><span class="keyword">void</span> <span class="title">bootstrap</span><span class="params">()</span> </span>{
-    <span class="keyword">if</span> (!disabled &amp;&amp; bootstrapCacheLoader != <span class="keyword">null</span>) {
-        bootstrapCacheLoader.load(<span class="keyword">this</span>);
-    }
-
-}
-</code></pre><p>然后就可以load到自定义信息了，因为底层就是用了java自带序列化来存储Element对象，方法在：<strong>DiskStorageFactory.serializeElement()</strong></p>
-<h3 id="持久化">持久化</h3><p>从最近本的cache.put()方法不断debug进去，发现DiskStore.put()引用了segment.put()，然后Element的行记录的包装类PlaceHolder里面的install方法调用了如下内容：</p>
-<pre><code><span class="keyword">public</span> <span class="function"><span class="keyword">void</span> <span class="title">installed</span><span class="params">()</span> </span>{
-    DiskStorageFactory.<span class="keyword">this</span>.schedule(<span class="keyword">new</span> PersistentDiskWriteTask(<span class="keyword">this</span>));
-}
-</code></pre><p>看着感觉很悲剧，果然看到里面是一个ScheduledThreadPoolExecutor在执行，实体是DiskStorageFactory里面的diskWriter，然后是默认生成的，还不能修改队列啥的：</p>
-<pre><code>diskWriter <span class="subst">=</span> <span class="literal">new</span> ScheduledThreadPoolExecutor(<span class="number">1</span>, <span class="literal">new</span> ThreadFactory() {
-    <span class="keyword">public</span> <span class="keyword">Thread</span> newThread(Runnable r) {
-        <span class="keyword">Thread</span> t <span class="subst">=</span> <span class="literal">new</span> <span class="keyword">Thread</span>(r, file<span class="built_in">.</span>getName());
-        t<span class="built_in">.</span>setDaemon(<span class="literal">false</span>);
-        <span class="keyword">return</span> t;
-    }
-});
-</code></pre><p>这个构造函数，消息队列是默认11个的PriorityQueue，所以机器中断可能导致数据还在queue里面没被写入到磁盘。这个组件不能用了！！！</p>
-<h2 id="OSCache">OSCache</h2><p>名声挺好的，搜了下，已经不维护了，略过</p>
-<h2 id="JCS">JCS</h2><p>JCS是插件式管看着很棒，persistent功能介绍也很强大，符合我的需求，看了一眼bugfix清单，关于persistet的bug那么多，最新的版本还是beta的，完全不敢用，不想自找麻烦。</p>
-<h2 id="FQueue">FQueue</h2><p>转换下思路了。如果说持久化要做到可靠性最佳，理论上面就应该是同步插入数据到磁盘；如果还要保证消费的顺序性，想了一种方案，如下:</p>
-<p><img src="http://7oxfl2.com1.z0.glb.clouddn.com/思路.jpg" alt="思路">：</p>
-<p>虽然很开心的想出来了，但是可靠性却不能保证啊。我们的存储使用的是HBASE，scheme设计是：rowkey用index，所有相同index的记录都需要记录到一行记录里面。如果我再搞一个持久化的重试队列，Queue的Element先poll出来，push到retryQueue extends LinkedList，并在内存存储retryQueue的Element和位置的关系Map，然后等异步插入HBase数据完成之后，利用内存关系来做删除，这个时候有两个问题：</p>
-<ol>
-<li><p>fQueue使用是FIFO的Queue，如何在记录位置并删除呢，效率是否有影响？想象下多个线程同时操作一个文件。如果要做, 可能需要学ehcache的方式，在内存里面映射文件为一个map，做segment分段加锁，然后在内存中删除，同时交给一个只有一个线程的线程池异步删除对应文件数据，那这样最多就2个线程抢占一个文件，一个写入，一个删除；那么问题来了，因为是异步，所以可能存在crash的时候内存删除了，文件数据没删除的情况，对异常恢复造成影响，类似之后提到的2问题。</p>
-</li>
-<li><p>插入HBase的时候，机器crash了，我们不知道是否真的插入成功了，就需要在机器重启的时候重新插入，这个时候会在同一行记录里面append内容一样的column了。</p>
-</li>
-</ol>
-<p>换一种思路：<br>我每一个index下的内容都生成一个持久化文件，并在内存中存储一个mark标记，标记是否index文件生成完了，监听器监听 <strong>生成完</strong>的状态，然后交给一个线程处理这个index相关的一个文件，因为内容是顺序的，所以直接拼装成一条记录，并且写入，写入成功之后，删除这个index对应的文件。异常状况处理如下：</p>
-<ol>
-<li><p>index下内容生成一半，crash，重启以后首先消费掉这些数据并做插入到HBase，保证异常数据也能够被系统得到。</p>
-</li>
-<li><p>插入HBase时，crash，重启以后同样重复消费文件数据，构造一条记录，插入。如果上次已经插入通用的rowkey数据，那么HBase自己会做update，那么业务上面完全没有影响，就是DB方面多update了一次。</p>
-</li>
-</ol>
-<p>恩，现在感觉完美了。</p>
-<p>FQueue默认文件大小是300M，用400个线程同时创建文件，ssd 硬盘，2.5GCPU的配置直接卡爆。然后调整为默认为1M。重写了三个类：FQueue.java, FSQueue.java, LogEntity.java</p>
-<p>HMFQueue.java</p>
-<pre><code><span class="function"><span class="keyword">public</span> <span class="title">HMFQueue</span><span class="params">(String path)</span> <span class="keyword">throws</span> Exception </span>{
-    fsQueue = <span class="keyword">new</span> HMFSQueue(path, <span class="number">1024</span> * <span class="number">1024</span> * <span class="number">1</span>); <span class="comment">//默认是1M大小</span>
-}
-
-<span class="annotation">@Override</span>
-<span class="comment">//not thread safe, be careful , 添加了iterator的支持，需要修改FSQueue和LogEntity</span>
-<span class="keyword">public</span> Iterator&lt;<span class="keyword">byte</span>[]&gt; iterator() {
-    <span class="keyword">try</span> {
-        fsQueue.curseToHead();
-    } <span class="keyword">catch</span> (IOException e) {
-        log.<span class="keyword">error</span>(<span class="string">" cannot open the file!"</span>,e );
-        <span class="keyword">throw</span> <span class="keyword">new</span> UnsupportedOperationException(<span class="string">"failed to move to head!"</span>);
-    } <span class="keyword">catch</span> (FileFormatException e) {
-        log.<span class="keyword">error</span>(<span class="string">"failed to move to head! the file format is wrong"</span>,e );
-        <span class="keyword">throw</span> <span class="keyword">new</span> UnsupportedOperationException(<span class="string">"failed to move to head!"</span>);
-    }
-
-    <span class="keyword">return</span> <span class="keyword">new</span> Iterator&lt;<span class="keyword">byte</span>[]&gt;() {
-
-        <span class="annotation">@Override</span>
-         <span class="keyword">public</span> <span class="function"><span class="keyword">boolean</span> <span class="title">hasNext</span><span class="params">()</span> </span>{
-            <span class="function"><span class="keyword">return</span> fsQueue.<span class="title">hasNext</span><span class="params">()</span></span>;
-        }
-
-        <span class="annotation">@Override</span>
-        <span class="keyword">public</span> <span class="keyword">byte</span>[] next() {
-            <span class="function"><span class="keyword">return</span> fsQueue.<span class="title">readNextAndMove</span><span class="params">()</span></span>;
-        }
-
-        <span class="annotation">@Override</span>
-        <span class="keyword">public</span> <span class="function"><span class="keyword">void</span> <span class="title">remove</span><span class="params">()</span> </span>{
-            <span class="keyword">throw</span> <span class="keyword">new</span> UnsupportedOperationException(<span class="string">"remove operation is not supported here!"</span>);
-        }
-    };
-}
-</code></pre><p>HMFSQueue.java 添加如下方法支持文件的重头读取和遍历</p>
-<pre><code><span class="comment">//not thread safe 定位到文件的头部，更新index</span>
-<span class="keyword">public</span> <span class="function"><span class="keyword">void</span> <span class="title">curseToHead</span><span class="params">()</span>  <span class="keyword">throws</span> IOException, FileFormatException </span>{
-    <span class="keyword">int</span> fileNum = -<span class="number">1</span>;
-    File dir = <span class="keyword">new</span> File(path);
-    <span class="keyword">if</span>(dir.exists() &amp;&amp; dir.isDirectory()){
-        <span class="keyword">if</span>(dir.listFiles() != <span class="keyword">null</span> &amp;&amp; dir.listFiles().length &gt; <span class="number">0</span>){
-            <span class="keyword">for</span>(<span class="keyword">int</span> i = <span class="number">1</span>; i &lt; Integer.MAX_VALUE; i++){
-                String fileName = path + fileSeparator + filePrefix + <span class="string">"data_"</span> + i + <span class="string">".idb"</span>;
-                File file = <span class="keyword">new</span> File(fileName);
-                <span class="keyword">if</span>(file.exists()){
-                    fileNum = i;
-                    <span class="keyword">break</span>;
-                }
-            }
-            <span class="keyword">if</span>(fileNum != -<span class="number">1</span>){
-                <span class="keyword">if</span> (writerHandle.getCurrentFileNumber() == fileNum) {
-                    readerHandle = writerHandle;
-                }<span class="keyword">else</span>{
-                    readerHandle = createLogEntity(path + fileSeparator + filePrefix + <span class="string">"data_"</span> + fileNum + <span class="string">".idb"</span>, db,
-                            fileNum);
-                }
-                readerHandle.resetReaderPosition();
-            }
-        }
-    }
-}
-
-<span class="comment">//not thread safe 判断是否有下一条数据</span>
-<span class="keyword">public</span> <span class="function"><span class="keyword">boolean</span> <span class="title">hasNext</span><span class="params">()</span></span>{
-    <span class="keyword">byte</span>[] b = <span class="keyword">null</span>;
-    <span class="keyword">try</span> {
-        b = readerHandle.readNext();
-    } <span class="keyword">catch</span> (FileEOFException e) {
-        <span class="keyword">int</span> nextfile = readerHandle.getNextFile();
-        readerHandle.close();
-        <span class="comment">// 更新下一次读取的位置和索引</span>
-        db.putReaderPosition(HMLogEntity.messageStartPosition);
-        db.putReaderIndex(nextfile);
-        <span class="keyword">if</span> (writerHandle.getCurrentFileNumber() == nextfile) {
-            readerHandle = writerHandle;
-        } <span class="keyword">else</span> {
-            <span class="keyword">try</span> {
-                readerHandle = createLogEntity(path + fileSeparator + filePrefix + <span class="string">"data_"</span> + nextfile + <span class="string">".idb"</span>, db,
-                        nextfile);
-            } <span class="keyword">catch</span> (IOException e1) {
-                log.<span class="keyword">error</span>(<span class="string">"failed to read file: "</span> + path + fileSeparator + filePrefix + <span class="string">"data_"</span> + nextfile + <span class="string">".idb"</span>,e1);
-            } <span class="keyword">catch</span> (FileFormatException e1) {
-                log.<span class="keyword">error</span>(<span class="string">"the file has wrong format: "</span> + path + fileSeparator + filePrefix + <span class="string">"data_"</span> + nextfile + <span class="string">".idb"</span>, e1);
-            }
-        }
-        <span class="keyword">try</span> {
-            b = readerHandle.readNext();
-        } <span class="keyword">catch</span> (FileEOFException e1) {
-            log.<span class="keyword">error</span>(<span class="string">"read new log file FileEOFException error occurred"</span>,e1);
-        }
-    }
-    <span class="keyword">if</span> (b != <span class="keyword">null</span>) {
-        <span class="keyword">return</span> <span class="keyword">true</span>;
-    }
-    <span class="keyword">return</span> <span class="keyword">false</span>;
-}
-
-<span class="comment">//not thread safe 读取下一个并且更新索引</span>
-<span class="keyword">public</span> <span class="keyword">byte</span>[] readNextAndMove(){
-    <span class="keyword">byte</span>[] b = <span class="keyword">null</span>;
-    <span class="keyword">try</span> {
-        b = readerHandle.readNextAndMove();
-    } <span class="keyword">catch</span> (FileEOFException e) {
-        <span class="keyword">int</span> nextfile = readerHandle.getNextFile();
-        readerHandle.close();
-        <span class="comment">// 更新下一次读取的位置和索引</span>
-        db.putReaderPosition(HMLogEntity.messageStartPosition);
-        db.putReaderIndex(nextfile);
-        <span class="keyword">if</span> (writerHandle.getCurrentFileNumber() == nextfile) {
-            readerHandle = writerHandle;
-        } <span class="keyword">else</span> {
-            <span class="keyword">try</span> {
-                readerHandle = createLogEntity(path + fileSeparator + filePrefix + <span class="string">"data_"</span> + nextfile + <span class="string">".idb"</span>, db,
-                        nextfile);
-            } <span class="keyword">catch</span> (IOException e1) {
-                log.<span class="keyword">error</span>(<span class="string">"failed to read file: "</span> + path + fileSeparator + filePrefix + <span class="string">"data_"</span> + nextfile + <span class="string">".idb"</span>, e1);
-            } <span class="keyword">catch</span> (FileFormatException e1) {
-                log.<span class="keyword">error</span>(<span class="string">"the file has wrong format: "</span> + path + fileSeparator + filePrefix + <span class="string">"data_"</span> + nextfile + <span class="string">".idb"</span>, e1);
-            }
-        }
-        <span class="keyword">try</span> {
-            b = readerHandle.readNextAndMove();
-        } <span class="keyword">catch</span> (FileEOFException e1) {
-            log.<span class="keyword">error</span>(<span class="string">"read new log file FileEOFException error occurred"</span>,e1);
-        }
-    }
-    <span class="keyword">return</span> b;
-}
-
-<span class="comment">//删除消息队列相关数据文件</span>
-<span class="keyword">public</span> <span class="function"><span class="keyword">void</span> <span class="title">delQueue</span><span class="params">()</span> <span class="keyword">throws</span> IOException, FileFormatException </span>{
-    FileUtils.deleteDirectory(<span class="keyword">new</span> File(path));
-}
-</code></pre><p>HMLogEntity.java</p>
-<pre><code><span class="keyword">public</span> HMLogEntity(<span class="built_in">String</span> path, LogIndex db, int fileNumber,
-                 int fileLimitLength) throws IOException, FileFormatException {
-    <span class="attribute">...</span><span class="attribute">...</span><span class="built_in">..
-    </span><span class="keyword">if</span> (file<span class="built_in">.</span>exists() <span class="subst">==</span> <span class="literal">false</span>) {
-        createLogEntity();
-        <span class="comment">//FileRunner.addCreateFile(Integer.toString(fileNumber + 1)); //注释掉，如果文件切片为1M时候，提前创建有问题：由于是异步的，消费的时候会存在还没有创建成功，写入失败的情况。</span>
-    } <span class="keyword">else</span> {
-        <span class="attribute">...</span><span class="attribute">...</span><span class="built_in">..
-    </span>}      
-}
-</code></pre><p>测试下性能，单线程写20W的数据花了9s；</p>
-<p>但是多线程写入多个文件性能和稳定性可能有问题了：</p>
-<ol>
-<li><p>400个线程，每个线程创建自己的文件，写入300条数据，遍历300条数据，删除自己创建写入的文件总共要6.1s，且一切正常。</p>
-</li>
-<li><p>400个线程，每个线程创建自己的文件，写入400条数据，遍历400条数据，删除自己创建写入的文件出现写入失败和读取失败的情况：240个线程写入完成，133个线程遍历完成，且没有异常抛出。</p>
-</li>
-<li><p>600个线程，每个线程创建自己的文件，写入300条数据，遍历300条数据，删除自己创建写入的文件出现写入失败和读取失败的情况：244个线程写入完成，160个线程遍历完成，且没有异常抛出。</p>
-</li>
-</ol>
-<p>1的情况已经是达到了临界值。2，3都会出现不稳定的情况，我去，这个是啥原因呢？？百思不得其解。</p>
-
-      
-    </div>
-    <footer class="article-footer">
-      
-        <a data-url="https://danieldingzju.github.io/2015/09/04/本地缓存组件选型/" data-id="citlfbsk700088rbu7gfx0t3b" class="article-share-link" data-share="baidu" data-title="本地缓存组件选型">分享到</a>
-      
-
-      
-
-      
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Java/">Java</a></li></ul>
 
     </footer>
   </div>
@@ -1529,7 +1307,7 @@ cacheManager.addCache(cache1Name);
   <div class="widget-wrap">
     <h3 class="widget-title">标签</h3>
     <div class="widget">
-      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/JAVA/">JAVA</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Java/">Java</a><span class="tag-list-count">8</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Life/">Life</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Linux/">Linux</a><span class="tag-list-count">2</span></li></ul>
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/JAVA/">JAVA</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Java/">Java</a><span class="tag-list-count">8</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Life/">Life</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Linux/">Linux</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/program/">program</a><span class="tag-list-count">1</span></li></ul>
     </div>
   </div>
 
@@ -1538,7 +1316,7 @@ cacheManager.addCache(cache1Name);
   <div class="widget-wrap">
     <h3 class="widget-title">标签云</h3>
     <div class="widget tagcloud">
-      <a href="/tags/JAVA/" style="font-size: 10px;">JAVA</a><a href="/tags/Java/" style="font-size: 20px;">Java</a><a href="/tags/Life/" style="font-size: 10px;">Life</a><a href="/tags/Linux/" style="font-size: 15px;">Linux</a>
+      <a href="/tags/JAVA/" style="font-size: 10px;">JAVA</a><a href="/tags/Java/" style="font-size: 20px;">Java</a><a href="/tags/Life/" style="font-size: 10px;">Life</a><a href="/tags/Linux/" style="font-size: 15px;">Linux</a><a href="/tags/program/" style="font-size: 10px;">program</a>
     </div>
   </div>
 
@@ -1547,7 +1325,7 @@ cacheManager.addCache(cache1Name);
   <div class="widget-wrap">
     <h3 class="widget-title">归档</h3>
     <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/09/">九月 2016</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/02/">二月 2016</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/01/">一月 2016</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/12/">十二月 2015</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/11/">十一月 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/10/">十月 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/09/">九月 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/04/">四月 2015</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/03/">三月 2015</a><span class="archive-list-count">1</span></li></ul>
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/12/">十二月 2016</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/09/">九月 2016</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/02/">二月 2016</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/01/">一月 2016</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/12/">十二月 2015</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/11/">十一月 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/10/">十月 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/09/">九月 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/04/">四月 2015</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/03/">三月 2015</a><span class="archive-list-count">1</span></li></ul>
     </div>
   </div>
 
@@ -1559,11 +1337,15 @@ cacheManager.addCache(cache1Name);
       <ul>
         
           <li>
+            <a href="/2016/12/09/case-one/">case-one</a>
+          </li>
+        
+          <li>
             <a href="/2016/09/27/hacking-phoenix/">hacking phoenix</a>
           </li>
         
           <li>
-            <a href="/2016/02/19/性能优化-ClassLoader/">性能优化-ClassLoader</a>
+            <a href="/2016/02/19/性能优化-ClassLoader/">hacking fastjson</a>
           </li>
         
           <li>
@@ -1572,10 +1354,6 @@ cacheManager.addCache(cache1Name);
         
           <li>
             <a href="/2016/01/28/ASM/">ASM</a>
-          </li>
-        
-          <li>
-            <a href="/2016/01/19/Zero-Copy/">Zero Copy</a>
           </li>
         
       </ul>

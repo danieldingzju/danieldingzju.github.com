@@ -108,7 +108,7 @@
     </div>
     <footer class="article-footer">
       
-        <a data-url="https://danieldingzju.github.io/2016/12/09/hdfs-case-one/" data-id="ciwhjx3sl000mutbubudeh1sm" class="article-share-link" data-share="baidu" data-title="hdfs-case-one">分享到</a>
+        <a data-url="https://danieldingzju.github.io/2016/12/09/hdfs-case-one/" data-id="cj7n3ozj3000moebuhd2o6801" class="article-share-link" data-share="baidu" data-title="hdfs-case-one">分享到</a>
       
 
       
@@ -184,7 +184,7 @@
     </div>
     <footer class="article-footer">
       
-        <a data-url="https://danieldingzju.github.io/2016/12/09/zeppelin-case-one/" data-id="ciwhjx3sf000iutbu1ge6mbgx" class="article-share-link" data-share="baidu" data-title="zeppelin-case-one">分享到</a>
+        <a data-url="https://danieldingzju.github.io/2016/12/09/zeppelin-case-one/" data-id="cj7n3ozix000ioebu0hs2qo33" class="article-share-link" data-share="baidu" data-title="zeppelin-case-one">分享到</a>
       
 
       
@@ -328,79 +328,7 @@ properties.setProperty(QueryServices.HCONNECTION_POOL_MAX_SIZE, <span class="str
     </div>
     <footer class="article-footer">
       
-        <a data-url="https://danieldingzju.github.io/2016/09/27/hacking-phoenix/" data-id="ciwhjx3so000outbu3d7zydud" class="article-share-link" data-share="baidu" data-title="hacking phoenix">分享到</a>
-      
-
-      
-
-      
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Java/">Java</a></li></ul>
-
-    </footer>
-  </div>
-  
-</article>
-
-
-  
-    <article id="post-hacking fastjson" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2016/03/14/hacking fastjson/" class="article-date">
-  <time datetime="2016-03-14T03:51:02.000Z" itemprop="datePublished">3月 14 2016</time>
-</a>
-    
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2016/03/14/hacking fastjson/">hacking fastjson</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h4 id="背景">背景</h4><p>fastjson是一个很牛逼的开源json工具包，谁用谁知道。它有如下常见用法：</p>
-<ol>
-<li>假设我们的json数据结构为：</li>
-</ol>
-<p>{<br>id: xxx<br>        name : xxx<br>        address : xxx<br>        phone : xxx<br>}</p>
-<ol>
-<li>定义json数据结构对应的POJO对象，假设为(请允许我用lombok偷个懒)：</li>
-</ol>
-<p>@Data<br>Class PeopleDO {<br>    private Long id;<br>    private String name;<br>    private String phone;<br>}</p>
-<ol>
-<li>然后我们使用API把json数据解析为对应的POJO实例：</li>
-</ol>
-<p>com.alibaba.fastjson.JSON.parseObject(json_data, PeopleDO.class)</p>
-<pre><code><span class="comment">---</span>
-</code></pre><h4 id="问题">问题</h4><pre><code>在我的hercules 的agent 开发过程中，我发现了cpu，load飙高，用jstack一看，得到了
-
-![<span class="link_label">图片</span>](<span class="link_url">http://tempwork.qiniudn.com/fastjson_current_problem.png</span>)
-
-关于如何定位问题，请看[<span class="link_label">classLoader 性能问题</span>](<span class="link_url">http://www.atatech.org/articles/49976?msgid=726987</span>)
-
-<span class="horizontal_rule">---</span>
-</code></pre><h4 id="解决">解决</h4><pre><code>首先，有一个餐前点心知识点是：JDK6的ClassLoader使用大量的syncronized关键字。
-
-让我们一起看下代码，从**parseObject**方法跟进去，并且找到使用到ASMClassLoader.defineClassPublic()的类
-    <span class="comment"><figure class="highlight"><table><tr><td class="code"><pre><span class="line">public class ASMDeserializerFactory implements Opcodes &#123;&#10;&#9;.....&#10;&#9;&#9;public FieldDeserializer createStringFieldDeserializer(ParserConfig mapping, Class&#60;?&#62; clazz, FieldInfo fieldInfo) throws Exception &#123;&#10;&#9;&#9;&#9;.....        &#10;&#9;&#9;&#9;&#9;byte[] code1 = cw.toByteArray();&#10;&#9;&#9;&#9;Class exampleClass = this.classLoader.defineClassPublic(className, code1, 0, code1.length);&#10;&#9;&#9;&#9;Constructor constructor = exampleClass.getConstructor(new Class[]&#123;ParserConfig.class, Class.class, FieldInfo.class&#125;);&#10;&#9;&#9;&#9;Object instance = constructor.newInstance(new Object[]&#123;mapping, clazz, fieldInfo&#125;);&#10;&#9;&#9;&#9;return (FieldDeserializer)instance;&#10;&#9;&#9;&#125;&#10;&#125;</span><br></pre></td></tr></table></figure></span>
-</code></pre><p>这里其实可以明白的看到 <strong>code1</strong> 这个变量其实每次调用parseObject进来之后都是会通过asm解析，改造生成同样内容的byte[]的；同时这个函数的目的是为了拿到 exampleClass 的实例；那么我们可以通过缓存 exampleClass 对象来避免反复调用 <strong>this.classLoader.defineClassPublic</strong> 这个方法，最终解决并发问题。</p>
-<hr>
-<p><strong>改造后的代码</strong></p>
-<figure class="highlight"><table><tr><td class="code"><pre><span class="line">public class ASMDeserializerFactory implements Opcodes &#123;&#10;&#9;private final Map&#60;String, Class&#62; classMap = new HashMap&#60;String, Class&#62;();&#10;&#9;.....&#10;&#9;&#9;public FieldDeserializer createStringFieldDeserializer(ParserConfig mapping, Class&#60;?&#62; clazz, FieldInfo fieldInfo) throws Exception &#123;&#10;&#9;&#9;&#9;.....        &#10;&#9;&#9;&#9;&#9;byte[] code1 = cw.toByteArray();&#10;&#9;&#9;&#9;Class&#60;?&#62; exampleClass = defineClassPublic(className, code, 0, code.length); // &#35843;&#29992;&#20989;&#25968;&#20869;&#23450;&#20041;&#26041;&#27861;defineClassPublic&#10;&#9;&#9;&#9;Constructor constructor = exampleClass.getConstructor(new Class[]&#123;ParserConfig.class, Class.class, FieldInfo.class&#125;);&#10;&#9;&#9;&#9;Object instance = constructor.newInstance(new Object[]&#123;mapping, clazz, fieldInfo&#125;);&#10;&#9;&#9;&#9;return (FieldDeserializer)instance;&#10;&#9;&#9;&#125;&#10;&#10;&#9;//&#21033;&#29992;&#32531;&#23384;&#21028;&#26029;&#26159;&#21542;&#24050;&#32463;&#23384;&#22312;className&#23545;&#24212;&#36890;&#36807;asm&#20462;&#25913;&#22909;&#30340;class&#31867;&#10;&#9;private Class&#60;?&#62; defineClassPublic(String name, byte[] b, int off, int len)&#123;&#10;&#9;&#9;if(classMap.containsKey(name))&#123;&#10;&#9;&#9;&#9;return classMap.get(name);&#10;&#9;&#9;&#125; else &#123;&#10;&#9;&#9;&#9;return classLoader.defineClassPublic(name, b, off, len);&#10;&#9;&#9;&#125;&#10;&#9;&#125;&#10;&#125;</span><br></pre></td></tr></table></figure>
-<p>最终已经提交mr，作者合并到master升级了。</p>
-
-      
-    </div>
-    <footer class="article-footer">
-      
-        <a data-url="https://danieldingzju.github.io/2016/03/14/hacking fastjson/" data-id="cj7n3jhrf000092buef0isok4" class="article-share-link" data-share="baidu" data-title="hacking fastjson">分享到</a>
+        <a data-url="https://danieldingzju.github.io/2016/09/27/hacking-phoenix/" data-id="cj7n3ozj7000ooebubgd23m7c" class="article-share-link" data-share="baidu" data-title="hacking phoenix">分享到</a>
       
 
       
@@ -567,13 +495,13 @@ echo
     </div>
     <footer class="article-footer">
       
-        <a data-url="https://danieldingzju.github.io/2016/02/19/性能优化-ClassLoader/" data-id="ciwhjx3sa000autbuu4y3bhty" class="article-share-link" data-share="baidu" data-title="hacking fastjson">分享到</a>
+        <a data-url="https://danieldingzju.github.io/2016/02/19/性能优化-ClassLoader/" data-id="cj7n3ozis000aoebuslz76xok" class="article-share-link" data-share="baidu" data-title="hacking fastjson">分享到</a>
       
 
       
 
       
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/JAVA/">JAVA</a></li></ul>
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Java/">Java</a></li></ul>
 
     </footer>
   </div>
@@ -613,7 +541,7 @@ echo
     </div>
     <footer class="article-footer">
       
-        <a data-url="https://danieldingzju.github.io/2016/01/29/开源tomcat类加载机制/" data-id="ciwhjx3sb000dutbut6mb52l3" class="article-share-link" data-share="baidu" data-title="开源tomcat类加载机制">分享到</a>
+        <a data-url="https://danieldingzju.github.io/2016/01/29/开源tomcat类加载机制/" data-id="cj7n3ozit000doebumswmenry" class="article-share-link" data-share="baidu" data-title="开源tomcat类加载机制">分享到</a>
       
 
       
@@ -737,7 +665,7 @@ cn.accept(c);
     </div>
     <footer class="article-footer">
       
-        <a data-url="https://danieldingzju.github.io/2016/01/28/ASM/" data-id="ciwhjx3sw000yutbu0gyf0lr7" class="article-share-link" data-share="baidu" data-title="ASM">分享到</a>
+        <a data-url="https://danieldingzju.github.io/2016/01/28/ASM/" data-id="cj7n3ozji0010oebusehzmshl" class="article-share-link" data-share="baidu" data-title="ASM">分享到</a>
       
 
       
@@ -905,7 +833,7 @@ cn.accept(c);
     </div>
     <footer class="article-footer">
       
-        <a data-url="https://danieldingzju.github.io/2016/01/19/Zero-Copy/" data-id="ciwhjx3sq000qutbuzakaca4o" class="article-share-link" data-share="baidu" data-title="Zero Copy">分享到</a>
+        <a data-url="https://danieldingzju.github.io/2016/01/19/Zero-Copy/" data-id="cj7n3ozja000soebunskseaf6" class="article-share-link" data-share="baidu" data-title="Zero Copy">分享到</a>
       
 
       
@@ -1018,7 +946,7 @@ cn.accept(c);
     </div>
     <footer class="article-footer">
       
-        <a data-url="https://danieldingzju.github.io/2015/12/26/认识java-agent/" data-id="ciwhjx3s10002utbumju9q5fh" class="article-share-link" data-share="baidu" data-title="认识java agent">分享到</a>
+        <a data-url="https://danieldingzju.github.io/2015/12/26/认识java-agent/" data-id="cj7n3ozij0002oebul2i6n9w9" class="article-share-link" data-share="baidu" data-title="认识java agent">分享到</a>
       
 
       
@@ -1252,13 +1180,104 @@ signature polymorphic（MethodHandler）这个也是JDK7加入的，为了实现
     </div>
     <footer class="article-footer">
       
-        <a data-url="https://danieldingzju.github.io/2015/12/20/JVMS7笔记/" data-id="ciwhjx3st000uutbulo6m8uyg" class="article-share-link" data-share="baidu" data-title="JVMS7笔记">分享到</a>
+        <a data-url="https://danieldingzju.github.io/2015/12/20/JVMS7笔记/" data-id="cj7n3ozje000woebu02gcrw8e" class="article-share-link" data-share="baidu" data-title="JVMS7笔记">分享到</a>
       
 
       
 
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Java/">Java</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-理解CPU-steal-time" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2015/11/21/理解CPU-steal-time/" class="article-date">
+  <time datetime="2015-11-21T06:37:04.000Z" itemprop="datePublished">11月 21 2015</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2015/11/21/理解CPU-steal-time/">理解CPU steal time</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>Netflix 很关注CPU的Steal Time。他们的策略是：如果是当前虚拟机的Steal Time 超过了你们设置的 阈值，他们会关闭这台虚拟机并且在另外一台物理机上面重启。</p>
+<p>如果你想要部署虚拟环境（例如：Amazon EC2）， steal time就是你想要关注的性能指标之一。 如果这个指标的数值很高，那么说明机器状态非常糟糕。什么是steal time？什么会引发高steal time？多少才是警戒值（你需要做什么）？</p>
+<h3 id="CPU_Steal_Time_的定义">CPU Steal Time 的定义</h3><p>From <a href="ibm.com">ibm</a>:</p>
+<pre><code>Steal <span class="built_in">time</span> is <span class="operator">the</span> percentage <span class="operator">of</span> <span class="built_in">time</span> <span class="operator">a</span> virtual CPU waits <span class="keyword">for</span> <span class="operator">a</span> real CPU <span class="keyword">while</span> <span class="operator">the</span> hypervisor is servicing another virtual processor.
+</code></pre><p>你的虚拟机（VM）会与虚拟环境的宿主机上的多个虚拟机实例共享物理资源。其中之一共享的就是CPU时间切片。如果你的VM的物理机虚拟比是1/4， 那么它的CPU使用率不会限制于25%的CPU时间切片－它能够使用超过它设置的虚拟比。（有别于内存的使用，内存大小是严格控制的）。</p>
+<h3 id="哪里可以看到CPU_Steal_Time?">哪里可以看到CPU Steal Time?</h3><p>你可以使用Linux 的 TOP 命令来看到实时的一些性能指标。CPU相关的其中一行内容如下：<br><img src="https://dl.dropboxusercontent.com/u/468982/blog/steal/top_steal.png" alt="top"><br>两个你可能较为熟悉的是 %id(空闲 百分比) 和 %wa(I/O 等待 百分比)。 如果 %id 很低， 那么说明CPU的工作负载很大并且没有多少计算负载能力剩余。 如果 %wa 很高，则说明瓶 CPU 处于等待计算的状态，但是正在等待I/O活动的完成(类似 从数据库中获取存储在 磁盘上 的一行数据)。</p>
+<p>%st（percent steal time） 是CPU展示的最后一个性能指标。</p>
+<h3 id="CPU_Steal_Time_-_类比售票厅">CPU Steal Time - 类比售票厅</h3><p>假设你打算买了若干张最新的好莱坞大片的电影票，且有两条队伍等待买票和一个售票口：</p>
+<p><img src="https://dl.dropboxusercontent.com/u/468982/blog/steal/movie_line.png" alt="Movie Theater"></p>
+<p>如果我们把 CPU steal time 性能指标 类比成 售票的过程， 那么过程就是如下：</p>
+<ul>
+<li><p><strong>0% Steal Time</strong> - 现在是礼拜三下午场：售票口正在工作，先处理第一条队伍的电影观众，然后处理第二条，然后第一条，然后第二条，轮流进行。处理的很快，且没有人在等待。</p>
+</li>
+<li><p><strong>50% Steal Time</strong> - 现在是礼拜五晚上： 在队伍中的一个人有一半的时间需要等待另一个在售票口的人完成卖票，而不能立刻买到票。卖票的时间更长了。</p>
+</li>
+<li><p><strong>100% Steal Time</strong> - 现在是礼拜五晚上并且 现金出纳金 坏了：所有人都在等待。</p>
+</li>
+</ul>
+<h3 id="为什么高_Steal_Time_会对web应用有更大的影响">为什么高 Steal Time 会对web应用有更大的影响</h3><p>如果有你在负载未满的物理机器上面运行一个长时间的计算任务，那么它可能会使用超过它额定的CPU切片 时间。过一段时间，可能其他的VMs可能也会需要超过它们额定量的CPU切片 时间，所以这个任务的执行会变慢。对于长时间计算任务而言之，这个情况可能并不是不能接受的：它可能是会晚点一完成或者也可能更快的完成（由于它能够使用更多的资源）。</p>
+<p>然后，这种情况能够时代web应用停止响应。对于实时任务，类似快速响应许多的web请求，性能下降到1/4会对请求队列执行对应备选逻辑—中断请求。</p>
+<h3 id="Steal_Time远高于0的原因">Steal Time远高于0的原因</h3><p>这里有两种可能性：</p>
+<ol>
+<li><p>你需要一个额定更多CPU资源的虚拟机（你的虚拟机<strong>是</strong>问题）</p>
+</li>
+<li><p>物理机已经超卖了并且多个虚拟机之间在激烈的竞争资源（你的虚拟机<strong>不是</strong>问题）</p>
+</li>
+</ol>
+<p>提示：<strong>你不能通过看当前被影响的虚拟机实例的CPU性能指标来判断你所遇到的场景。（1 or 2）</strong> 当你有很多的虚拟宿主机上分别都部署了相同职责的服务程序（可能作为集群）时，就比较容易知道自己遇到的问题了。</p>
+<p><img src="https://dl.dropboxusercontent.com/u/468982/blog/steal/steal_scenarios.png" alt="资源图片"></p>
+<ul>
+<li><p>是否 %st(CPU Steal Time Percentage) 在所有机器上面都上涨了？</p>
+<p>  这个意味着你的虚拟机在使用更多的CPU资源。你需要为你的虚拟起增加更多的CPU资源的配额。</p>
+</li>
+<li><p>是否%st(CPU Steal Time Percentage) 只在一部分机器上面陡峭增长？</p>
+<p>  这个意味着物理机器被超卖了。把你自己的虚拟机挪到另一个物理机器去吧。</p>
+</li>
+</ul>
+<h3 id="所有，什么时候你应该担心？">所有，什么时候你应该担心？</h3><p>一般的参考标准-<strong>如果steal time 超过了10%并且持续了20分钟，那么虚拟机就可能性能下降了</strong></p>
+<p>当这种情况发生：</p>
+<ol>
+<li><p>关闭虚拟机并且挪到另一台物理机器上面</p>
+</li>
+<li><p>如果steal time维持在很高的数值， 那么增加CPU资源配额。</p>
+</li>
+<li><p>如果steal time维持在很高的数值， 联系你的虚拟机提供商。你的虚拟机提供商有可能在超卖物理机。</p>
+</li>
+</ol>
+<p><em>翻译自 <a href="http://blog.scoutapp.com/articles/2013/07/25/understanding-cpu-steal-time-when-should-you-be-worried" target="_blank" rel="external">这里</a></em></p>
+<p>公司的应用最近都已经迁移到自家的云计算平台上面了，所以也开始出现了无故Load飙升的情况，最后定位出来原因时虚拟机CPU资源竞争的情况。新知识Get！</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      
+        <a data-url="https://danieldingzju.github.io/2015/11/21/理解CPU-steal-time/" data-id="cj7n3ozio0005oebu0z7tjzzt" class="article-share-link" data-share="baidu" data-title="理解CPU steal time">分享到</a>
+      
+
+      
+
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Linux/">Linux</a></li></ul>
 
     </footer>
   </div>
@@ -1282,7 +1301,7 @@ signature polymorphic（MethodHandler）这个也是JDK7加入的，为了实现
   <div class="widget-wrap">
     <h3 class="widget-title">标签</h3>
     <div class="widget">
-      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/JAVA/">JAVA</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Java/">Java</a><span class="tag-list-count">9</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Life/">Life</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Linux/">Linux</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/problem/">problem</a><span class="tag-list-count">2</span></li></ul>
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Java/">Java</a><span class="tag-list-count">9</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Life/">Life</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Linux/">Linux</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/problem/">problem</a><span class="tag-list-count">2</span></li></ul>
     </div>
   </div>
 
@@ -1291,7 +1310,7 @@ signature polymorphic（MethodHandler）这个也是JDK7加入的，为了实现
   <div class="widget-wrap">
     <h3 class="widget-title">标签云</h3>
     <div class="widget tagcloud">
-      <a href="/tags/JAVA/" style="font-size: 10px;">JAVA</a><a href="/tags/Java/" style="font-size: 20px;">Java</a><a href="/tags/Life/" style="font-size: 10px;">Life</a><a href="/tags/Linux/" style="font-size: 15px;">Linux</a><a href="/tags/problem/" style="font-size: 15px;">problem</a>
+      <a href="/tags/Java/" style="font-size: 20px;">Java</a><a href="/tags/Life/" style="font-size: 10px;">Life</a><a href="/tags/Linux/" style="font-size: 15px;">Linux</a><a href="/tags/problem/" style="font-size: 15px;">problem</a>
     </div>
   </div>
 
@@ -1300,7 +1319,7 @@ signature polymorphic（MethodHandler）这个也是JDK7加入的，为了实现
   <div class="widget-wrap">
     <h3 class="widget-title">归档</h3>
     <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/12/">十二月 2016</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/09/">九月 2016</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/03/">三月 2016</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/02/">二月 2016</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/01/">一月 2016</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/12/">十二月 2015</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/11/">十一月 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/10/">十月 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/09/">九月 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/04/">四月 2015</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/03/">三月 2015</a><span class="archive-list-count">1</span></li></ul>
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/12/">十二月 2016</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/09/">九月 2016</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/02/">二月 2016</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/01/">一月 2016</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/12/">十二月 2015</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/11/">十一月 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/10/">十月 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/09/">九月 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/04/">四月 2015</a><span class="archive-list-count">2</span></li></ul>
     </div>
   </div>
 
@@ -1324,11 +1343,11 @@ signature polymorphic（MethodHandler）这个也是JDK7加入的，为了实现
           </li>
         
           <li>
-            <a href="/2016/03/14/hacking fastjson/">hacking fastjson</a>
+            <a href="/2016/02/19/性能优化-ClassLoader/">hacking fastjson</a>
           </li>
         
           <li>
-            <a href="/2016/02/19/性能优化-ClassLoader/">hacking fastjson</a>
+            <a href="/2016/01/29/开源tomcat类加载机制/">开源tomcat类加载机制</a>
           </li>
         
       </ul>

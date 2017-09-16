@@ -73,97 +73,6 @@
     <div class="outer">
       <section id="main">
   
-    <article id="post-理解CPU-steal-time" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2015/11/21/理解CPU-steal-time/" class="article-date">
-  <time datetime="2015-11-21T06:37:04.000Z" itemprop="datePublished">11月 21 2015</time>
-</a>
-    
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2015/11/21/理解CPU-steal-time/">理解CPU steal time</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>Netflix 很关注CPU的Steal Time。他们的策略是：如果是当前虚拟机的Steal Time 超过了你们设置的 阈值，他们会关闭这台虚拟机并且在另外一台物理机上面重启。</p>
-<p>如果你想要部署虚拟环境（例如：Amazon EC2）， steal time就是你想要关注的性能指标之一。 如果这个指标的数值很高，那么说明机器状态非常糟糕。什么是steal time？什么会引发高steal time？多少才是警戒值（你需要做什么）？</p>
-<h3 id="CPU_Steal_Time_的定义">CPU Steal Time 的定义</h3><p>From <a href="ibm.com">ibm</a>:</p>
-<pre><code>Steal <span class="built_in">time</span> is <span class="operator">the</span> percentage <span class="operator">of</span> <span class="built_in">time</span> <span class="operator">a</span> virtual CPU waits <span class="keyword">for</span> <span class="operator">a</span> real CPU <span class="keyword">while</span> <span class="operator">the</span> hypervisor is servicing another virtual processor.
-</code></pre><p>你的虚拟机（VM）会与虚拟环境的宿主机上的多个虚拟机实例共享物理资源。其中之一共享的就是CPU时间切片。如果你的VM的物理机虚拟比是1/4， 那么它的CPU使用率不会限制于25%的CPU时间切片－它能够使用超过它设置的虚拟比。（有别于内存的使用，内存大小是严格控制的）。</p>
-<h3 id="哪里可以看到CPU_Steal_Time?">哪里可以看到CPU Steal Time?</h3><p>你可以使用Linux 的 TOP 命令来看到实时的一些性能指标。CPU相关的其中一行内容如下：<br><img src="https://dl.dropboxusercontent.com/u/468982/blog/steal/top_steal.png" alt="top"><br>两个你可能较为熟悉的是 %id(空闲 百分比) 和 %wa(I/O 等待 百分比)。 如果 %id 很低， 那么说明CPU的工作负载很大并且没有多少计算负载能力剩余。 如果 %wa 很高，则说明瓶 CPU 处于等待计算的状态，但是正在等待I/O活动的完成(类似 从数据库中获取存储在 磁盘上 的一行数据)。</p>
-<p>%st（percent steal time） 是CPU展示的最后一个性能指标。</p>
-<h3 id="CPU_Steal_Time_-_类比售票厅">CPU Steal Time - 类比售票厅</h3><p>假设你打算买了若干张最新的好莱坞大片的电影票，且有两条队伍等待买票和一个售票口：</p>
-<p><img src="https://dl.dropboxusercontent.com/u/468982/blog/steal/movie_line.png" alt="Movie Theater"></p>
-<p>如果我们把 CPU steal time 性能指标 类比成 售票的过程， 那么过程就是如下：</p>
-<ul>
-<li><p><strong>0% Steal Time</strong> - 现在是礼拜三下午场：售票口正在工作，先处理第一条队伍的电影观众，然后处理第二条，然后第一条，然后第二条，轮流进行。处理的很快，且没有人在等待。</p>
-</li>
-<li><p><strong>50% Steal Time</strong> - 现在是礼拜五晚上： 在队伍中的一个人有一半的时间需要等待另一个在售票口的人完成卖票，而不能立刻买到票。卖票的时间更长了。</p>
-</li>
-<li><p><strong>100% Steal Time</strong> - 现在是礼拜五晚上并且 现金出纳金 坏了：所有人都在等待。</p>
-</li>
-</ul>
-<h3 id="为什么高_Steal_Time_会对web应用有更大的影响">为什么高 Steal Time 会对web应用有更大的影响</h3><p>如果有你在负载未满的物理机器上面运行一个长时间的计算任务，那么它可能会使用超过它额定的CPU切片 时间。过一段时间，可能其他的VMs可能也会需要超过它们额定量的CPU切片 时间，所以这个任务的执行会变慢。对于长时间计算任务而言之，这个情况可能并不是不能接受的：它可能是会晚点一完成或者也可能更快的完成（由于它能够使用更多的资源）。</p>
-<p>然后，这种情况能够时代web应用停止响应。对于实时任务，类似快速响应许多的web请求，性能下降到1/4会对请求队列执行对应备选逻辑—中断请求。</p>
-<h3 id="Steal_Time远高于0的原因">Steal Time远高于0的原因</h3><p>这里有两种可能性：</p>
-<ol>
-<li><p>你需要一个额定更多CPU资源的虚拟机（你的虚拟机<strong>是</strong>问题）</p>
-</li>
-<li><p>物理机已经超卖了并且多个虚拟机之间在激烈的竞争资源（你的虚拟机<strong>不是</strong>问题）</p>
-</li>
-</ol>
-<p>提示：<strong>你不能通过看当前被影响的虚拟机实例的CPU性能指标来判断你所遇到的场景。（1 or 2）</strong> 当你有很多的虚拟宿主机上分别都部署了相同职责的服务程序（可能作为集群）时，就比较容易知道自己遇到的问题了。</p>
-<p><img src="https://dl.dropboxusercontent.com/u/468982/blog/steal/steal_scenarios.png" alt="资源图片"></p>
-<ul>
-<li><p>是否 %st(CPU Steal Time Percentage) 在所有机器上面都上涨了？</p>
-<p>  这个意味着你的虚拟机在使用更多的CPU资源。你需要为你的虚拟起增加更多的CPU资源的配额。</p>
-</li>
-<li><p>是否%st(CPU Steal Time Percentage) 只在一部分机器上面陡峭增长？</p>
-<p>  这个意味着物理机器被超卖了。把你自己的虚拟机挪到另一个物理机器去吧。</p>
-</li>
-</ul>
-<h3 id="所有，什么时候你应该担心？">所有，什么时候你应该担心？</h3><p>一般的参考标准-<strong>如果steal time 超过了10%并且持续了20分钟，那么虚拟机就可能性能下降了</strong></p>
-<p>当这种情况发生：</p>
-<ol>
-<li><p>关闭虚拟机并且挪到另一台物理机器上面</p>
-</li>
-<li><p>如果steal time维持在很高的数值， 那么增加CPU资源配额。</p>
-</li>
-<li><p>如果steal time维持在很高的数值， 联系你的虚拟机提供商。你的虚拟机提供商有可能在超卖物理机。</p>
-</li>
-</ol>
-<p><em>翻译自 <a href="http://blog.scoutapp.com/articles/2013/07/25/understanding-cpu-steal-time-when-should-you-be-worried" target="_blank" rel="external">这里</a></em></p>
-<p>公司的应用最近都已经迁移到自家的云计算平台上面了，所以也开始出现了无故Load飙升的情况，最后定位出来原因时虚拟机CPU资源竞争的情况。新知识Get！</p>
-
-      
-    </div>
-    <footer class="article-footer">
-      
-        <a data-url="https://danieldingzju.github.io/2015/11/21/理解CPU-steal-time/" data-id="ciwhjx3s60005utbugpovlzy5" class="article-share-link" data-share="baidu" data-title="理解CPU steal time">分享到</a>
-      
-
-      
-
-      
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Linux/">Linux</a></li></ul>
-
-    </footer>
-  </div>
-  
-</article>
-
-
-  
     <article id="post-亲身经历icloud账号被黑事件" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
     <a href="/2015/10/06/亲身经历icloud账号被黑事件/" class="article-date">
@@ -211,7 +120,7 @@
     </div>
     <footer class="article-footer">
       
-        <a data-url="https://danieldingzju.github.io/2015/10/06/亲身经历icloud账号被黑事件/" data-id="ciwhjx3sd000futbuoiyicmen" class="article-share-link" data-share="baidu" data-title="亲身经历icloud账号被黑事件">分享到</a>
+        <a data-url="https://danieldingzju.github.io/2015/10/06/亲身经历icloud账号被黑事件/" data-id="cj7n3oziw000foebux1arjyku" class="article-share-link" data-share="baidu" data-title="亲身经历icloud账号被黑事件">分享到</a>
       
 
       
@@ -503,7 +412,7 @@ cacheManager.addCache(cache1Name);
     </div>
     <footer class="article-footer">
       
-        <a data-url="https://danieldingzju.github.io/2015/09/04/本地缓存组件选型/" data-id="ciwhjx3s80008utburszm908z" class="article-share-link" data-share="baidu" data-title="本地缓存组件选型">分享到</a>
+        <a data-url="https://danieldingzju.github.io/2015/09/04/本地缓存组件选型/" data-id="cj7n3oziq0008oebu17ey6zuf" class="article-share-link" data-share="baidu" data-title="本地缓存组件选型">分享到</a>
       
 
       
@@ -601,7 +510,7 @@ cacheManager.addCache(cache1Name);
     </div>
     <footer class="article-footer">
       
-        <a data-url="https://danieldingzju.github.io/2015/04/09/Dynamic-Bean/" data-id="ciwhjx3sv000wutbuf5ca091k" class="article-share-link" data-share="baidu" data-title="Dynamic Bean">分享到</a>
+        <a data-url="https://danieldingzju.github.io/2015/04/09/Dynamic-Bean/" data-id="cj7n3ozjf000yoebuw3ugqnlb" class="article-share-link" data-share="baidu" data-title="Dynamic Bean">分享到</a>
       
 
       
@@ -647,7 +556,7 @@ cacheManager.addCache(cache1Name);
     </div>
     <footer class="article-footer">
       
-        <a data-url="https://danieldingzju.github.io/2015/04/09/JavaBeans-TM/" data-id="ciwhjx3ss000sutbuocgpieth" class="article-share-link" data-share="baidu" data-title="JavaBeans(TM)">分享到</a>
+        <a data-url="https://danieldingzju.github.io/2015/04/09/JavaBeans-TM/" data-id="cj7n3ozjc000uoebuaxia682m" class="article-share-link" data-share="baidu" data-title="JavaBeans(TM)">分享到</a>
       
 
       
@@ -655,55 +564,6 @@ cacheManager.addCache(cache1Name);
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Java/">Java</a></li></ul>
 
-    </footer>
-  </div>
-  
-</article>
-
-
-  
-    <article id="post-hello-world" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2015/03/24/hello-world/" class="article-date">
-  <time datetime="2015-03-24T02:16:39.000Z" itemprop="datePublished">3月 24 2015</time>
-</a>
-    
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2015/03/24/hello-world/">Hello World</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>Welcome to <a href="http://hexo.io/" target="_blank" rel="external">Hexo</a>! This is your very first post. Check <a href="http://hexo.io/docs/" target="_blank" rel="external">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a href="http://hexo.io/docs/troubleshooting.html" target="_blank" rel="external">troubleshooting</a> or you can ask me on <a href="https://github.com/hexojs/hexo/issues" target="_blank" rel="external">GitHub</a>.</p>
-<h2 id="Quick_Start">Quick Start</h2><h3 id="Create_a_new_post">Create a new post</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo new <span class="string">"My New Post"</span></span><br></pre></td></tr></table></figure>
-<p>More info: <a href="http://hexo.io/docs/writing.html" target="_blank" rel="external">Writing</a></p>
-<h3 id="Run_server">Run server</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo server</span><br></pre></td></tr></table></figure>
-<p>More info: <a href="http://hexo.io/docs/server.html" target="_blank" rel="external">Server</a></p>
-<h3 id="Generate_static_files">Generate static files</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo generate</span><br></pre></td></tr></table></figure>
-<p>More info: <a href="http://hexo.io/docs/generating.html" target="_blank" rel="external">Generating</a></p>
-<h3 id="Deploy_to_remote_sites">Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure>
-<p>More info: <a href="http://hexo.io/docs/deployment.html" target="_blank" rel="external">Deployment</a></p>
-
-      
-    </div>
-    <footer class="article-footer">
-      
-        <a data-url="https://danieldingzju.github.io/2015/03/24/hello-world/" data-id="ciwhjx3sh000lutbuu62t41p9" class="article-share-link" data-share="baidu" data-title="Hello World">分享到</a>
-      
-
-      
-
-      
     </footer>
   </div>
   
@@ -726,7 +586,7 @@ cacheManager.addCache(cache1Name);
   <div class="widget-wrap">
     <h3 class="widget-title">标签</h3>
     <div class="widget">
-      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/JAVA/">JAVA</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Java/">Java</a><span class="tag-list-count">9</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Life/">Life</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Linux/">Linux</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/problem/">problem</a><span class="tag-list-count">2</span></li></ul>
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Java/">Java</a><span class="tag-list-count">9</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Life/">Life</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Linux/">Linux</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/problem/">problem</a><span class="tag-list-count">2</span></li></ul>
     </div>
   </div>
 
@@ -735,7 +595,7 @@ cacheManager.addCache(cache1Name);
   <div class="widget-wrap">
     <h3 class="widget-title">标签云</h3>
     <div class="widget tagcloud">
-      <a href="/tags/JAVA/" style="font-size: 10px;">JAVA</a><a href="/tags/Java/" style="font-size: 20px;">Java</a><a href="/tags/Life/" style="font-size: 10px;">Life</a><a href="/tags/Linux/" style="font-size: 15px;">Linux</a><a href="/tags/problem/" style="font-size: 15px;">problem</a>
+      <a href="/tags/Java/" style="font-size: 20px;">Java</a><a href="/tags/Life/" style="font-size: 10px;">Life</a><a href="/tags/Linux/" style="font-size: 15px;">Linux</a><a href="/tags/problem/" style="font-size: 15px;">problem</a>
     </div>
   </div>
 
@@ -744,7 +604,7 @@ cacheManager.addCache(cache1Name);
   <div class="widget-wrap">
     <h3 class="widget-title">归档</h3>
     <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/12/">十二月 2016</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/09/">九月 2016</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/03/">三月 2016</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/02/">二月 2016</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/01/">一月 2016</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/12/">十二月 2015</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/11/">十一月 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/10/">十月 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/09/">九月 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/04/">四月 2015</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/03/">三月 2015</a><span class="archive-list-count">1</span></li></ul>
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/12/">十二月 2016</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/09/">九月 2016</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/02/">二月 2016</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/01/">一月 2016</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/12/">十二月 2015</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/11/">十一月 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/10/">十月 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/09/">九月 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/04/">四月 2015</a><span class="archive-list-count">2</span></li></ul>
     </div>
   </div>
 
@@ -768,11 +628,11 @@ cacheManager.addCache(cache1Name);
           </li>
         
           <li>
-            <a href="/2016/03/14/hacking fastjson/">hacking fastjson</a>
+            <a href="/2016/02/19/性能优化-ClassLoader/">hacking fastjson</a>
           </li>
         
           <li>
-            <a href="/2016/02/19/性能优化-ClassLoader/">hacking fastjson</a>
+            <a href="/2016/01/29/开源tomcat类加载机制/">开源tomcat类加载机制</a>
           </li>
         
       </ul>

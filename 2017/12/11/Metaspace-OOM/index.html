@@ -4,17 +4,41 @@
 <head>
   <meta charset="utf-8">
   
-  <title>磐石</title>
+  <title>fastjson引发的oom事件 | 磐石</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="danielding&apos;s blog | java | bi">
-<meta property="og:type" content="website">
-<meta property="og:title" content="磐石">
-<meta property="og:url" content="https://danieldingzju.github.io/tags/problem/index.html">
+  <meta name="description" content="问题描述12月1日的时候 风控系统 线上出现 metaspace OOM
+
+排查过程
+查询了背景资料：hotspot 1.8 里面有了metaspace，且修改自定义classloader相关的class的回收机制。当自定义classloader被标记为可以回收的时候，相关的class才能被全部回收。
+
+由于 风控系统 使用了字节码生成动态class技术，所以初步判定为自定义classloader">
+<meta property="og:type" content="article">
+<meta property="og:title" content="fastjson引发的oom事件">
+<meta property="og:url" content="https://danieldingzju.github.io/2017/12/11/Metaspace-OOM/index.html">
 <meta property="og:site_name" content="磐石">
-<meta property="og:description" content="danielding&apos;s blog | java | bi">
+<meta property="og:description" content="问题描述12月1日的时候 风控系统 线上出现 metaspace OOM
+
+排查过程
+查询了背景资料：hotspot 1.8 里面有了metaspace，且修改自定义classloader相关的class的回收机制。当自定义classloader被标记为可以回收的时候，相关的class才能被全部回收。
+
+由于 风控系统 使用了字节码生成动态class技术，所以初步判定为自定义classloader">
+<meta property="og:image" content="http://tempwork.qiniudn.com/Metasapce_OOM_pic1.png">
+<meta property="og:image" content="http://tempwork.qiniudn.com/Metasapce_OOM_pic2.png">
+<meta property="og:image" content="http://tempwork.qiniudn.com/Metasapce_OOM_pic3.png">
+<meta property="og:image" content="http://tempwork.qiniudn.com/Metasapce_OOM_pic4.png">
+<meta property="og:image" content="http://tempwork.qiniudn.com/Metasapce_OOM_pic5.png">
+<meta property="og:image" content="http://tempwork.qiniudn.com/Metasapce_OOM_pic7.png">
+<meta property="og:image" content="http://tempwork.qiniudn.com/Metasapce_OOM_pic8.png">
+<meta property="og:image" content="http://tempwork.qiniudn.com/Metasapce_OOM_pic9.png">
+<meta property="og:image" content="http://tempwork.qiniudn.com/Metasapce_OOM_pic10.png">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="磐石">
-<meta name="twitter:description" content="danielding&apos;s blog | java | bi">
+<meta name="twitter:title" content="fastjson引发的oom事件">
+<meta name="twitter:description" content="问题描述12月1日的时候 风控系统 线上出现 metaspace OOM
+
+排查过程
+查询了背景资料：hotspot 1.8 里面有了metaspace，且修改自定义classloader相关的class的回收机制。当自定义classloader被标记为可以回收的时候，相关的class才能被全部回收。
+
+由于 风控系统 使用了字节码生成动态class技术，所以初步判定为自定义classloader">
   
     <link rel="alternative" href="/atom.xml" title="磐石" type="application/atom+xml">
   
@@ -71,58 +95,84 @@
   </div>
 </header>
     <div class="outer">
-      <section id="main">
-  
-  
-    
-    
-      
-      
-      <section class="archives-wrap">
-        <div class="archive-year-wrap">
-          <a href="/archives/2016" class="archive-year">2016</a>
-        </div>
-        <div class="archives">
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      <a href="/2016/12/09/hdfs-case-one/" class="archive-article-date">
-  <time datetime="2016-12-09T08:42:17.000Z" itemprop="datePublished">12月 9</time>
+      <section id="main"><article id="post-Metaspace-OOM" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2017/12/11/Metaspace-OOM/" class="article-date">
+  <time datetime="2017-12-11T08:30:00.000Z" itemprop="datePublished">12月 11 2017</time>
 </a>
-      
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
   
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2016/12/09/hdfs-case-one/">hdfs-case-one</a>
+    <h1 class="article-title" itemprop="name">
+      fastjson引发的oom事件
     </h1>
   
 
-    </header>
-  </div>
-</article>
-  
+      </header>
     
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      <a href="/2016/12/09/zeppelin-case-one/" class="archive-article-date">
-  <time datetime="2016-12-09T08:18:43.000Z" itemprop="datePublished">12月 9</time>
-</a>
+    <div class="article-entry" itemprop="articleBody">
       
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2016/12/09/zeppelin-case-one/">zeppelin-case-one</a>
-    </h1>
-  
+        <h3 id="问题描述">问题描述</h3><p>12月1日的时候 风控系统 线上出现 metaspace OOM</p>
+<hr>
+<h3 id="排查过程">排查过程</h3><ul>
+<li><p>查询了背景资料：hotspot 1.8 里面有了metaspace，且修改自定义classloader相关的class的回收机制。当自定义classloader被标记为可以回收的时候，相关的class才能被全部回收。</p>
+</li>
+<li><p>由于 风控系统 使用了字节码生成动态class技术，所以初步判定为自定义classloader造成了内存泄漏。</p>
+</li>
+<li><p>因为出现oom的情况下，java的vm参数设置的好，很容易就dump出heap，然后进行分析 </p>
+</li>
+<li><p>放到MAT使用 list object with incoming reference：<br><img src="http://tempwork.qiniudn.com/Metasapce_OOM_pic1.png" alt="pic1"><br>明确可以看到有很多的ClazzLoader对象。</p>
+</li>
+<li><p>找到任意一个实例，去掉weak，soft，phantom类型的reference，留下的如下：<br><img src="http://tempwork.qiniudn.com/Metasapce_OOM_pic2.png" alt="pic2"><br>判断为fastjson 引起的内存泄漏。</p>
+</li>
+<li><p>翻看代码查看哪里fastjson使用了func中的clazz对象：<br><img src="http://tempwork.qiniudn.com/Metasapce_OOM_pic3.png" alt="pic3"><br><img src="http://tempwork.qiniudn.com/Metasapce_OOM_pic4.png" alt="pic4"></p>
+</li>
+<li><p>竟然是Func执行成功的情况下的 debug的日志 导致了这个问题，虽然这个日志并没有打印出来（debug级别），但是java执行的时候在这里没有lazy的处理。 很巧合的引起了这个问题。</p>
+</li>
+</ul>
+<hr>
+<h3 id="验证复现问题：">验证复现问题：</h3><h4 id="使用fastjson的情况：">使用fastjson的情况：</h4><p><img src="http://tempwork.qiniudn.com/Metasapce_OOM_pic5.png" alt="pic5"></p>
+<ul>
+<li>通过分析heap可以发现相同的现象：<br><img src="http://tempwork.qiniudn.com/Metasapce_OOM_pic7.png" alt="pic7"><br><img src="http://tempwork.qiniudn.com/Metasapce_OOM_pic8.png" alt="pic8"><br><img src="http://tempwork.qiniudn.com/Metasapce_OOM_pic9.png" alt="pic9"></li>
+</ul>
+<h4 id="不使用fastjson的情况：">不使用fastjson的情况：</h4><p><img src="http://tempwork.qiniudn.com/Metasapce_OOM_pic10.png" alt="pic10"></p>
+<hr>
+<h3 id="结论">结论</h3><p>fastjson这个库对动态class文件的序列化是存在风险的。</p>
 
-    </header>
+      
+    </div>
+    <footer class="article-footer">
+      
+        <a data-url="https://danieldingzju.github.io/2017/12/11/Metaspace-OOM/" data-id="cjb1xsf35000qq0bu8uj39kuy" class="article-share-link" data-share="baidu" data-title="fastjson引发的oom事件">分享到</a>
+      
+
+      
+
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Java/">Java</a></li></ul>
+
+    </footer>
   </div>
+  
+    
+<nav id="article-nav">
+  
+  
+    <a href="/2016/12/09/hdfs-case-one/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">上一篇</strong>
+      <div class="article-nav-title">hdfs-case-one</div>
+    </a>
+  
+</nav>
+
+  
 </article>
-  
-  
-    </div></section>
-  
+
 </section>
       
       <aside id="sidebar">

@@ -1,50 +1,36 @@
 
 <!DOCTYPE html>
 <html>
-<head>
+<head><meta name="generator" content="Hexo 3.8.0">
   <meta charset="utf-8">
   
   <title>Dynamic Bean | 磐石</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="突然对一些基础类库的代码感了兴趣，于是最先看起了Apache的commons-beanutils这个包，然后顺藤摸瓜式的了解JavaBeans和Dynamic Bean相关的知识。
-common-beanutils-1.9.2此包主要功能如下：
-创建动态的JavaBean及相关的util类型代码。
-主要类的关系图如下：
-
-
-DynaClass, DynaProperty, DynaBean用来动态">
+  <meta name="description" content="突然对一些基础类库的代码感了兴趣，于是最先看起了Apache的commons-beanutils这个包，然后顺藤摸瓜式的了解JavaBeans和Dynamic Bean相关的知识。 common-beanutils-1.9.2此包主要功能如下： 创建动态的JavaBean及相关的util类型代码。 主要类的关系图如下：   DynaClass, DynaProperty, DynaBean用来动态">
+<meta name="keywords" content="Java">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Dynamic Bean">
 <meta property="og:url" content="https://danieldingzju.github.io/2015/04/09/Dynamic-Bean/index.html">
 <meta property="og:site_name" content="磐石">
-<meta property="og:description" content="突然对一些基础类库的代码感了兴趣，于是最先看起了Apache的commons-beanutils这个包，然后顺藤摸瓜式的了解JavaBeans和Dynamic Bean相关的知识。
-common-beanutils-1.9.2此包主要功能如下：
-创建动态的JavaBean及相关的util类型代码。
-主要类的关系图如下：
-
-
-DynaClass, DynaProperty, DynaBean用来动态">
+<meta property="og:description" content="突然对一些基础类库的代码感了兴趣，于是最先看起了Apache的commons-beanutils这个包，然后顺藤摸瓜式的了解JavaBeans和Dynamic Bean相关的知识。 common-beanutils-1.9.2此包主要功能如下： 创建动态的JavaBean及相关的util类型代码。 主要类的关系图如下：   DynaClass, DynaProperty, DynaBean用来动态">
+<meta property="og:locale" content="zh-CN">
 <meta property="og:image" content="http://tempwork.qiniudn.com/apache-beanutils-class-diagram.jpg">
+<meta property="og:updated_time" content="2016-01-19T03:53:04.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Dynamic Bean">
-<meta name="twitter:description" content="突然对一些基础类库的代码感了兴趣，于是最先看起了Apache的commons-beanutils这个包，然后顺藤摸瓜式的了解JavaBeans和Dynamic Bean相关的知识。
-common-beanutils-1.9.2此包主要功能如下：
-创建动态的JavaBean及相关的util类型代码。
-主要类的关系图如下：
-
-
-DynaClass, DynaProperty, DynaBean用来动态">
+<meta name="twitter:description" content="突然对一些基础类库的代码感了兴趣，于是最先看起了Apache的commons-beanutils这个包，然后顺藤摸瓜式的了解JavaBeans和Dynamic Bean相关的知识。 common-beanutils-1.9.2此包主要功能如下： 创建动态的JavaBean及相关的util类型代码。 主要类的关系图如下：   DynaClass, DynaProperty, DynaBean用来动态">
+<meta name="twitter:image" content="http://tempwork.qiniudn.com/apache-beanutils-class-diagram.jpg">
   
     <link rel="alternative" href="/atom.xml" title="磐石" type="application/atom+xml">
   
   
     <link rel="icon" href="/favicon.png">
   
-  <link rel="stylesheet" href="/css/style.css" type="text/css">
+  <link rel="stylesheet" href="/css/style.css">
   <link href="//fonts.useso.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
   <!--[if lt IE 9]><script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7/html5shiv.min.js"></script><![endif]-->
   
-</head>
+</head></html>
 <body>
 <div id="container">
   <div id="wrap">
@@ -80,9 +66,9 @@ DynaClass, DynaProperty, DynaBean用来动态">
         <form action="http://www.baidu.com/baidu" method="get" accept-charset="utf-8" class="search-form">
           <input type="search" name="word" maxlength="20" class="search-form-input" placeholder="Search">
           <input type="submit" value="" class="search-form-submit">
-          <input name=tn type=hidden value="bds">
-          <input name=cl type=hidden value="3">
-          <input name=ct type=hidden value="2097152">
+          <input name="tn" type="hidden" value="bds">
+          <input name="cl" type="hidden" value="3">
+          <input name="ct" type="hidden" value="2097152">
           <input type="hidden" name="si" value="danieldingzju.github.io">
         </form>
       </div>
@@ -90,7 +76,7 @@ DynaClass, DynaProperty, DynaBean用来动态">
   </div>
 </header>
     <div class="outer">
-      <section id="main"><article id="post-Dynamic-Bean" class="article article-type-post" itemscope itemprop="blogPost">
+      <section id="main"><article id="post-Dynamic-Bean" class="article article-type-post" itemscope="" itemprop="blogPost">
   <div class="article-meta">
     <a href="/2015/04/09/Dynamic-Bean/" class="article-date">
   <time datetime="2015-04-09T02:19:28.000Z" itemprop="datePublished">4月 9 2015</time>
@@ -123,7 +109,7 @@ DynaClass, DynaProperty, DynaBean用来动态">
 <li><p>BeanUtilsBean是单例, 包含拷贝属性，克隆bean等util方法。</p>
 </li>
 </ul>
-<p>举个<a href="http://www.javadb.com/simple-dynabean-example-apache-commons-beanutils/" title="beanutils实践例子" target="_blank" rel="external">栗子</a>：</p>
+<p>举个<a href="http://www.javadb.com/simple-dynabean-example-apache-commons-beanutils/" title="beanutils实践例子" target="_blank" rel="noopener">栗子</a>：</p>
 <pre><code><span class="preprocessor"><span class="keyword">import</span> org.apache.commons.beanutils.BasicDynaClass;</span>
 <span class="preprocessor"><span class="keyword">import</span> org.apache.commons.beanutils.DynaBean;</span>
 <span class="preprocessor"><span class="keyword">import</span> org.apache.commons.beanutils.DynaClass;</span>
@@ -165,15 +151,15 @@ DynaClass, DynaProperty, DynaBean用来动态">
     }
 }
 </code></pre><p>所以看着这个使用的方式感觉还是蛮有意思的，可以动态的生成自己想要的<em>“Java Bean”</em>。</p>
-<p>这个时候就开始好奇这个包会有什么问题呢？比如性能上面？然后就搜到了<a href="http://blog.athico.com/2006/11/just-say-no-to-dynabeans.html" title="反对使用beanutils包" target="_blank" rel="external">这个</a>。<strong>Drools</strong>很早就开始反对使用这种方式来构建<strong>Java Bean</strong>，理由很简单，系统兼容性不好，说这个包虽然实现的<strong>Dynamic Bean</strong>的功能，但是生成的DynaBean是不符合<strong>JavaBeans</strong>的规范的，将会引发一系列的代码兼容性的问题，所以不建议商业系统环境使用这个包—例如主流的ORM框架都只支持规范的<strong>JavaBeans</strong>。我们看代码可以发现<code>DynaBean</code>使用的是一个<code>Map&lt;String, DynaProperty&gt;</code>来存储属性的。</p>
+<p>这个时候就开始好奇这个包会有什么问题呢？比如性能上面？然后就搜到了<a href="http://blog.athico.com/2006/11/just-say-no-to-dynabeans.html" title="反对使用beanutils包" target="_blank" rel="noopener">这个</a>。<strong>Drools</strong>很早就开始反对使用这种方式来构建<strong>Java Bean</strong>，理由很简单，系统兼容性不好，说这个包虽然实现的<strong>Dynamic Bean</strong>的功能，但是生成的DynaBean是不符合<strong>JavaBeans</strong>的规范的，将会引发一系列的代码兼容性的问题，所以不建议商业系统环境使用这个包—例如主流的ORM框架都只支持规范的<strong>JavaBeans</strong>。我们看代码可以发现<code>DynaBean</code>使用的是一个<code>Map&lt;String, DynaProperty&gt;</code>来存储属性的。</p>
 <p>那么现在问题来了，什么是<strong>JavaBeans</strong> ?</p>
-<h3 id="JavaBean">JavaBean</h3><p>参阅<a href="http://download.oracle.com/otndocs/jcp/7224-javabeans-1.01-fr-spec-oth-JSpec/" target="_blank" rel="external">JavaBeans(TM) Specification</a>官方的文档，移步<a href="http://melody-dc.com/2015/04/09/JavaBeans-TM/" target="_blank" rel="external">解读大纲</a>。所以这个包是通过使用Introspection相关的类来实现<strong>Dynamic Bean</strong>，而不是构造符合<strong>JavaBeans</strong>规范的类.所以<strong>Drools</strong>就推荐使用了cglib来实现<strong>Dynamic Bean</strong>, 移步此<a href="http://sixlegs.com/blog/java/death-to-dynabeans.html" target="_blank" rel="external">参考</a>。</p>
+<h3 id="JavaBean">JavaBean</h3><p>参阅<a href="http://download.oracle.com/otndocs/jcp/7224-javabeans-1.01-fr-spec-oth-JSpec/" target="_blank" rel="noopener">JavaBeans(TM) Specification</a>官方的文档，移步<a href="http://melody-dc.com/2015/04/09/JavaBeans-TM/" target="_blank" rel="noopener">解读大纲</a>。所以这个包是通过使用Introspection相关的类来实现<strong>Dynamic Bean</strong>，而不是构造符合<strong>JavaBeans</strong>规范的类.所以<strong>Drools</strong>就推荐使用了cglib来实现<strong>Dynamic Bean</strong>, 移步此<a href="http://sixlegs.com/blog/java/death-to-dynabeans.html" target="_blank" rel="noopener">参考</a>。</p>
 
       
     </div>
     <footer class="article-footer">
       
-        <a data-url="https://danieldingzju.github.io/2015/04/09/Dynamic-Bean/" data-id="cjb1xsf39000wq0buxv3bfy9f" class="article-share-link" data-share="baidu" data-title="Dynamic Bean">分享到</a>
+        <a data-url="https://danieldingzju.github.io/2015/04/09/Dynamic-Bean/" data-id="cjrn8vykf0005nnbugo2bekuc" class="article-share-link" data-share="baidu" data-title="Dynamic Bean">分享到</a>
       
 
       
@@ -217,7 +203,7 @@ DynaClass, DynaProperty, DynaBean用来动态">
   <div class="widget-wrap">
     <h3 class="widget-title">标签</h3>
     <div class="widget">
-      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Java/">Java</a><span class="tag-list-count">10</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Life/">Life</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Linux/">Linux</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/problem/">problem</a><span class="tag-list-count">2</span></li></ul>
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Java/">Java</a><span class="tag-list-count">11</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Life/">Life</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Linux/">Linux</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/problem/">problem</a><span class="tag-list-count">2</span></li></ul>
     </div>
   </div>
 
@@ -226,7 +212,7 @@ DynaClass, DynaProperty, DynaBean用来动态">
   <div class="widget-wrap">
     <h3 class="widget-title">标签云</h3>
     <div class="widget tagcloud">
-      <a href="/tags/Java/" style="font-size: 20px;">Java</a><a href="/tags/Life/" style="font-size: 10px;">Life</a><a href="/tags/Linux/" style="font-size: 15px;">Linux</a><a href="/tags/problem/" style="font-size: 15px;">problem</a>
+      <a href="/tags/Java/" style="font-size: 20px;">Java</a> <a href="/tags/Life/" style="font-size: 10px;">Life</a> <a href="/tags/Linux/" style="font-size: 15px;">Linux</a> <a href="/tags/problem/" style="font-size: 15px;">problem</a>
     </div>
   </div>
 
@@ -235,7 +221,7 @@ DynaClass, DynaProperty, DynaBean用来动态">
   <div class="widget-wrap">
     <h3 class="widget-title">归档</h3>
     <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/12/">十二月 2017</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/12/">十二月 2016</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/09/">九月 2016</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/02/">二月 2016</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/01/">一月 2016</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/12/">十二月 2015</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/11/">十一月 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/10/">十月 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/09/">九月 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/04/">四月 2015</a><span class="archive-list-count">2</span></li></ul>
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/02/">二月 2019</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/12/">十二月 2017</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/12/">十二月 2016</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/09/">九月 2016</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/02/">二月 2016</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/01/">一月 2016</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/12/">十二月 2015</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/11/">十一月 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/10/">十月 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/09/">九月 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/04/">四月 2015</a><span class="archive-list-count">2</span></li></ul>
     </div>
   </div>
 
@@ -245,6 +231,10 @@ DynaClass, DynaProperty, DynaBean用来动态">
     <h3 class="widget-title">近期文章</h3>
     <div class="widget">
       <ul>
+        
+          <li>
+            <a href="/2019/02/02/LinkageError-排查过程/">LinkageError 排查过程</a>
+          </li>
         
           <li>
             <a href="/2017/12/11/Metaspace-OOM/">fastjson引发的oom事件</a>
@@ -260,10 +250,6 @@ DynaClass, DynaProperty, DynaBean用来动态">
         
           <li>
             <a href="/2016/09/27/hacking-phoenix/">hacking phoenix</a>
-          </li>
-        
-          <li>
-            <a href="/2016/02/19/性能优化-ClassLoader/">hacking fastjson</a>
           </li>
         
       </ul>
@@ -297,7 +283,7 @@ DynaClass, DynaProperty, DynaBean用来动态">
   
   <div class="outer">
     <div id="footer-info" class="inner">
-      &copy; 2017 danielding<br>
+      &copy; 2019 danielding<br>
       Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
       .
       Theme by <a href="https://github.com/xiangming/landscape-plus" target="_blank">Landscape-plus</a>
@@ -314,7 +300,7 @@ DynaClass, DynaProperty, DynaBean用来动态">
 </nav>
   <!-- totop start -->
 <div id="totop">
-<a title="返回顶部"><img src="/img/scrollup.png"/></a>
+<a title="返回顶部"><img src="/img/scrollup.png"></a>
 </div>
 
 <!-- totop end -->
@@ -391,7 +377,7 @@ MathJax.Hub.Queue(function() {
 </script>
 
 
-<script src="/js/script.js" type="text/javascript"></script>
+<script src="/js/script.js"></script>
 
 </div>
 </body>

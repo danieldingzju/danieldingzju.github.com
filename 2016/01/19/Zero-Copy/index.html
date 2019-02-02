@@ -1,41 +1,39 @@
 
 <!DOCTYPE html>
 <html>
-<head>
+<head><meta name="generator" content="Hexo 3.8.0">
   <meta charset="utf-8">
   
   <title>Zero Copy | 磐石</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="xflush，metaq都适用了zero copy技术来提高性能，多次看到这个词，却一直没有理解透彻，于是找了一些资料了解。以下此技术点知识的翻译及汇总。
-翻译自这里
-到目前为止几乎所有的人都听说过linux下的所谓的zero-copy，但是我还是经常碰到不能完全理解这个内容的人。 基于此，我打算写一些文章深挖，剖析一下这个有用的功能。在这个文章里面，我们从user-mode（用户模式）应用这个角">
+  <meta name="description" content="xflush，metaq都适用了zero copy技术来提高性能，多次看到这个词，却一直没有理解透彻，于是找了一些资料了解。以下此技术点知识的翻译及汇总。 翻译自这里 到目前为止几乎所有的人都听说过linux下的所谓的zero-copy，但是我还是经常碰到不能完全理解这个内容的人。 基于此，我打算写一些文章深挖，剖析一下这个有用的功能。在这个文章里面，我们从user-mode（用户模式）应用这个角">
+<meta name="keywords" content="Linux">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Zero Copy">
 <meta property="og:url" content="https://danieldingzju.github.io/2016/01/19/Zero-Copy/index.html">
 <meta property="og:site_name" content="磐石">
-<meta property="og:description" content="xflush，metaq都适用了zero copy技术来提高性能，多次看到这个词，却一直没有理解透彻，于是找了一些资料了解。以下此技术点知识的翻译及汇总。
-翻译自这里
-到目前为止几乎所有的人都听说过linux下的所谓的zero-copy，但是我还是经常碰到不能完全理解这个内容的人。 基于此，我打算写一些文章深挖，剖析一下这个有用的功能。在这个文章里面，我们从user-mode（用户模式）应用这个角">
+<meta property="og:description" content="xflush，metaq都适用了zero copy技术来提高性能，多次看到这个词，却一直没有理解透彻，于是找了一些资料了解。以下此技术点知识的翻译及汇总。 翻译自这里 到目前为止几乎所有的人都听说过linux下的所谓的zero-copy，但是我还是经常碰到不能完全理解这个内容的人。 基于此，我打算写一些文章深挖，剖析一下这个有用的功能。在这个文章里面，我们从user-mode（用户模式）应用这个角">
+<meta property="og:locale" content="zh-CN">
 <meta property="og:image" content="http://www.linuxjournal.com/files/linuxjournal.com/linuxjournal/articles/063/6345/6345f1.jpg">
 <meta property="og:image" content="http://www.linuxjournal.com/files/linuxjournal.com/linuxjournal/articles/063/6345/6345f2.jpg">
 <meta property="og:image" content="http://www.linuxjournal.com/files/linuxjournal.com/linuxjournal/articles/063/6345/6345f4.jpg">
 <meta property="og:image" content="http://www.linuxjournal.com/files/linuxjournal.com/linuxjournal/articles/063/6345/6345f4.jpg">
+<meta property="og:updated_time" content="2016-01-21T04:25:46.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Zero Copy">
-<meta name="twitter:description" content="xflush，metaq都适用了zero copy技术来提高性能，多次看到这个词，却一直没有理解透彻，于是找了一些资料了解。以下此技术点知识的翻译及汇总。
-翻译自这里
-到目前为止几乎所有的人都听说过linux下的所谓的zero-copy，但是我还是经常碰到不能完全理解这个内容的人。 基于此，我打算写一些文章深挖，剖析一下这个有用的功能。在这个文章里面，我们从user-mode（用户模式）应用这个角">
+<meta name="twitter:description" content="xflush，metaq都适用了zero copy技术来提高性能，多次看到这个词，却一直没有理解透彻，于是找了一些资料了解。以下此技术点知识的翻译及汇总。 翻译自这里 到目前为止几乎所有的人都听说过linux下的所谓的zero-copy，但是我还是经常碰到不能完全理解这个内容的人。 基于此，我打算写一些文章深挖，剖析一下这个有用的功能。在这个文章里面，我们从user-mode（用户模式）应用这个角">
+<meta name="twitter:image" content="http://www.linuxjournal.com/files/linuxjournal.com/linuxjournal/articles/063/6345/6345f1.jpg">
   
     <link rel="alternative" href="/atom.xml" title="磐石" type="application/atom+xml">
   
   
     <link rel="icon" href="/favicon.png">
   
-  <link rel="stylesheet" href="/css/style.css" type="text/css">
+  <link rel="stylesheet" href="/css/style.css">
   <link href="//fonts.useso.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
   <!--[if lt IE 9]><script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7/html5shiv.min.js"></script><![endif]-->
   
-</head>
+</head></html>
 <body>
 <div id="container">
   <div id="wrap">
@@ -71,9 +69,9 @@
         <form action="http://www.baidu.com/baidu" method="get" accept-charset="utf-8" class="search-form">
           <input type="search" name="word" maxlength="20" class="search-form-input" placeholder="Search">
           <input type="submit" value="" class="search-form-submit">
-          <input name=tn type=hidden value="bds">
-          <input name=cl type=hidden value="3">
-          <input name=ct type=hidden value="2097152">
+          <input name="tn" type="hidden" value="bds">
+          <input name="cl" type="hidden" value="3">
+          <input name="ct" type="hidden" value="2097152">
           <input type="hidden" name="si" value="danieldingzju.github.io">
         </form>
       </div>
@@ -81,7 +79,7 @@
   </div>
 </header>
     <div class="outer">
-      <section id="main"><article id="post-Zero-Copy" class="article article-type-post" itemscope itemprop="blogPost">
+      <section id="main"><article id="post-Zero-Copy" class="article article-type-post" itemscope="" itemprop="blogPost">
   <div class="article-meta">
     <a href="/2016/01/19/Zero-Copy/" class="article-date">
   <time datetime="2016-01-19T03:51:02.000Z" itemprop="datePublished">1月 19 2016</time>
@@ -104,7 +102,7 @@
     <div class="article-entry" itemprop="articleBody">
       
         <p>xflush，metaq都适用了zero copy技术来提高性能，多次看到这个词，却一直没有理解透彻，于是找了一些资料了解。以下此技术点知识的翻译及汇总。</p>
-<p>翻译自<a href="http://www.linuxjournal.com/article/6345" target="_blank" rel="external">这里</a></p>
+<p>翻译自<a href="http://www.linuxjournal.com/article/6345" target="_blank" rel="noopener">这里</a></p>
 <p>到目前为止几乎所有的人都听说过linux下的所谓的zero-copy，但是我还是经常碰到不能完全理解这个内容的人。 基于此，我打算写一些文章深挖，剖析一下这个有用的功能。在这个文章里面，我们从user-mode（用户模式）应用这个角度来看下zero copy， 所以更详尽的kernel-level（内核）细节会被有意的忽略。</p>
 <h4 id="What_is_Zero-Copy?">What is Zero-Copy?</h4><p>为了更好的理解一个问题的解决方案，我们首先需要的是理解问题本身。让我们了解下网络服务器进程（？network server dæmon ）为client端提供数据存储在文件中的服务的简单过程中包含了什么。一下是实例代码：</p>
 <pre><code><span class="keyword">read</span>(<span class="keyword">file</span>, tmp_buf, <span class="built_in">len</span>);
@@ -174,7 +172,7 @@
 </ul>
 <p>因为数据实际上仍然从disk复制到了memory并且之后从memory到了wire，有人可能会说这个不是真正的 zero copy。 之前所描述的是 操作系统角度 的zero copy，因为数据没有在kernel buffers之间被复制。当使用zero copy的时候，能得到除了避免数据复制之外的性能提升，例如更少的context switches，更少的CPU data cache pollution（cpu 数据缓存污染，不需要修改cpu的缓存内容？）和 no CPU checksum calculations（这个是什么？）</p>
 <h4 id="How_to_use_Zero-Copy?">How to use Zero-Copy?</h4><p>现在我们知道了什么是zero copy，让我们实践下理论并且写一些代码吧。</p>
-<p>C的代码参考<a href="http://www.linuxjournal.com/article/6345" target="_blank" rel="external">这里</a></p>
+<p>C的代码参考<a href="http://www.linuxjournal.com/article/6345" target="_blank" rel="noopener">这里</a></p>
 <p>以下为JAVA中如何完成zero copy，只要使用api：</p>
 <pre><code>java.nio.channel.FileChannel的transferTo(<span class="keyword">long</span> position, <span class="keyword">long</span> count, WritableByteChannel <span class="keyword">target</span>) <span class="keyword">throws</span> IOException;
 </code></pre><p>来自<a href="">参考</a>的性能数据：</p>
@@ -234,7 +232,7 @@
     </div>
     <footer class="article-footer">
       
-        <a data-url="https://danieldingzju.github.io/2016/01/19/Zero-Copy/" data-id="cjb1xsf33000oq0bume1z46ks" class="article-share-link" data-share="baidu" data-title="Zero Copy">分享到</a>
+        <a data-url="https://danieldingzju.github.io/2016/01/19/Zero-Copy/" data-id="cjrn8vykg0006nnbuhfvvnjql" class="article-share-link" data-share="baidu" data-title="Zero Copy">分享到</a>
       
 
       
@@ -278,7 +276,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">标签</h3>
     <div class="widget">
-      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Java/">Java</a><span class="tag-list-count">10</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Life/">Life</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Linux/">Linux</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/problem/">problem</a><span class="tag-list-count">2</span></li></ul>
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Java/">Java</a><span class="tag-list-count">11</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Life/">Life</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Linux/">Linux</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/problem/">problem</a><span class="tag-list-count">2</span></li></ul>
     </div>
   </div>
 
@@ -287,7 +285,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">标签云</h3>
     <div class="widget tagcloud">
-      <a href="/tags/Java/" style="font-size: 20px;">Java</a><a href="/tags/Life/" style="font-size: 10px;">Life</a><a href="/tags/Linux/" style="font-size: 15px;">Linux</a><a href="/tags/problem/" style="font-size: 15px;">problem</a>
+      <a href="/tags/Java/" style="font-size: 20px;">Java</a> <a href="/tags/Life/" style="font-size: 10px;">Life</a> <a href="/tags/Linux/" style="font-size: 15px;">Linux</a> <a href="/tags/problem/" style="font-size: 15px;">problem</a>
     </div>
   </div>
 
@@ -296,7 +294,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">归档</h3>
     <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/12/">十二月 2017</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/12/">十二月 2016</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/09/">九月 2016</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/02/">二月 2016</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/01/">一月 2016</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/12/">十二月 2015</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/11/">十一月 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/10/">十月 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/09/">九月 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/04/">四月 2015</a><span class="archive-list-count">2</span></li></ul>
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/02/">二月 2019</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/12/">十二月 2017</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/12/">十二月 2016</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/09/">九月 2016</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/02/">二月 2016</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/01/">一月 2016</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/12/">十二月 2015</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/11/">十一月 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/10/">十月 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/09/">九月 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/04/">四月 2015</a><span class="archive-list-count">2</span></li></ul>
     </div>
   </div>
 
@@ -306,6 +304,10 @@
     <h3 class="widget-title">近期文章</h3>
     <div class="widget">
       <ul>
+        
+          <li>
+            <a href="/2019/02/02/LinkageError-排查过程/">LinkageError 排查过程</a>
+          </li>
         
           <li>
             <a href="/2017/12/11/Metaspace-OOM/">fastjson引发的oom事件</a>
@@ -321,10 +323,6 @@
         
           <li>
             <a href="/2016/09/27/hacking-phoenix/">hacking phoenix</a>
-          </li>
-        
-          <li>
-            <a href="/2016/02/19/性能优化-ClassLoader/">hacking fastjson</a>
           </li>
         
       </ul>
@@ -358,7 +356,7 @@
   
   <div class="outer">
     <div id="footer-info" class="inner">
-      &copy; 2017 danielding<br>
+      &copy; 2019 danielding<br>
       Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
       .
       Theme by <a href="https://github.com/xiangming/landscape-plus" target="_blank">Landscape-plus</a>
@@ -375,7 +373,7 @@
 </nav>
   <!-- totop start -->
 <div id="totop">
-<a title="返回顶部"><img src="/img/scrollup.png"/></a>
+<a title="返回顶部"><img src="/img/scrollup.png"></a>
 </div>
 
 <!-- totop end -->
@@ -452,7 +450,7 @@ MathJax.Hub.Queue(function() {
 </script>
 
 
-<script src="/js/script.js" type="text/javascript"></script>
+<script src="/js/script.js"></script>
 
 </div>
 </body>

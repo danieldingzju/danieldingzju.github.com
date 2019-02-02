@@ -1,7 +1,7 @@
 
 <!DOCTYPE html>
 <html>
-<head>
+<head><meta name="generator" content="Hexo 3.8.0">
   <meta charset="utf-8">
   
   <title>磐石</title>
@@ -12,6 +12,7 @@
 <meta property="og:url" content="https://danieldingzju.github.io/index.html">
 <meta property="og:site_name" content="磐石">
 <meta property="og:description" content="danielding&apos;s blog | java | bi">
+<meta property="og:locale" content="zh-CN">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="磐石">
 <meta name="twitter:description" content="danielding&apos;s blog | java | bi">
@@ -21,11 +22,11 @@
   
     <link rel="icon" href="/favicon.png">
   
-  <link rel="stylesheet" href="/css/style.css" type="text/css">
+  <link rel="stylesheet" href="/css/style.css">
   <link href="//fonts.useso.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
   <!--[if lt IE 9]><script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7/html5shiv.min.js"></script><![endif]-->
   
-</head>
+</head></html>
 <body>
 <div id="container">
   <div id="wrap">
@@ -61,9 +62,9 @@
         <form action="http://www.baidu.com/baidu" method="get" accept-charset="utf-8" class="search-form">
           <input type="search" name="word" maxlength="20" class="search-form-input" placeholder="Search">
           <input type="submit" value="" class="search-form-submit">
-          <input name=tn type=hidden value="bds">
-          <input name=cl type=hidden value="3">
-          <input name=ct type=hidden value="2097152">
+          <input name="tn" type="hidden" value="bds">
+          <input name="cl" type="hidden" value="3">
+          <input name="ct" type="hidden" value="2097152">
           <input type="hidden" name="si" value="danieldingzju.github.io">
         </form>
       </div>
@@ -73,7 +74,74 @@
     <div class="outer">
       <section id="main">
   
-    <article id="post-Metaspace-OOM" class="article article-type-post" itemscope itemprop="blogPost">
+    <article id="post-LinkageError-排查过程" class="article article-type-post" itemscope="" itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2019/02/02/LinkageError-排查过程/" class="article-date">
+  <time datetime="2019-02-02T08:56:40.000Z" itemprop="datePublished">2月 2 2019</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2019/02/02/LinkageError-排查过程/">LinkageError 排查过程</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h3 id="问题">问题</h3><p>在部署loan-lending的分支进行测试进件的时候，发现了如下的报错：<br><img src="http://git.caimi-inc.com/asset-center/loan-lending/uploads/c938091ac041d341dcaab3e1f5dae400/image.png" alt="image"></p>
+<h3 id="分析过程">分析过程</h3><ol>
+<li>看着就像是ClassLoader找不到对应的类；但是这个类就是此应用的class文件，还不是引入的二，三方包，奇怪。</li>
+<li>在本地和k2上面都打印了对应的classLoader，看起来也都比较正常。3</li>
+<li><p>在本地重启，关闭了一些干扰功能和日志（特别是consumer），好好观察了下日志，发现每次出现问题之前一定会有一次这个错误：<br><img src="http://git.caimi-inc.com/asset-center/loan-lending/uploads/32d0ae8e2f28f442dccd9ebdbbdf8b4c/image.png" alt="image"></p>
+</li>
+<li><p>这个问题看着就像是包冲突了，那么解决netty的包冲突，去掉所有其他的netty包，留下了一个版本，然后重启，再次测试没有问题了！！</p>
+</li>
+</ol>
+<h3 id="推测">推测</h3><p>JVM在运行时加载类A的时候，如果类A的static 区域发送了LinkageError，那么这个A也会发生LinkageError。所以<strong>第一次报错是static区域中具体的LinkageError信息</strong>，<strong>第二次以及以后的报错都是A相关的LinkageError</strong>；如果是在线上不断的有日志打印，还有很多其他的混淆信息，很难发现<strong>有且仅有一次</strong>的报错；（因为正常排查逻辑都会去关注报错量较大的信息）。</p>
+<h3 id="实验证明">实验证明</h3><ol>
+<li><p>自己起了项目，在HttpIo中增加如下代码：<br><img src="http://git.caimi-inc.com/asset-center/loan-lending/uploads/693716a52c234a811ce5a7b14c28e224/image.png" alt="image"></p>
+</li>
+<li><p>testBean 嵌套 testBean2，<br><img src="http://git.caimi-inc.com/asset-center/loan-lending/uploads/1278333fe8f3958deebc91e80608d1ff/image.png" alt="image"></p>
+</li>
+</ol>
+<p><img src="http://git.caimi-inc.com/asset-center/loan-lending/uploads/cae9e58bf936965f9cf667f026d53fbb/image.png" alt="image"></p>
+<ol>
+<li><p>最外层的测试用例用反射调用testBean的test方法<br><img src="http://git.caimi-inc.com/asset-center/loan-lending/uploads/3b3317185d985f61846b3dd37a331cf5/image.png" alt="image"></p>
+</li>
+<li><p>用这个模拟了真实应用中prophetclient相关的调用过程，最终调用看如下日志：</p>
+</li>
+</ol>
+<p><img src="http://git.caimi-inc.com/asset-center/loan-lending/uploads/a9aa62f69160503140ff90519bf9f3ef/image.png" alt="image"></p>
+<h3 id="最终结论">最终结论</h3><p>最终推测成立：<br>&gt;<br>JVM在运行时加载类A的时候，如果类A的static 区域发送了LinkageError，那么这个A也会发生LinkageError。所以<strong>第一次报错是static区域中具体的LinkageError信息</strong>，<strong>第二次以及以后的报错都是A相关的LinkageError</strong>； </p>
+
+      
+    </div>
+    <footer class="article-footer">
+      
+        <a data-url="https://danieldingzju.github.io/2019/02/02/LinkageError-排查过程/" data-id="cjrn8vykb0002nnbuzx3uszch" class="article-share-link" data-share="baidu" data-title="LinkageError 排查过程">分享到</a>
+      
+
+      
+
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Java/">Java</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-Metaspace-OOM" class="article article-type-post" itemscope="" itemprop="blogPost">
   <div class="article-meta">
     <a href="/2017/12/11/Metaspace-OOM/" class="article-date">
   <time datetime="2017-12-11T08:30:00.000Z" itemprop="datePublished">12月 11 2017</time>
@@ -126,7 +194,7 @@
     </div>
     <footer class="article-footer">
       
-        <a data-url="https://danieldingzju.github.io/2017/12/11/Metaspace-OOM/" data-id="cjb1xsf35000qq0bu8uj39kuy" class="article-share-link" data-share="baidu" data-title="fastjson引发的oom事件">分享到</a>
+        <a data-url="https://danieldingzju.github.io/2017/12/11/Metaspace-OOM/" data-id="cjrn8vykl000cnnbu3p0s2pk9" class="article-share-link" data-share="baidu" data-title="fastjson引发的oom事件">分享到</a>
       
 
       
@@ -141,7 +209,7 @@
 
 
   
-    <article id="post-hdfs-case-one" class="article article-type-post" itemscope itemprop="blogPost">
+    <article id="post-hdfs-case-one" class="article article-type-post" itemscope="" itemprop="blogPost">
   <div class="article-meta">
     <a href="/2016/12/09/hdfs-case-one/" class="article-date">
   <time datetime="2016-12-09T08:42:17.000Z" itemprop="datePublished">12月 9 2016</time>
@@ -176,7 +244,7 @@
     </div>
     <footer class="article-footer">
       
-        <a data-url="https://danieldingzju.github.io/2016/12/09/hdfs-case-one/" data-id="cjb1xsf2y000kq0buf45e4gjg" class="article-share-link" data-share="baidu" data-title="hdfs-case-one">分享到</a>
+        <a data-url="https://danieldingzju.github.io/2016/12/09/hdfs-case-one/" data-id="cjrn8vykn000fnnbu7c8llcda" class="article-share-link" data-share="baidu" data-title="hdfs-case-one">分享到</a>
       
 
       
@@ -191,7 +259,7 @@
 
 
   
-    <article id="post-zeppelin-case-one" class="article article-type-post" itemscope itemprop="blogPost">
+    <article id="post-zeppelin-case-one" class="article article-type-post" itemscope="" itemprop="blogPost">
   <div class="article-meta">
     <a href="/2016/12/09/zeppelin-case-one/" class="article-date">
   <time datetime="2016-12-09T08:18:43.000Z" itemprop="datePublished">12月 9 2016</time>
@@ -252,7 +320,7 @@
     </div>
     <footer class="article-footer">
       
-        <a data-url="https://danieldingzju.github.io/2016/12/09/zeppelin-case-one/" data-id="cjb1xsf2u000hq0bucgwxczjy" class="article-share-link" data-share="baidu" data-title="zeppelin-case-one">分享到</a>
+        <a data-url="https://danieldingzju.github.io/2016/12/09/zeppelin-case-one/" data-id="cjrn8vykp000knnbuwfrhbsc0" class="article-share-link" data-share="baidu" data-title="zeppelin-case-one">分享到</a>
       
 
       
@@ -267,7 +335,7 @@
 
 
   
-    <article id="post-hacking-phoenix" class="article article-type-post" itemscope itemprop="blogPost">
+    <article id="post-hacking-phoenix" class="article article-type-post" itemscope="" itemprop="blogPost">
   <div class="article-meta">
     <a href="/2016/09/27/hacking-phoenix/" class="article-date">
   <time datetime="2016-09-27T11:51:50.000Z" itemprop="datePublished">9月 27 2016</time>
@@ -306,7 +374,7 @@
 </ol>
 <p>恩，到这里，逻辑已经串联起来了。</p>
 <hr>
-<h4 id="分析问题：">分析问题：</h4><p>PhoenixDriver 获取 connection 的时候可以使用方法 <code>Connection connect(String url, Properties info)</code>, info 按理是我们的自定义配置，但是实际却不能生效。<a href="https://phoenix.apache.org/tuning.html" target="_blank" rel="external">配置项参考</a></p>
+<h4 id="分析问题：">分析问题：</h4><p>PhoenixDriver 获取 connection 的时候可以使用方法 <code>Connection connect(String url, Properties info)</code>, info 按理是我们的自定义配置，但是实际却不能生效。<a href="https://phoenix.apache.org/tuning.html" target="_blank" rel="noopener">配置项参考</a></p>
 <p>但是我们发现 PhoenixDriver.getQueryServices() 创建了 QueryServicesImpl</p>
 <ol>
 <li>PhoenixEmbeddedDriver 定义了函数 <code>abstract public QueryServices getQueryServices() throws SQLException;</code> 参数列表竟然是空的！</li>
@@ -396,7 +464,7 @@ properties.setProperty(QueryServices.HCONNECTION_POOL_MAX_SIZE, <span class="str
     </div>
     <footer class="article-footer">
       
-        <a data-url="https://danieldingzju.github.io/2016/09/27/hacking-phoenix/" data-id="cjb1xsf31000mq0buosw97kzd" class="article-share-link" data-share="baidu" data-title="hacking phoenix">分享到</a>
+        <a data-url="https://danieldingzju.github.io/2016/09/27/hacking-phoenix/" data-id="cjrn8vyko000hnnbubyijvxfq" class="article-share-link" data-share="baidu" data-title="hacking phoenix">分享到</a>
       
 
       
@@ -411,7 +479,7 @@ properties.setProperty(QueryServices.HCONNECTION_POOL_MAX_SIZE, <span class="str
 
 
   
-    <article id="post-性能优化-ClassLoader" class="article article-type-post" itemscope itemprop="blogPost">
+    <article id="post-性能优化-ClassLoader" class="article article-type-post" itemscope="" itemprop="blogPost">
   <div class="article-meta">
     <a href="/2016/02/19/性能优化-ClassLoader/" class="article-date">
   <time datetime="2016-02-19T02:02:51.000Z" itemprop="datePublished">2月 19 2016</time>
@@ -563,7 +631,7 @@ echo
     </div>
     <footer class="article-footer">
       
-        <a data-url="https://danieldingzju.github.io/2016/02/19/性能优化-ClassLoader/" data-id="cjb1xsf2p000aq0buhdykstpx" class="article-share-link" data-share="baidu" data-title="hacking fastjson">分享到</a>
+        <a data-url="https://danieldingzju.github.io/2016/02/19/性能优化-ClassLoader/" data-id="cjrn8vyku000wnnbupt4s017a" class="article-share-link" data-share="baidu" data-title="hacking fastjson">分享到</a>
       
 
       
@@ -578,7 +646,7 @@ echo
 
 
   
-    <article id="post-开源tomcat类加载机制" class="article article-type-post" itemscope itemprop="blogPost">
+    <article id="post-开源tomcat类加载机制" class="article article-type-post" itemscope="" itemprop="blogPost">
   <div class="article-meta">
     <a href="/2016/01/29/开源tomcat类加载机制/" class="article-date">
   <time datetime="2016-01-29T08:56:44.000Z" itemprop="datePublished">1月 29 2016</time>
@@ -609,7 +677,7 @@ echo
     </div>
     <footer class="article-footer">
       
-        <a data-url="https://danieldingzju.github.io/2016/01/29/开源tomcat类加载机制/" data-id="cjb1xsf2q000cq0buudvc1lyk" class="article-share-link" data-share="baidu" data-title="开源tomcat类加载机制">分享到</a>
+        <a data-url="https://danieldingzju.github.io/2016/01/29/开源tomcat类加载机制/" data-id="cjrn8vykr000pnnbu5lgo42zo" class="article-share-link" data-share="baidu" data-title="开源tomcat类加载机制">分享到</a>
       
 
       
@@ -624,7 +692,7 @@ echo
 
 
   
-    <article id="post-ASM" class="article article-type-post" itemscope itemprop="blogPost">
+    <article id="post-ASM" class="article article-type-post" itemscope="" itemprop="blogPost">
   <div class="article-meta">
     <a href="/2016/01/28/ASM/" class="article-date">
   <time datetime="2016-01-28T07:22:34.000Z" itemprop="datePublished">1月 28 2016</time>
@@ -659,7 +727,7 @@ echo
 <p>  相关主要类：ClassNode, MethodNode</p>
 </li>
 </ul>
-<p>在<a href="file:///Users/tingjieding/Dropbox/See%20my%20life%20here/%E5%AD%A6%E4%B9%A0%E8%B5%84%E6%96%99/asm4-guide.pdf" target="_blank" rel="external">此文</a>中就拿了SAX 和 DOM 来描述解析xml的比较 来 类比 core API 和 tree API 的比较：</p>
+<p>在<a href="file:///Users/tingjieding/Dropbox/See%20my%20life%20here/%E5%AD%A6%E4%B9%A0%E8%B5%84%E6%96%99/asm4-guide.pdf" target="_blank" rel="noopener">此文</a>中就拿了SAX 和 DOM 来描述解析xml的比较 来 类比 core API 和 tree API 的比较：</p>
 <ul>
 <li><p>core API 比 tree API 占用更少的系统资源。从内存的角度看：tree API 由于要把字节码抽象成tree，在内存中会占用跟多的空间</p>
 </li>
@@ -708,7 +776,7 @@ cn.accept(c);
 //cr--&gt;cn--&gt;cw
 </code></pre></li>
 </ul>
-<p>PS：推荐在IDE上面安装<a href="https://plugins.jetbrains.com/plugin/5918?pr=idea" target="_blank" rel="external">ASM字节码工具</a>，在一个正常类里面写完代码以后，用工具一转，可以参考转出的字节码，开始写asm相关代码了。</p>
+<p>PS：推荐在IDE上面安装<a href="https://plugins.jetbrains.com/plugin/5918?pr=idea" target="_blank" rel="noopener">ASM字节码工具</a>，在一个正常类里面写完代码以后，用工具一转，可以参考转出的字节码，开始写asm相关代码了。</p>
 <h3 id="ASM其他">ASM其他</h3><h4 id="ASM_core_api">ASM core api</h4><ul>
 <li><p>TraceClassVisitor:</p>
 <p>  通过 <strong>PrintWriter</strong> 实例打印可读的字节码信息。</p>
@@ -733,7 +801,7 @@ cn.accept(c);
     </div>
     <footer class="article-footer">
       
-        <a data-url="https://danieldingzju.github.io/2016/01/28/ASM/" data-id="cjb1xsf3b000yq0bua6th6j02" class="article-share-link" data-share="baidu" data-title="ASM">分享到</a>
+        <a data-url="https://danieldingzju.github.io/2016/01/28/ASM/" data-id="cjrn8vyk70000nnbu02zo18pi" class="article-share-link" data-share="baidu" data-title="ASM">分享到</a>
       
 
       
@@ -748,7 +816,7 @@ cn.accept(c);
 
 
   
-    <article id="post-Zero-Copy" class="article article-type-post" itemscope itemprop="blogPost">
+    <article id="post-Zero-Copy" class="article article-type-post" itemscope="" itemprop="blogPost">
   <div class="article-meta">
     <a href="/2016/01/19/Zero-Copy/" class="article-date">
   <time datetime="2016-01-19T03:51:02.000Z" itemprop="datePublished">1月 19 2016</time>
@@ -771,7 +839,7 @@ cn.accept(c);
     <div class="article-entry" itemprop="articleBody">
       
         <p>xflush，metaq都适用了zero copy技术来提高性能，多次看到这个词，却一直没有理解透彻，于是找了一些资料了解。以下此技术点知识的翻译及汇总。</p>
-<p>翻译自<a href="http://www.linuxjournal.com/article/6345" target="_blank" rel="external">这里</a></p>
+<p>翻译自<a href="http://www.linuxjournal.com/article/6345" target="_blank" rel="noopener">这里</a></p>
 <p>到目前为止几乎所有的人都听说过linux下的所谓的zero-copy，但是我还是经常碰到不能完全理解这个内容的人。 基于此，我打算写一些文章深挖，剖析一下这个有用的功能。在这个文章里面，我们从user-mode（用户模式）应用这个角度来看下zero copy， 所以更详尽的kernel-level（内核）细节会被有意的忽略。</p>
 <h4 id="What_is_Zero-Copy?">What is Zero-Copy?</h4><p>为了更好的理解一个问题的解决方案，我们首先需要的是理解问题本身。让我们了解下网络服务器进程（？network server dæmon ）为client端提供数据存储在文件中的服务的简单过程中包含了什么。一下是实例代码：</p>
 <pre><code><span class="keyword">read</span>(<span class="keyword">file</span>, tmp_buf, <span class="built_in">len</span>);
@@ -841,7 +909,7 @@ cn.accept(c);
 </ul>
 <p>因为数据实际上仍然从disk复制到了memory并且之后从memory到了wire，有人可能会说这个不是真正的 zero copy。 之前所描述的是 操作系统角度 的zero copy，因为数据没有在kernel buffers之间被复制。当使用zero copy的时候，能得到除了避免数据复制之外的性能提升，例如更少的context switches，更少的CPU data cache pollution（cpu 数据缓存污染，不需要修改cpu的缓存内容？）和 no CPU checksum calculations（这个是什么？）</p>
 <h4 id="How_to_use_Zero-Copy?">How to use Zero-Copy?</h4><p>现在我们知道了什么是zero copy，让我们实践下理论并且写一些代码吧。</p>
-<p>C的代码参考<a href="http://www.linuxjournal.com/article/6345" target="_blank" rel="external">这里</a></p>
+<p>C的代码参考<a href="http://www.linuxjournal.com/article/6345" target="_blank" rel="noopener">这里</a></p>
 <p>以下为JAVA中如何完成zero copy，只要使用api：</p>
 <pre><code>java.nio.channel.FileChannel的transferTo(<span class="keyword">long</span> position, <span class="keyword">long</span> count, WritableByteChannel <span class="keyword">target</span>) <span class="keyword">throws</span> IOException;
 </code></pre><p>来自<a href="">参考</a>的性能数据：</p>
@@ -901,7 +969,7 @@ cn.accept(c);
     </div>
     <footer class="article-footer">
       
-        <a data-url="https://danieldingzju.github.io/2016/01/19/Zero-Copy/" data-id="cjb1xsf33000oq0bume1z46ks" class="article-share-link" data-share="baidu" data-title="Zero Copy">分享到</a>
+        <a data-url="https://danieldingzju.github.io/2016/01/19/Zero-Copy/" data-id="cjrn8vykg0006nnbuhfvvnjql" class="article-share-link" data-share="baidu" data-title="Zero Copy">分享到</a>
       
 
       
@@ -916,7 +984,7 @@ cn.accept(c);
 
 
   
-    <article id="post-认识java-agent" class="article article-type-post" itemscope itemprop="blogPost">
+    <article id="post-认识java-agent" class="article article-type-post" itemscope="" itemprop="blogPost">
   <div class="article-meta">
     <a href="/2015/12/26/认识java-agent/" class="article-date">
   <time datetime="2015-12-26T14:25:02.000Z" itemprop="datePublished">12月 26 2015</time>
@@ -986,7 +1054,7 @@ cn.accept(c);
 <span class="number">2.</span> 可以获得 A 中已经加载的所有的<span class="class"><span class="keyword">class</span>类。</span>
 <span class="number">3.</span> 可以添加 ClassFileTransformer 类来进行<span class="class"><span class="keyword">class</span>文件（字节码）的修改。</span>
     instrument.add
-</code></pre><p>更多请参考API。<a href="http://www.chinaxing.org/articles/Java/2014/09/25/2014-09-24-instrumentation.html" target="_blank" rel="external">这里</a>有一篇比较好的理解，强烈推荐。</p>
+</code></pre><p>更多请参考API。<a href="http://www.chinaxing.org/articles/Java/2014/09/25/2014-09-24-instrumentation.html" target="_blank" rel="noopener">这里</a>有一篇比较好的理解，强烈推荐。</p>
 <h6 id="实践经验">实践经验</h6><ul>
 <li><p>因为com.sun.tools.attach.VirtualMachine在tools.jar中，所以在（2）情况下要调用其attach和loadAgent的时候，需要在classpath中添加tools.jar。形如：</p>
 <pre><code>java -<span class="keyword">classpath</span> {JAVA_HOME}<span class="regexp">/lib/</span>tools.jar:myTransport.jar Transport
@@ -1014,241 +1082,7 @@ cn.accept(c);
     </div>
     <footer class="article-footer">
       
-        <a data-url="https://danieldingzju.github.io/2015/12/26/认识java-agent/" data-id="cjb1xsf2g0002q0bu27rlk1bk" class="article-share-link" data-share="baidu" data-title="认识java agent">分享到</a>
-      
-
-      
-
-      
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Java/">Java</a></li></ul>
-
-    </footer>
-  </div>
-  
-</article>
-
-
-  
-    <article id="post-JVMS7笔记" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2015/12/20/JVMS7笔记/" class="article-date">
-  <time datetime="2015-12-20T08:07:58.000Z" itemprop="datePublished">12月 20 2015</time>
-</a>
-    
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2015/12/20/JVMS7笔记/">JVMS7笔记</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>Structure of JVM</p>
-<hr>
-<p>DataTypes:</p>
-<ul>
-<li><p>primitive types </p>
-<ul>
-<li>Integral Types : int, long, short, char。</li>
-<li>Boolean Type : 计算的时候使用int。</li>
-<li>Floating-Point Types : float, double。</li>
-<li>the returnAddress Type : 开发不能直接使用。</li>
-</ul>
-</li>
-<li><p>reference types</p>
-<ul>
-<li>足够长来存储指针，长度一般与机器位数相同。</li>
-</ul>
-</li>
-</ul>
-<hr>
-<p>Runtime Data Areas:</p>
-<ul>
-<li><p>The <strong>pc</strong> Register</p>
-<p>  正常指向指令的地址。</p>
-<ul>
-<li>执行native方法的时候，pc是不存在值的。</li>
-</ul>
-</li>
-<li><p>Java Virtual Machine Stacks</p>
-<p>  每个线程都有自己的stack，stack存储了frames。</p>
-<ul>
-<li><p>frame</p>
-<p>  A frame is used to store data and partial results, as well as to perform dynamic linking, return values for methods, and dispatch exceptions.</p>
-<p>  A new frame is created each time a method is invoked. A frame is destroyed when its method invocation completes, whether that completion is normal or abrupt (it throws an uncaught exception). Frames are allocated from the Java virtual machine stack (§2.5.2) of the thread creating the frame. Each frame has its own array of local variables (§2.6.1), its own operand stack (§2.6.2), and a reference to the runtime constant pool (§2.5.5) of the class of the current method.</p>
-<ul>
-<li><p>Local Variables</p>
-<p>  一个local variable 占用一个word size；long，double占用两个word size，所以是两个local variable。 0 local variable 为被调用的method所在的object的reference（即this），方法的参数从1 local variable 开始连续 存储。</p>
-<pre><code>JVM 设计的word size 不同于 word（<span class="number">8</span> bits） <span class="keyword">in</span> computer science：
-
-The basic <span class="keyword">unit</span> <span class="keyword">of</span> size <span class="keyword">for</span> data values <span class="keyword">in</span> the Java <span class="keyword">virtual</span> machine <span class="keyword">is</span> the word--a fixed size chosen <span class="keyword">by</span> the designer <span class="keyword">of</span> <span class="keyword">each</span> Java <span class="keyword">virtual</span> machine <span class="keyword">implementation</span>. The word size must be large enough <span class="keyword">to</span> hold a value <span class="keyword">of</span> <span class="keyword">type</span> byte, short, int, char, float, returnAddress, <span class="keyword">or</span> <span class="keyword">reference</span>. Two words must be large enough <span class="keyword">to</span> hold a value <span class="keyword">of</span> <span class="keyword">type</span> long <span class="keyword">or</span> double. An <span class="keyword">implementation</span> designer must therefore choose a word size that <span class="keyword">is</span> at least <span class="number">32</span> bits, but otherwise can pick whatever word size will <span class="keyword">yield</span> the most efficient <span class="keyword">implementation</span>. The word size <span class="keyword">is</span> often chosen <span class="keyword">to</span> be the size <span class="keyword">of</span> a native pointer <span class="keyword">on</span> the host <span class="keyword">platform</span>.
-</code></pre></li>
-<li><p>Operand Stacks</p>
-<pre><code>Each frame (§<span class="number">2.6</span>) <span class="keyword">contains</span> a <span class="keyword">last</span>-<span class="keyword">in</span>-<span class="keyword">first</span>-out (LIFO) stack known <span class="keyword">as</span> <span class="keyword">its</span> operand stack.
-</code></pre></li>
-<li><p>Dynamic Linking</p>
-<pre><code><span class="type">The</span> class file code <span class="keyword">for</span> a <span class="keyword">method</span> refers to methods to be invoked <span class="keyword">and</span> variables to be accessed via symbolic references.
-</code></pre></li>
-<li><p>Special Methods</p>
-<pre><code>每一个construction都是&lt;init&gt;方法；每一个默认的Void 且没有参数的contruction是&lt;clinit&gt;方法。
-they are never invoked directly <span class="keyword">from</span> any Java <span class="keyword">virtual</span> machine instruction, but are invoked only indirectly <span class="keyword">as</span> part <span class="keyword">of</span> the <span class="keyword">class</span> initialization process.
-signature polymorphic（MethodHandler）这个也是JDK7加入的，为了实现JSR292，为在JVM上实现动态语言提供更多的支持。MethodHandle是JSR292的重要组成部分之一。invokevirtual 指令会对siglenature polymorphic <span class="function"><span class="keyword">method</span>（<span class="title">MethodHandler</span>以及子类）多特殊处理。</span>
-</code></pre></li>
-<li><p>Exception</p>
-<pre><code>同步异常（synchronous exception）抛出的方式：
-<span class="bullet">1. </span>athrow 指令的调用
-<span class="bullet">2. </span>JVM相关的Error，类loading，liking阶段相关的Exception，OutOfMemory，StackOverflow，RuntimeException的继承类等。
-异步异常（asynchronous exception）抛出的方式：
-<span class="bullet">1. </span>Thread或者ThreadGroup的stop方法被触发。
-<span class="bullet">2. </span>JVM内部的错误
-<span class="code">    JVM允许异步的异常抛出存在一定的延迟，在最适合的时候记性处理－－在这段延迟中，可以让JVM重排指令来优化代码和计算。（比较简单的实现方式是：在每条[control transfer instruction]执行的时候才去poll异步的异常。正是因为有这个保证，所以control transfer instruction之间的指令能够被JVM优化）</span>
-</code></pre><p>  在class文件中，excpetion handlers都存在table里面。</p>
-</li>
-</ul>
-</li>
-</ul>
-</li>
-<li><p>Heap</p>
-<p>  Heap的管理是通过automacic storage management system，JVMS的实现可以实现自己heap管理机制。</p>
-</li>
-<li><p>Method Area</p>
-<p>  It stores per-class structures such as the runtime constant pool, field and method data, and the code for methods and constructors, including the special methods (§2.9) used in class and instance initialization and interface initialization</p>
-<ul>
-<li><p>一般JVMS简单的实现是不会选择去处理Method Area的，但是这个版本的JVMS没有强制要求这么做。</p>
-</li>
-<li><p>Runtime Constant Pool</p>
-<pre><code>A runtime <span class="type">constant</span> pool <span class="keyword">is</span> a per-<span class="type">class</span> <span class="keyword">or</span> per-interface runtime representation <span class="keyword">of</span> <span class="keyword">the</span> constant_pool table <span class="keyword">in</span> a <span class="type">class</span> <span class="type">file</span> (§<span class="number">4.4</span>). It <span class="keyword">contains</span> several kinds <span class="keyword">of</span> constants, ranging <span class="keyword">from</span> numeric literals known <span class="keyword">at</span> compile-<span class="property">time</span> <span class="keyword">to</span> method <span class="keyword">and</span> field references <span class="keyword">that</span> must be resolved <span class="keyword">at</span> runtime. The runtime <span class="type">constant</span> pool serves a function similar <span class="keyword">to</span> <span class="keyword">that</span> <span class="keyword">of</span> a symbol table <span class="keyword">for</span> a conventional programming language, although <span class="keyword">it</span> <span class="keyword">contains</span> a wider range <span class="keyword">of</span> data than a typical symbol table.
-</code></pre></li>
-</ul>
-</li>
-</ul>
-<hr>
-<p>Instruction Summary:</p>
-<p>字节码指令流一般是按照字节排列的，只有lookupswitch &amp; tableswitch 比较特别。</p>
-<ul>
-<li><p>instructions with type info:</p>
-<p>  指令集里面有部分是可以之间看出类型，比如iadd表示可以计算int类型的数据，fadd表示计算float类型的的数据等。但是要每个指令都支持所有的类型，是不现实的，因为一个byte只有8位。所以最后char，boolean，short等的add指令都会被转换成int的计算（使用iadd）。</p>
-</li>
-<li><p>instructions regardless of type info:</p>
-<p>  指令集里面的类似push，pop，swap等是不带type信息的，只关心使用到的category of computational types。</p>
-<ul>
-<li><p>Category 1: </p>
-<p>  boolean, byte, char, short, int 的计算类型是 int； float计算类型位float；reference为reference；returnAddress为returnAddress；</p>
-</li>
-<li><p>Category 2: </p>
-<p>  long的计算类型为long， double计算类型为double，</p>
-</li>
-</ul>
-</li>
-<li><p>指令概览</p>
-<ul>
-<li><p>支持的类型widening指令（ i2l, i2f, i2d, l2f, l2d, and f2d）：</p>
-<ul>
-<li>int to long, float, or double</li>
-<li>long to float or double</li>
-<li>float to double</li>
-</ul>
-</li>
-<li><p>支持的narrowing指令（i2b, i2c, i2s, l2i, f2i, f2l, d2i, d2l, and d2f）：</p>
-<ul>
-<li>int to byte, short, or char</li>
-<li>long to int</li>
-<li>float to int or long</li>
-<li>double to int, long, or float</li>
-</ul>
-<p>类型转换过程中，会存在一定的信息丢失情况，具体需要具体翻看了解。</p>
-</li>
-<li><p>支持的 control transfer instruction 分为以下几类：</p>
-<ul>
-<li><p>conditional branch: </p>
-<p>  ifeq, ifne, iflt, ifle, ifgt, ifge, ifnull, ifnonnull, if_icmpeq, if_icmpne, if_icmplt, if_icmple, if_icmpgt if_icmpge, if_acmpeq, if_acmpne</p>
-</li>
-<li><p>compound conditional brach: </p>
-<p>  tableswitch, lookupswitch</p>
-</li>
-<li><p>unconditional brach: </p>
-<p>  goto, goto_w, jsr, jsr_w, ret</p>
-</li>
-</ul>
-</li>
-<li><p>5种方法调用指令：</p>
-<ul>
-<li>invokevirtual: 调用类实例的方法</li>
-<li>invokeinterface: ???</li>
-<li>invokespecial: init, private, super class的方法</li>
-<li>invokestatic: 调用类的方法</li>
-<li>invokedynamic: 关联到MethodHandle，看了相关的资料，暂时还没有领会其用途（？？？）</li>
-</ul>
-</li>
-<li><p>同步, 分为两类：</p>
-<ul>
-<li>method synchronization</li>
-<li><p>block synchronization</p>
-<p>moniterenter，moniterexit 这两个指令配合完成同步。</p>
-</li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-<hr>
-<h6 id="Compiling_for_JVM">Compiling for JVM</h6><p>tableswitch是switch 连续的int 和 lookupswitch是switch离散的int。排序过的switch key 效率更高；tableswitch效率比lookupswitch高。</p>
-<p>try-catch statements：</p>
-<pre><code>As a subtle point, note <span class="keyword">that</span> <span class="keyword">the</span> range <span class="keyword">of</span> a catch clause <span class="keyword">is</span> inclusive <span class="function_start"><span class="keyword">on</span></span> <span class="keyword">the</span> <span class="string">"from"</span> <span class="keyword">end</span> <span class="keyword">and</span> exclusive <span class="function_start"><span class="keyword">on</span></span> <span class="keyword">the</span> <span class="string">"to"</span> <span class="keyword">end</span>.
-</code></pre><p>A Java virtual machine implementation verifies that each class file satisfies the necessary constraints at linking time</p>
-<p>String.intern() 会找到runtime constant pool中相同字符串的引用地址</p>
-<p><strong>skip Class file format &amp; Verification of Class Files</strong></p>
-<hr>
-<h6 id="Loading,_Linking,_and_Initializing">Loading, Linking, and Initializing</h6><p>VM Start-up</p>
-<p>调用bootstrap classloader 加载 初始化类，然后加载main方法；一般jvm的实现都有 命令行参数 或者 提供 初始化参数的方式。</p>
-<p>Creation and Loading</p>
-<p>C代表一个interface or class;</p>
-<p>N代表internal name of C in JVM implementation;</p>
-<p>D触发了C的创建：D的runtime contant pool有C的引用 或者 D通过反射创建C</p>
-<p>A class loader L may create C by defining it directly or by delegating to another class loader. <strong>If L creates C directly, we say that L defines C or, equivalently, that L is the defining loader of C.</strong></p>
-<p>When one class loader delegates to another class loader, the loader that initiates the loading is not necessarily the same loader that completes the loading and defines the class. <strong>If L creates C, either by defining it directly or by delegation, we say that L initiates loading of C or, equivalently, that L is an initiating loader of C.</strong></p>
-<p>The Java virtual machine uses one of three procedures to create class or interface C denoted by N:</p>
-<ul>
-<li><p>If N denotes a nonarray class or an interface, one of the two following methods is used to load and thereby create C:</p>
-<ul>
-<li><p>If D was defined by the bootstrap class loader, then the bootstrap class loader initiates loading of C.</p>
-</li>
-<li><p>If D was defined by a user-defined class loader, then that same user-defined class loader initiates loading of C.</p>
-</li>
-</ul>
-</li>
-<li><p>Otherwise N denotes anarray class.An array class is created directly by the Java virtual machine, not by a class loader. However, the defining class loader of D is used in the process of creating array class C.</p>
-</li>
-</ul>
-<p>在loading的阶段出现异常，抛出LinkageError的继承类。</p>
-<p>&lt; $$$ N, L_d $$$ &gt; : N denotes the name of the class or interface and $$$ L_d $$$ denotes the defining loader of the class or interface.</p>
-<p>$$$ N^{L_i} $$$ : N denotes the name of the class or interface and $$$ L_i $$$ denotes an initiating loader of the class or interface.</p>
-<hr>
-<p>Linking:</p>
-<p>如果JVM在Verification or Resolution class C的时候抛出了ClassNotFoundException的时候，会被包装成NoClassDefFoundError.（Loading of superclass 是 Rsolution逻辑的一部分）</p>
-<ul>
-<li>Verification</li>
-<li>Prepare</li>
-<li>Resolusion: 这个可能在真正使用的时候（懒加载，invokedynamic指令）才会使用到；也有情况是直接使用。</li>
-</ul>
-<hr>
-<p>Initializing:</p>
-<p>ClassLoader.loadClass() 与 Class.forName()<br>ClassLoader.loadClass(String name, boolean resolve)，其中resolve默认为false，即只执行类装载的第一个阶段。</p>
-<p>Class.forName(String name, boolean initialize, ClassLoader loader)， 其中initialize默认为true，即执行到类装载的第三个阶段。</p>
-
-      
-    </div>
-    <footer class="article-footer">
-      
-        <a data-url="https://danieldingzju.github.io/2015/12/20/JVMS7笔记/" data-id="cjb1xsf38000uq0buhxyvsyp7" class="article-share-link" data-share="baidu" data-title="JVMS7笔记">分享到</a>
+        <a data-url="https://danieldingzju.github.io/2015/12/26/认识java-agent/" data-id="cjrn8vykv000znnbuvwrzap1s" class="article-share-link" data-share="baidu" data-title="认识java agent">分享到</a>
       
 
       
@@ -1278,7 +1112,7 @@ signature polymorphic（MethodHandler）这个也是JDK7加入的，为了实现
   <div class="widget-wrap">
     <h3 class="widget-title">标签</h3>
     <div class="widget">
-      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Java/">Java</a><span class="tag-list-count">10</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Life/">Life</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Linux/">Linux</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/problem/">problem</a><span class="tag-list-count">2</span></li></ul>
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Java/">Java</a><span class="tag-list-count">11</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Life/">Life</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Linux/">Linux</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/problem/">problem</a><span class="tag-list-count">2</span></li></ul>
     </div>
   </div>
 
@@ -1287,7 +1121,7 @@ signature polymorphic（MethodHandler）这个也是JDK7加入的，为了实现
   <div class="widget-wrap">
     <h3 class="widget-title">标签云</h3>
     <div class="widget tagcloud">
-      <a href="/tags/Java/" style="font-size: 20px;">Java</a><a href="/tags/Life/" style="font-size: 10px;">Life</a><a href="/tags/Linux/" style="font-size: 15px;">Linux</a><a href="/tags/problem/" style="font-size: 15px;">problem</a>
+      <a href="/tags/Java/" style="font-size: 20px;">Java</a> <a href="/tags/Life/" style="font-size: 10px;">Life</a> <a href="/tags/Linux/" style="font-size: 15px;">Linux</a> <a href="/tags/problem/" style="font-size: 15px;">problem</a>
     </div>
   </div>
 
@@ -1296,7 +1130,7 @@ signature polymorphic（MethodHandler）这个也是JDK7加入的，为了实现
   <div class="widget-wrap">
     <h3 class="widget-title">归档</h3>
     <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/12/">十二月 2017</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/12/">十二月 2016</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/09/">九月 2016</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/02/">二月 2016</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/01/">一月 2016</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/12/">十二月 2015</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/11/">十一月 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/10/">十月 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/09/">九月 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/04/">四月 2015</a><span class="archive-list-count">2</span></li></ul>
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/02/">二月 2019</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/12/">十二月 2017</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/12/">十二月 2016</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/09/">九月 2016</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/02/">二月 2016</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/01/">一月 2016</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/12/">十二月 2015</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/11/">十一月 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/10/">十月 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/09/">九月 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/04/">四月 2015</a><span class="archive-list-count">2</span></li></ul>
     </div>
   </div>
 
@@ -1306,6 +1140,10 @@ signature polymorphic（MethodHandler）这个也是JDK7加入的，为了实现
     <h3 class="widget-title">近期文章</h3>
     <div class="widget">
       <ul>
+        
+          <li>
+            <a href="/2019/02/02/LinkageError-排查过程/">LinkageError 排查过程</a>
+          </li>
         
           <li>
             <a href="/2017/12/11/Metaspace-OOM/">fastjson引发的oom事件</a>
@@ -1321,10 +1159,6 @@ signature polymorphic（MethodHandler）这个也是JDK7加入的，为了实现
         
           <li>
             <a href="/2016/09/27/hacking-phoenix/">hacking phoenix</a>
-          </li>
-        
-          <li>
-            <a href="/2016/02/19/性能优化-ClassLoader/">hacking fastjson</a>
           </li>
         
       </ul>
@@ -1358,7 +1192,7 @@ signature polymorphic（MethodHandler）这个也是JDK7加入的，为了实现
   
   <div class="outer">
     <div id="footer-info" class="inner">
-      &copy; 2017 danielding<br>
+      &copy; 2019 danielding<br>
       Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
       .
       Theme by <a href="https://github.com/xiangming/landscape-plus" target="_blank">Landscape-plus</a>
@@ -1375,7 +1209,7 @@ signature polymorphic（MethodHandler）这个也是JDK7加入的，为了实现
 </nav>
   <!-- totop start -->
 <div id="totop">
-<a title="返回顶部"><img src="/img/scrollup.png"/></a>
+<a title="返回顶部"><img src="/img/scrollup.png"></a>
 </div>
 
 <!-- totop end -->
@@ -1452,7 +1286,7 @@ MathJax.Hub.Queue(function() {
 </script>
 
 
-<script src="/js/script.js" type="text/javascript"></script>
+<script src="/js/script.js"></script>
 
 </div>
 </body>

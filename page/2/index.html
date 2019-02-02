@@ -1,7 +1,7 @@
 
 <!DOCTYPE html>
 <html>
-<head>
+<head><meta name="generator" content="Hexo 3.8.0">
   <meta charset="utf-8">
   
   <title>磐石</title>
@@ -12,6 +12,7 @@
 <meta property="og:url" content="https://danieldingzju.github.io/page/2/index.html">
 <meta property="og:site_name" content="磐石">
 <meta property="og:description" content="danielding&apos;s blog | java | bi">
+<meta property="og:locale" content="zh-CN">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="磐石">
 <meta name="twitter:description" content="danielding&apos;s blog | java | bi">
@@ -21,11 +22,11 @@
   
     <link rel="icon" href="/favicon.png">
   
-  <link rel="stylesheet" href="/css/style.css" type="text/css">
+  <link rel="stylesheet" href="/css/style.css">
   <link href="//fonts.useso.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
   <!--[if lt IE 9]><script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7/html5shiv.min.js"></script><![endif]-->
   
-</head>
+</head></html>
 <body>
 <div id="container">
   <div id="wrap">
@@ -61,9 +62,9 @@
         <form action="http://www.baidu.com/baidu" method="get" accept-charset="utf-8" class="search-form">
           <input type="search" name="word" maxlength="20" class="search-form-input" placeholder="Search">
           <input type="submit" value="" class="search-form-submit">
-          <input name=tn type=hidden value="bds">
-          <input name=cl type=hidden value="3">
-          <input name=ct type=hidden value="2097152">
+          <input name="tn" type="hidden" value="bds">
+          <input name="cl" type="hidden" value="3">
+          <input name="ct" type="hidden" value="2097152">
           <input type="hidden" name="si" value="danieldingzju.github.io">
         </form>
       </div>
@@ -73,7 +74,241 @@
     <div class="outer">
       <section id="main">
   
-    <article id="post-理解CPU-steal-time" class="article article-type-post" itemscope itemprop="blogPost">
+    <article id="post-JVMS7笔记" class="article article-type-post" itemscope="" itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2015/12/20/JVMS7笔记/" class="article-date">
+  <time datetime="2015-12-20T08:07:58.000Z" itemprop="datePublished">12月 20 2015</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2015/12/20/JVMS7笔记/">JVMS7笔记</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>Structure of JVM</p>
+<hr>
+<p>DataTypes:</p>
+<ul>
+<li><p>primitive types </p>
+<ul>
+<li>Integral Types : int, long, short, char。</li>
+<li>Boolean Type : 计算的时候使用int。</li>
+<li>Floating-Point Types : float, double。</li>
+<li>the returnAddress Type : 开发不能直接使用。</li>
+</ul>
+</li>
+<li><p>reference types</p>
+<ul>
+<li>足够长来存储指针，长度一般与机器位数相同。</li>
+</ul>
+</li>
+</ul>
+<hr>
+<p>Runtime Data Areas:</p>
+<ul>
+<li><p>The <strong>pc</strong> Register</p>
+<p>  正常指向指令的地址。</p>
+<ul>
+<li>执行native方法的时候，pc是不存在值的。</li>
+</ul>
+</li>
+<li><p>Java Virtual Machine Stacks</p>
+<p>  每个线程都有自己的stack，stack存储了frames。</p>
+<ul>
+<li><p>frame</p>
+<p>  A frame is used to store data and partial results, as well as to perform dynamic linking, return values for methods, and dispatch exceptions.</p>
+<p>  A new frame is created each time a method is invoked. A frame is destroyed when its method invocation completes, whether that completion is normal or abrupt (it throws an uncaught exception). Frames are allocated from the Java virtual machine stack (§2.5.2) of the thread creating the frame. Each frame has its own array of local variables (§2.6.1), its own operand stack (§2.6.2), and a reference to the runtime constant pool (§2.5.5) of the class of the current method.</p>
+<ul>
+<li><p>Local Variables</p>
+<p>  一个local variable 占用一个word size；long，double占用两个word size，所以是两个local variable。 0 local variable 为被调用的method所在的object的reference（即this），方法的参数从1 local variable 开始连续 存储。</p>
+<pre><code>JVM 设计的word size 不同于 word（<span class="number">8</span> bits） <span class="keyword">in</span> computer science：
+
+The basic <span class="keyword">unit</span> <span class="keyword">of</span> size <span class="keyword">for</span> data values <span class="keyword">in</span> the Java <span class="keyword">virtual</span> machine <span class="keyword">is</span> the word--a fixed size chosen <span class="keyword">by</span> the designer <span class="keyword">of</span> <span class="keyword">each</span> Java <span class="keyword">virtual</span> machine <span class="keyword">implementation</span>. The word size must be large enough <span class="keyword">to</span> hold a value <span class="keyword">of</span> <span class="keyword">type</span> byte, short, int, char, float, returnAddress, <span class="keyword">or</span> <span class="keyword">reference</span>. Two words must be large enough <span class="keyword">to</span> hold a value <span class="keyword">of</span> <span class="keyword">type</span> long <span class="keyword">or</span> double. An <span class="keyword">implementation</span> designer must therefore choose a word size that <span class="keyword">is</span> at least <span class="number">32</span> bits, but otherwise can pick whatever word size will <span class="keyword">yield</span> the most efficient <span class="keyword">implementation</span>. The word size <span class="keyword">is</span> often chosen <span class="keyword">to</span> be the size <span class="keyword">of</span> a native pointer <span class="keyword">on</span> the host <span class="keyword">platform</span>.
+</code></pre></li>
+<li><p>Operand Stacks</p>
+<pre><code>Each frame (§<span class="number">2.6</span>) <span class="keyword">contains</span> a <span class="keyword">last</span>-<span class="keyword">in</span>-<span class="keyword">first</span>-out (LIFO) stack known <span class="keyword">as</span> <span class="keyword">its</span> operand stack.
+</code></pre></li>
+<li><p>Dynamic Linking</p>
+<pre><code><span class="type">The</span> class file code <span class="keyword">for</span> a <span class="keyword">method</span> refers to methods to be invoked <span class="keyword">and</span> variables to be accessed via symbolic references.
+</code></pre></li>
+<li><p>Special Methods</p>
+<pre><code>每一个construction都是&lt;init&gt;方法；每一个默认的Void 且没有参数的contruction是&lt;clinit&gt;方法。
+they are never invoked directly <span class="keyword">from</span> any Java <span class="keyword">virtual</span> machine instruction, but are invoked only indirectly <span class="keyword">as</span> part <span class="keyword">of</span> the <span class="keyword">class</span> initialization process.
+signature polymorphic（MethodHandler）这个也是JDK7加入的，为了实现JSR292，为在JVM上实现动态语言提供更多的支持。MethodHandle是JSR292的重要组成部分之一。invokevirtual 指令会对siglenature polymorphic <span class="function"><span class="keyword">method</span>（<span class="title">MethodHandler</span>以及子类）多特殊处理。</span>
+</code></pre></li>
+<li><p>Exception</p>
+<pre><code>同步异常（synchronous exception）抛出的方式：
+<span class="bullet">1. </span>athrow 指令的调用
+<span class="bullet">2. </span>JVM相关的Error，类loading，liking阶段相关的Exception，OutOfMemory，StackOverflow，RuntimeException的继承类等。
+异步异常（asynchronous exception）抛出的方式：
+<span class="bullet">1. </span>Thread或者ThreadGroup的stop方法被触发。
+<span class="bullet">2. </span>JVM内部的错误
+<span class="code">    JVM允许异步的异常抛出存在一定的延迟，在最适合的时候记性处理－－在这段延迟中，可以让JVM重排指令来优化代码和计算。（比较简单的实现方式是：在每条[control transfer instruction]执行的时候才去poll异步的异常。正是因为有这个保证，所以control transfer instruction之间的指令能够被JVM优化）</span>
+</code></pre><p>  在class文件中，excpetion handlers都存在table里面。</p>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>Heap</p>
+<p>  Heap的管理是通过automacic storage management system，JVMS的实现可以实现自己heap管理机制。</p>
+</li>
+<li><p>Method Area</p>
+<p>  It stores per-class structures such as the runtime constant pool, field and method data, and the code for methods and constructors, including the special methods (§2.9) used in class and instance initialization and interface initialization</p>
+<ul>
+<li><p>一般JVMS简单的实现是不会选择去处理Method Area的，但是这个版本的JVMS没有强制要求这么做。</p>
+</li>
+<li><p>Runtime Constant Pool</p>
+<pre><code>A runtime <span class="type">constant</span> pool <span class="keyword">is</span> a per-<span class="type">class</span> <span class="keyword">or</span> per-interface runtime representation <span class="keyword">of</span> <span class="keyword">the</span> constant_pool table <span class="keyword">in</span> a <span class="type">class</span> <span class="type">file</span> (§<span class="number">4.4</span>). It <span class="keyword">contains</span> several kinds <span class="keyword">of</span> constants, ranging <span class="keyword">from</span> numeric literals known <span class="keyword">at</span> compile-<span class="property">time</span> <span class="keyword">to</span> method <span class="keyword">and</span> field references <span class="keyword">that</span> must be resolved <span class="keyword">at</span> runtime. The runtime <span class="type">constant</span> pool serves a function similar <span class="keyword">to</span> <span class="keyword">that</span> <span class="keyword">of</span> a symbol table <span class="keyword">for</span> a conventional programming language, although <span class="keyword">it</span> <span class="keyword">contains</span> a wider range <span class="keyword">of</span> data than a typical symbol table.
+</code></pre></li>
+</ul>
+</li>
+</ul>
+<hr>
+<p>Instruction Summary:</p>
+<p>字节码指令流一般是按照字节排列的，只有lookupswitch &amp; tableswitch 比较特别。</p>
+<ul>
+<li><p>instructions with type info:</p>
+<p>  指令集里面有部分是可以之间看出类型，比如iadd表示可以计算int类型的数据，fadd表示计算float类型的的数据等。但是要每个指令都支持所有的类型，是不现实的，因为一个byte只有8位。所以最后char，boolean，short等的add指令都会被转换成int的计算（使用iadd）。</p>
+</li>
+<li><p>instructions regardless of type info:</p>
+<p>  指令集里面的类似push，pop，swap等是不带type信息的，只关心使用到的category of computational types。</p>
+<ul>
+<li><p>Category 1: </p>
+<p>  boolean, byte, char, short, int 的计算类型是 int； float计算类型位float；reference为reference；returnAddress为returnAddress；</p>
+</li>
+<li><p>Category 2: </p>
+<p>  long的计算类型为long， double计算类型为double，</p>
+</li>
+</ul>
+</li>
+<li><p>指令概览</p>
+<ul>
+<li><p>支持的类型widening指令（ i2l, i2f, i2d, l2f, l2d, and f2d）：</p>
+<ul>
+<li>int to long, float, or double</li>
+<li>long to float or double</li>
+<li>float to double</li>
+</ul>
+</li>
+<li><p>支持的narrowing指令（i2b, i2c, i2s, l2i, f2i, f2l, d2i, d2l, and d2f）：</p>
+<ul>
+<li>int to byte, short, or char</li>
+<li>long to int</li>
+<li>float to int or long</li>
+<li>double to int, long, or float</li>
+</ul>
+<p>类型转换过程中，会存在一定的信息丢失情况，具体需要具体翻看了解。</p>
+</li>
+<li><p>支持的 control transfer instruction 分为以下几类：</p>
+<ul>
+<li><p>conditional branch: </p>
+<p>  ifeq, ifne, iflt, ifle, ifgt, ifge, ifnull, ifnonnull, if_icmpeq, if_icmpne, if_icmplt, if_icmple, if_icmpgt if_icmpge, if_acmpeq, if_acmpne</p>
+</li>
+<li><p>compound conditional brach: </p>
+<p>  tableswitch, lookupswitch</p>
+</li>
+<li><p>unconditional brach: </p>
+<p>  goto, goto_w, jsr, jsr_w, ret</p>
+</li>
+</ul>
+</li>
+<li><p>5种方法调用指令：</p>
+<ul>
+<li>invokevirtual: 调用类实例的方法</li>
+<li>invokeinterface: ???</li>
+<li>invokespecial: init, private, super class的方法</li>
+<li>invokestatic: 调用类的方法</li>
+<li>invokedynamic: 关联到MethodHandle，看了相关的资料，暂时还没有领会其用途（？？？）</li>
+</ul>
+</li>
+<li><p>同步, 分为两类：</p>
+<ul>
+<li>method synchronization</li>
+<li><p>block synchronization</p>
+<p>moniterenter，moniterexit 这两个指令配合完成同步。</p>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<hr>
+<h6 id="Compiling_for_JVM">Compiling for JVM</h6><p>tableswitch是switch 连续的int 和 lookupswitch是switch离散的int。排序过的switch key 效率更高；tableswitch效率比lookupswitch高。</p>
+<p>try-catch statements：</p>
+<pre><code>As a subtle point, note <span class="keyword">that</span> <span class="keyword">the</span> range <span class="keyword">of</span> a catch clause <span class="keyword">is</span> inclusive <span class="function_start"><span class="keyword">on</span></span> <span class="keyword">the</span> <span class="string">"from"</span> <span class="keyword">end</span> <span class="keyword">and</span> exclusive <span class="function_start"><span class="keyword">on</span></span> <span class="keyword">the</span> <span class="string">"to"</span> <span class="keyword">end</span>.
+</code></pre><p>A Java virtual machine implementation verifies that each class file satisfies the necessary constraints at linking time</p>
+<p>String.intern() 会找到runtime constant pool中相同字符串的引用地址</p>
+<p><strong>skip Class file format &amp; Verification of Class Files</strong></p>
+<hr>
+<h6 id="Loading,_Linking,_and_Initializing">Loading, Linking, and Initializing</h6><p>VM Start-up</p>
+<p>调用bootstrap classloader 加载 初始化类，然后加载main方法；一般jvm的实现都有 命令行参数 或者 提供 初始化参数的方式。</p>
+<p>Creation and Loading</p>
+<p>C代表一个interface or class;</p>
+<p>N代表internal name of C in JVM implementation;</p>
+<p>D触发了C的创建：D的runtime contant pool有C的引用 或者 D通过反射创建C</p>
+<p>A class loader L may create C by defining it directly or by delegating to another class loader. <strong>If L creates C directly, we say that L defines C or, equivalently, that L is the defining loader of C.</strong></p>
+<p>When one class loader delegates to another class loader, the loader that initiates the loading is not necessarily the same loader that completes the loading and defines the class. <strong>If L creates C, either by defining it directly or by delegation, we say that L initiates loading of C or, equivalently, that L is an initiating loader of C.</strong></p>
+<p>The Java virtual machine uses one of three procedures to create class or interface C denoted by N:</p>
+<ul>
+<li><p>If N denotes a nonarray class or an interface, one of the two following methods is used to load and thereby create C:</p>
+<ul>
+<li><p>If D was defined by the bootstrap class loader, then the bootstrap class loader initiates loading of C.</p>
+</li>
+<li><p>If D was defined by a user-defined class loader, then that same user-defined class loader initiates loading of C.</p>
+</li>
+</ul>
+</li>
+<li><p>Otherwise N denotes anarray class.An array class is created directly by the Java virtual machine, not by a class loader. However, the defining class loader of D is used in the process of creating array class C.</p>
+</li>
+</ul>
+<p>在loading的阶段出现异常，抛出LinkageError的继承类。</p>
+<p>&lt; $$$ N, L_d $$$ &gt; : N denotes the name of the class or interface and $$$ L_d $$$ denotes the defining loader of the class or interface.</p>
+<p>$$$ N^{L_i} $$$ : N denotes the name of the class or interface and $$$ L_i $$$ denotes an initiating loader of the class or interface.</p>
+<hr>
+<p>Linking:</p>
+<p>如果JVM在Verification or Resolution class C的时候抛出了ClassNotFoundException的时候，会被包装成NoClassDefFoundError.（Loading of superclass 是 Rsolution逻辑的一部分）</p>
+<ul>
+<li>Verification</li>
+<li>Prepare</li>
+<li>Resolusion: 这个可能在真正使用的时候（懒加载，invokedynamic指令）才会使用到；也有情况是直接使用。</li>
+</ul>
+<hr>
+<p>Initializing:</p>
+<p>ClassLoader.loadClass() 与 Class.forName()<br>ClassLoader.loadClass(String name, boolean resolve)，其中resolve默认为false，即只执行类装载的第一个阶段。</p>
+<p>Class.forName(String name, boolean initialize, ClassLoader loader)， 其中initialize默认为true，即执行到类装载的第三个阶段。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      
+        <a data-url="https://danieldingzju.github.io/2015/12/20/JVMS7笔记/" data-id="cjrn8vykh0007nnbucytq9742" class="article-share-link" data-share="baidu" data-title="JVMS7笔记">分享到</a>
+      
+
+      
+
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Java/">Java</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-理解CPU-steal-time" class="article article-type-post" itemscope="" itemprop="blogPost">
   <div class="article-meta">
     <a href="/2015/11/21/理解CPU-steal-time/" class="article-date">
   <time datetime="2015-11-21T06:37:04.000Z" itemprop="datePublished">11月 21 2015</time>
@@ -142,14 +377,14 @@
 <li><p>如果steal time维持在很高的数值， 联系你的虚拟机提供商。你的虚拟机提供商有可能在超卖物理机。</p>
 </li>
 </ol>
-<p><em>翻译自 <a href="http://blog.scoutapp.com/articles/2013/07/25/understanding-cpu-steal-time-when-should-you-be-worried" target="_blank" rel="external">这里</a></em></p>
+<p><em>翻译自 <a href="http://blog.scoutapp.com/articles/2013/07/25/understanding-cpu-steal-time-when-should-you-be-worried" target="_blank" rel="noopener">这里</a></em></p>
 <p>公司的应用最近都已经迁移到自家的云计算平台上面了，所以也开始出现了无故Load飙升的情况，最后定位出来原因时虚拟机CPU资源竞争的情况。新知识Get！</p>
 
       
     </div>
     <footer class="article-footer">
       
-        <a data-url="https://danieldingzju.github.io/2015/11/21/理解CPU-steal-time/" data-id="cjb1xsf2m0005q0bub902cxav" class="article-share-link" data-share="baidu" data-title="理解CPU steal time">分享到</a>
+        <a data-url="https://danieldingzju.github.io/2015/11/21/理解CPU-steal-time/" data-id="cjrn8vykt000unnbufu7y4ht2" class="article-share-link" data-share="baidu" data-title="理解CPU steal time">分享到</a>
       
 
       
@@ -164,7 +399,7 @@
 
 
   
-    <article id="post-亲身经历icloud账号被黑事件" class="article article-type-post" itemscope itemprop="blogPost">
+    <article id="post-亲身经历icloud账号被黑事件" class="article article-type-post" itemscope="" itemprop="blogPost">
   <div class="article-meta">
     <a href="/2015/10/06/亲身经历icloud账号被黑事件/" class="article-date">
   <time datetime="2015-10-06T02:04:00.000Z" itemprop="datePublished">10月 6 2015</time>
@@ -211,7 +446,7 @@
     </div>
     <footer class="article-footer">
       
-        <a data-url="https://danieldingzju.github.io/2015/10/06/亲身经历icloud账号被黑事件/" data-id="cjb1xsf2s000eq0bu6xekg0eq" class="article-share-link" data-share="baidu" data-title="亲身经历icloud账号被黑事件">分享到</a>
+        <a data-url="https://danieldingzju.github.io/2015/10/06/亲身经历icloud账号被黑事件/" data-id="cjrn8vykq000mnnbu1b2oh80v" class="article-share-link" data-share="baidu" data-title="亲身经历icloud账号被黑事件">分享到</a>
       
 
       
@@ -226,7 +461,7 @@
 
 
   
-    <article id="post-本地缓存组件选型" class="article article-type-post" itemscope itemprop="blogPost">
+    <article id="post-本地缓存组件选型" class="article article-type-post" itemscope="" itemprop="blogPost">
   <div class="article-meta">
     <a href="/2015/09/04/本地缓存组件选型/" class="article-date">
   <time datetime="2015-09-04T03:30:53.000Z" itemprop="datePublished">9月 4 2015</time>
@@ -503,7 +738,7 @@ cacheManager.addCache(cache1Name);
     </div>
     <footer class="article-footer">
       
-        <a data-url="https://danieldingzju.github.io/2015/09/04/本地缓存组件选型/" data-id="cjb1xsf2o0008q0buetujxqzc" class="article-share-link" data-share="baidu" data-title="本地缓存组件选型">分享到</a>
+        <a data-url="https://danieldingzju.github.io/2015/09/04/本地缓存组件选型/" data-id="cjrn8vyks000rnnbu3x7yu2ke" class="article-share-link" data-share="baidu" data-title="本地缓存组件选型">分享到</a>
       
 
       
@@ -518,7 +753,7 @@ cacheManager.addCache(cache1Name);
 
 
   
-    <article id="post-Dynamic-Bean" class="article article-type-post" itemscope itemprop="blogPost">
+    <article id="post-Dynamic-Bean" class="article article-type-post" itemscope="" itemprop="blogPost">
   <div class="article-meta">
     <a href="/2015/04/09/Dynamic-Bean/" class="article-date">
   <time datetime="2015-04-09T02:19:28.000Z" itemprop="datePublished">4月 9 2015</time>
@@ -551,7 +786,7 @@ cacheManager.addCache(cache1Name);
 <li><p>BeanUtilsBean是单例, 包含拷贝属性，克隆bean等util方法。</p>
 </li>
 </ul>
-<p>举个<a href="http://www.javadb.com/simple-dynabean-example-apache-commons-beanutils/" title="beanutils实践例子" target="_blank" rel="external">栗子</a>：</p>
+<p>举个<a href="http://www.javadb.com/simple-dynabean-example-apache-commons-beanutils/" title="beanutils实践例子" target="_blank" rel="noopener">栗子</a>：</p>
 <pre><code><span class="preprocessor"><span class="keyword">import</span> org.apache.commons.beanutils.BasicDynaClass;</span>
 <span class="preprocessor"><span class="keyword">import</span> org.apache.commons.beanutils.DynaBean;</span>
 <span class="preprocessor"><span class="keyword">import</span> org.apache.commons.beanutils.DynaClass;</span>
@@ -593,15 +828,15 @@ cacheManager.addCache(cache1Name);
     }
 }
 </code></pre><p>所以看着这个使用的方式感觉还是蛮有意思的，可以动态的生成自己想要的<em>“Java Bean”</em>。</p>
-<p>这个时候就开始好奇这个包会有什么问题呢？比如性能上面？然后就搜到了<a href="http://blog.athico.com/2006/11/just-say-no-to-dynabeans.html" title="反对使用beanutils包" target="_blank" rel="external">这个</a>。<strong>Drools</strong>很早就开始反对使用这种方式来构建<strong>Java Bean</strong>，理由很简单，系统兼容性不好，说这个包虽然实现的<strong>Dynamic Bean</strong>的功能，但是生成的DynaBean是不符合<strong>JavaBeans</strong>的规范的，将会引发一系列的代码兼容性的问题，所以不建议商业系统环境使用这个包—例如主流的ORM框架都只支持规范的<strong>JavaBeans</strong>。我们看代码可以发现<code>DynaBean</code>使用的是一个<code>Map&lt;String, DynaProperty&gt;</code>来存储属性的。</p>
+<p>这个时候就开始好奇这个包会有什么问题呢？比如性能上面？然后就搜到了<a href="http://blog.athico.com/2006/11/just-say-no-to-dynabeans.html" title="反对使用beanutils包" target="_blank" rel="noopener">这个</a>。<strong>Drools</strong>很早就开始反对使用这种方式来构建<strong>Java Bean</strong>，理由很简单，系统兼容性不好，说这个包虽然实现的<strong>Dynamic Bean</strong>的功能，但是生成的DynaBean是不符合<strong>JavaBeans</strong>的规范的，将会引发一系列的代码兼容性的问题，所以不建议商业系统环境使用这个包—例如主流的ORM框架都只支持规范的<strong>JavaBeans</strong>。我们看代码可以发现<code>DynaBean</code>使用的是一个<code>Map&lt;String, DynaProperty&gt;</code>来存储属性的。</p>
 <p>那么现在问题来了，什么是<strong>JavaBeans</strong> ?</p>
-<h3 id="JavaBean">JavaBean</h3><p>参阅<a href="http://download.oracle.com/otndocs/jcp/7224-javabeans-1.01-fr-spec-oth-JSpec/" target="_blank" rel="external">JavaBeans(TM) Specification</a>官方的文档，移步<a href="http://melody-dc.com/2015/04/09/JavaBeans-TM/" target="_blank" rel="external">解读大纲</a>。所以这个包是通过使用Introspection相关的类来实现<strong>Dynamic Bean</strong>，而不是构造符合<strong>JavaBeans</strong>规范的类.所以<strong>Drools</strong>就推荐使用了cglib来实现<strong>Dynamic Bean</strong>, 移步此<a href="http://sixlegs.com/blog/java/death-to-dynabeans.html" target="_blank" rel="external">参考</a>。</p>
+<h3 id="JavaBean">JavaBean</h3><p>参阅<a href="http://download.oracle.com/otndocs/jcp/7224-javabeans-1.01-fr-spec-oth-JSpec/" target="_blank" rel="noopener">JavaBeans(TM) Specification</a>官方的文档，移步<a href="http://melody-dc.com/2015/04/09/JavaBeans-TM/" target="_blank" rel="noopener">解读大纲</a>。所以这个包是通过使用Introspection相关的类来实现<strong>Dynamic Bean</strong>，而不是构造符合<strong>JavaBeans</strong>规范的类.所以<strong>Drools</strong>就推荐使用了cglib来实现<strong>Dynamic Bean</strong>, 移步此<a href="http://sixlegs.com/blog/java/death-to-dynabeans.html" target="_blank" rel="noopener">参考</a>。</p>
 
       
     </div>
     <footer class="article-footer">
       
-        <a data-url="https://danieldingzju.github.io/2015/04/09/Dynamic-Bean/" data-id="cjb1xsf39000wq0buxv3bfy9f" class="article-share-link" data-share="baidu" data-title="Dynamic Bean">分享到</a>
+        <a data-url="https://danieldingzju.github.io/2015/04/09/Dynamic-Bean/" data-id="cjrn8vykf0005nnbugo2bekuc" class="article-share-link" data-share="baidu" data-title="Dynamic Bean">分享到</a>
       
 
       
@@ -616,7 +851,7 @@ cacheManager.addCache(cache1Name);
 
 
   
-    <article id="post-JavaBeans-TM" class="article article-type-post" itemscope itemprop="blogPost">
+    <article id="post-JavaBeans-TM" class="article article-type-post" itemscope="" itemprop="blogPost">
   <div class="article-meta">
     <a href="/2015/04/09/JavaBeans-TM/" class="article-date">
   <time datetime="2015-04-09T02:12:55.000Z" itemprop="datePublished">4月 9 2015</time>
@@ -647,7 +882,7 @@ cacheManager.addCache(cache1Name);
     </div>
     <footer class="article-footer">
       
-        <a data-url="https://danieldingzju.github.io/2015/04/09/JavaBeans-TM/" data-id="cjb1xsf37000sq0buc3uxjw0p" class="article-share-link" data-share="baidu" data-title="JavaBeans(TM)">分享到</a>
+        <a data-url="https://danieldingzju.github.io/2015/04/09/JavaBeans-TM/" data-id="cjrn8vykk000annbua8r98il4" class="article-share-link" data-share="baidu" data-title="JavaBeans(TM)">分享到</a>
       
 
       
@@ -677,7 +912,7 @@ cacheManager.addCache(cache1Name);
   <div class="widget-wrap">
     <h3 class="widget-title">标签</h3>
     <div class="widget">
-      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Java/">Java</a><span class="tag-list-count">10</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Life/">Life</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Linux/">Linux</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/problem/">problem</a><span class="tag-list-count">2</span></li></ul>
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Java/">Java</a><span class="tag-list-count">11</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Life/">Life</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Linux/">Linux</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/problem/">problem</a><span class="tag-list-count">2</span></li></ul>
     </div>
   </div>
 
@@ -686,7 +921,7 @@ cacheManager.addCache(cache1Name);
   <div class="widget-wrap">
     <h3 class="widget-title">标签云</h3>
     <div class="widget tagcloud">
-      <a href="/tags/Java/" style="font-size: 20px;">Java</a><a href="/tags/Life/" style="font-size: 10px;">Life</a><a href="/tags/Linux/" style="font-size: 15px;">Linux</a><a href="/tags/problem/" style="font-size: 15px;">problem</a>
+      <a href="/tags/Java/" style="font-size: 20px;">Java</a> <a href="/tags/Life/" style="font-size: 10px;">Life</a> <a href="/tags/Linux/" style="font-size: 15px;">Linux</a> <a href="/tags/problem/" style="font-size: 15px;">problem</a>
     </div>
   </div>
 
@@ -695,7 +930,7 @@ cacheManager.addCache(cache1Name);
   <div class="widget-wrap">
     <h3 class="widget-title">归档</h3>
     <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/12/">十二月 2017</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/12/">十二月 2016</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/09/">九月 2016</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/02/">二月 2016</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/01/">一月 2016</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/12/">十二月 2015</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/11/">十一月 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/10/">十月 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/09/">九月 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/04/">四月 2015</a><span class="archive-list-count">2</span></li></ul>
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/02/">二月 2019</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/12/">十二月 2017</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/12/">十二月 2016</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/09/">九月 2016</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/02/">二月 2016</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/01/">一月 2016</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/12/">十二月 2015</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/11/">十一月 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/10/">十月 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/09/">九月 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/04/">四月 2015</a><span class="archive-list-count">2</span></li></ul>
     </div>
   </div>
 
@@ -705,6 +940,10 @@ cacheManager.addCache(cache1Name);
     <h3 class="widget-title">近期文章</h3>
     <div class="widget">
       <ul>
+        
+          <li>
+            <a href="/2019/02/02/LinkageError-排查过程/">LinkageError 排查过程</a>
+          </li>
         
           <li>
             <a href="/2017/12/11/Metaspace-OOM/">fastjson引发的oom事件</a>
@@ -720,10 +959,6 @@ cacheManager.addCache(cache1Name);
         
           <li>
             <a href="/2016/09/27/hacking-phoenix/">hacking phoenix</a>
-          </li>
-        
-          <li>
-            <a href="/2016/02/19/性能优化-ClassLoader/">hacking fastjson</a>
           </li>
         
       </ul>
@@ -757,7 +992,7 @@ cacheManager.addCache(cache1Name);
   
   <div class="outer">
     <div id="footer-info" class="inner">
-      &copy; 2017 danielding<br>
+      &copy; 2019 danielding<br>
       Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
       .
       Theme by <a href="https://github.com/xiangming/landscape-plus" target="_blank">Landscape-plus</a>
@@ -774,7 +1009,7 @@ cacheManager.addCache(cache1Name);
 </nav>
   <!-- totop start -->
 <div id="totop">
-<a title="返回顶部"><img src="/img/scrollup.png"/></a>
+<a title="返回顶部"><img src="/img/scrollup.png"></a>
 </div>
 
 <!-- totop end -->
@@ -851,7 +1086,7 @@ MathJax.Hub.Queue(function() {
 </script>
 
 
-<script src="/js/script.js" type="text/javascript"></script>
+<script src="/js/script.js"></script>
 
 </div>
 </body>

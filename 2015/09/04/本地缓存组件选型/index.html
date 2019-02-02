@@ -1,44 +1,36 @@
 
 <!DOCTYPE html>
 <html>
-<head>
+<head><meta name="generator" content="Hexo 3.8.0">
   <meta charset="utf-8">
   
   <title>本地缓存组件选型 | 磐石</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="需求： 记录系统执行数据，能持久化，容错。
-Guava官网就没有说有persistent的功能，直接略过。
-ehcache企业版需要缴费，然后持久化功能和保证重启可用的功能都需要缴费。
-看看开源版ehcache的是否可以满足，现状是：可以在只是DiskStore相关配置，让cache把内容序列化后直接overflow到文件。现在问题是：
-重启重启以后，是重新新建文件并覆盖同名文件—也就是之前同名c">
+  <meta name="description" content="需求： 记录系统执行数据，能持久化，容错。 Guava官网就没有说有persistent的功能，直接略过。 ehcache企业版需要缴费，然后持久化功能和保证重启可用的功能都需要缴费。 看看开源版ehcache的是否可以满足，现状是：可以在只是DiskStore相关配置，让cache把内容序列化后直接overflow到文件。现在问题是： 重启重启以后，是重新新建文件并覆盖同名文件—也就是之前同名c">
+<meta name="keywords" content="Java">
 <meta property="og:type" content="article">
 <meta property="og:title" content="本地缓存组件选型">
 <meta property="og:url" content="https://danieldingzju.github.io/2015/09/04/本地缓存组件选型/index.html">
 <meta property="og:site_name" content="磐石">
-<meta property="og:description" content="需求： 记录系统执行数据，能持久化，容错。
-Guava官网就没有说有persistent的功能，直接略过。
-ehcache企业版需要缴费，然后持久化功能和保证重启可用的功能都需要缴费。
-看看开源版ehcache的是否可以满足，现状是：可以在只是DiskStore相关配置，让cache把内容序列化后直接overflow到文件。现在问题是：
-重启重启以后，是重新新建文件并覆盖同名文件—也就是之前同名c">
+<meta property="og:description" content="需求： 记录系统执行数据，能持久化，容错。 Guava官网就没有说有persistent的功能，直接略过。 ehcache企业版需要缴费，然后持久化功能和保证重启可用的功能都需要缴费。 看看开源版ehcache的是否可以满足，现状是：可以在只是DiskStore相关配置，让cache把内容序列化后直接overflow到文件。现在问题是： 重启重启以后，是重新新建文件并覆盖同名文件—也就是之前同名c">
+<meta property="og:locale" content="zh-CN">
 <meta property="og:image" content="http://7oxfl2.com1.z0.glb.clouddn.com/思路.jpg">
+<meta property="og:updated_time" content="2016-01-19T03:53:15.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="本地缓存组件选型">
-<meta name="twitter:description" content="需求： 记录系统执行数据，能持久化，容错。
-Guava官网就没有说有persistent的功能，直接略过。
-ehcache企业版需要缴费，然后持久化功能和保证重启可用的功能都需要缴费。
-看看开源版ehcache的是否可以满足，现状是：可以在只是DiskStore相关配置，让cache把内容序列化后直接overflow到文件。现在问题是：
-重启重启以后，是重新新建文件并覆盖同名文件—也就是之前同名c">
+<meta name="twitter:description" content="需求： 记录系统执行数据，能持久化，容错。 Guava官网就没有说有persistent的功能，直接略过。 ehcache企业版需要缴费，然后持久化功能和保证重启可用的功能都需要缴费。 看看开源版ehcache的是否可以满足，现状是：可以在只是DiskStore相关配置，让cache把内容序列化后直接overflow到文件。现在问题是： 重启重启以后，是重新新建文件并覆盖同名文件—也就是之前同名c">
+<meta name="twitter:image" content="http://7oxfl2.com1.z0.glb.clouddn.com/思路.jpg">
   
     <link rel="alternative" href="/atom.xml" title="磐石" type="application/atom+xml">
   
   
     <link rel="icon" href="/favicon.png">
   
-  <link rel="stylesheet" href="/css/style.css" type="text/css">
+  <link rel="stylesheet" href="/css/style.css">
   <link href="//fonts.useso.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
   <!--[if lt IE 9]><script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7/html5shiv.min.js"></script><![endif]-->
   
-</head>
+</head></html>
 <body>
 <div id="container">
   <div id="wrap">
@@ -74,9 +66,9 @@ ehcache企业版需要缴费，然后持久化功能和保证重启可用的功�
         <form action="http://www.baidu.com/baidu" method="get" accept-charset="utf-8" class="search-form">
           <input type="search" name="word" maxlength="20" class="search-form-input" placeholder="Search">
           <input type="submit" value="" class="search-form-submit">
-          <input name=tn type=hidden value="bds">
-          <input name=cl type=hidden value="3">
-          <input name=ct type=hidden value="2097152">
+          <input name="tn" type="hidden" value="bds">
+          <input name="cl" type="hidden" value="3">
+          <input name="ct" type="hidden" value="2097152">
           <input type="hidden" name="si" value="danieldingzju.github.io">
         </form>
       </div>
@@ -84,7 +76,7 @@ ehcache企业版需要缴费，然后持久化功能和保证重启可用的功�
   </div>
 </header>
     <div class="outer">
-      <section id="main"><article id="post-本地缓存组件选型" class="article article-type-post" itemscope itemprop="blogPost">
+      <section id="main"><article id="post-本地缓存组件选型" class="article article-type-post" itemscope="" itemprop="blogPost">
   <div class="article-meta">
     <a href="/2015/09/04/本地缓存组件选型/" class="article-date">
   <time datetime="2015-09-04T03:30:53.000Z" itemprop="datePublished">9月 4 2015</time>
@@ -361,7 +353,7 @@ cacheManager.addCache(cache1Name);
     </div>
     <footer class="article-footer">
       
-        <a data-url="https://danieldingzju.github.io/2015/09/04/本地缓存组件选型/" data-id="cjb1xsf2o0008q0buetujxqzc" class="article-share-link" data-share="baidu" data-title="本地缓存组件选型">分享到</a>
+        <a data-url="https://danieldingzju.github.io/2015/09/04/本地缓存组件选型/" data-id="cjrn8vyks000rnnbu3x7yu2ke" class="article-share-link" data-share="baidu" data-title="本地缓存组件选型">分享到</a>
       
 
       
@@ -405,7 +397,7 @@ cacheManager.addCache(cache1Name);
   <div class="widget-wrap">
     <h3 class="widget-title">标签</h3>
     <div class="widget">
-      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Java/">Java</a><span class="tag-list-count">10</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Life/">Life</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Linux/">Linux</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/problem/">problem</a><span class="tag-list-count">2</span></li></ul>
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Java/">Java</a><span class="tag-list-count">11</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Life/">Life</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Linux/">Linux</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/problem/">problem</a><span class="tag-list-count">2</span></li></ul>
     </div>
   </div>
 
@@ -414,7 +406,7 @@ cacheManager.addCache(cache1Name);
   <div class="widget-wrap">
     <h3 class="widget-title">标签云</h3>
     <div class="widget tagcloud">
-      <a href="/tags/Java/" style="font-size: 20px;">Java</a><a href="/tags/Life/" style="font-size: 10px;">Life</a><a href="/tags/Linux/" style="font-size: 15px;">Linux</a><a href="/tags/problem/" style="font-size: 15px;">problem</a>
+      <a href="/tags/Java/" style="font-size: 20px;">Java</a> <a href="/tags/Life/" style="font-size: 10px;">Life</a> <a href="/tags/Linux/" style="font-size: 15px;">Linux</a> <a href="/tags/problem/" style="font-size: 15px;">problem</a>
     </div>
   </div>
 
@@ -423,7 +415,7 @@ cacheManager.addCache(cache1Name);
   <div class="widget-wrap">
     <h3 class="widget-title">归档</h3>
     <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/12/">十二月 2017</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/12/">十二月 2016</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/09/">九月 2016</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/02/">二月 2016</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/01/">一月 2016</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/12/">十二月 2015</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/11/">十一月 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/10/">十月 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/09/">九月 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/04/">四月 2015</a><span class="archive-list-count">2</span></li></ul>
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/02/">二月 2019</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/12/">十二月 2017</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/12/">十二月 2016</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/09/">九月 2016</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/02/">二月 2016</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/01/">一月 2016</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/12/">十二月 2015</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/11/">十一月 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/10/">十月 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/09/">九月 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/04/">四月 2015</a><span class="archive-list-count">2</span></li></ul>
     </div>
   </div>
 
@@ -433,6 +425,10 @@ cacheManager.addCache(cache1Name);
     <h3 class="widget-title">近期文章</h3>
     <div class="widget">
       <ul>
+        
+          <li>
+            <a href="/2019/02/02/LinkageError-排查过程/">LinkageError 排查过程</a>
+          </li>
         
           <li>
             <a href="/2017/12/11/Metaspace-OOM/">fastjson引发的oom事件</a>
@@ -448,10 +444,6 @@ cacheManager.addCache(cache1Name);
         
           <li>
             <a href="/2016/09/27/hacking-phoenix/">hacking phoenix</a>
-          </li>
-        
-          <li>
-            <a href="/2016/02/19/性能优化-ClassLoader/">hacking fastjson</a>
           </li>
         
       </ul>
@@ -485,7 +477,7 @@ cacheManager.addCache(cache1Name);
   
   <div class="outer">
     <div id="footer-info" class="inner">
-      &copy; 2017 danielding<br>
+      &copy; 2019 danielding<br>
       Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
       .
       Theme by <a href="https://github.com/xiangming/landscape-plus" target="_blank">Landscape-plus</a>
@@ -502,7 +494,7 @@ cacheManager.addCache(cache1Name);
 </nav>
   <!-- totop start -->
 <div id="totop">
-<a title="返回顶部"><img src="/img/scrollup.png"/></a>
+<a title="返回顶部"><img src="/img/scrollup.png"></a>
 </div>
 
 <!-- totop end -->
@@ -579,7 +571,7 @@ MathJax.Hub.Queue(function() {
 </script>
 
 
-<script src="/js/script.js" type="text/javascript"></script>
+<script src="/js/script.js"></script>
 
 </div>
 </body>

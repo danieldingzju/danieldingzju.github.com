@@ -14,13 +14,13 @@
 <meta property="og:site_name" content="磐石">
 <meta property="og:description" content="因为微服务使用了springboot，并且用使用了phoenix 来读写Hbase，应用经常超过1000的线程数量。  分析 stack：自己管理了400个线程的线程池，phoenix-1-thread 有128个，HConnection的线程有256个，再加上一些tomcat的http线程，轻松就能到1000个线程。 略多，希望把phoenix和HConnection相关线程干掉。官方文档没有提">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:image" content="http://tempwork.qiniudn.com/Snip20160926_118.png">
-<meta property="og:image" content="http://tempwork.qiniudn.com/Snip20160926_119.png">
-<meta property="og:updated_time" content="2016-09-27T11:58:56.000Z">
+<meta property="og:image" content="https://danieldingzju.github.io/2016/09/27/hacking-phoenix/images/Snip20160926_118.png">
+<meta property="og:image" content="https://danieldingzju.github.io/2016/09/27/hacking-phoenix/images/Snip20160926_119.png">
+<meta property="og:updated_time" content="2019-02-11T05:07:16.783Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="hacking phoenix">
 <meta name="twitter:description" content="因为微服务使用了springboot，并且用使用了phoenix 来读写Hbase，应用经常超过1000的线程数量。  分析 stack：自己管理了400个线程的线程池，phoenix-1-thread 有128个，HConnection的线程有256个，再加上一些tomcat的http线程，轻松就能到1000个线程。 略多，希望把phoenix和HConnection相关线程干掉。官方文档没有提">
-<meta name="twitter:image" content="http://tempwork.qiniudn.com/Snip20160926_118.png">
+<meta name="twitter:image" content="https://danieldingzju.github.io/2016/09/27/hacking-phoenix/images/Snip20160926_118.png">
   
     <link rel="alternative" href="/atom.xml" title="磐石" type="application/atom+xml">
   
@@ -107,7 +107,7 @@
 <hr>
 <h4 id="解剖代码：">解剖代码：</h4><ol>
 <li><p>JobManager 创建了 <code>phoenix-{index}-thread</code> ，JobManager 初始化是由<code>QueryServicesImpl</code>完成的(使用了<code>QueryServicesOptions</code>)</p>
-<p> <img src="http://tempwork.qiniudn.com/Snip20160926_118.png" alt="图片"></p>
+<p> <img src="images/Snip20160926_118.png" alt="图片"></p>
 </li>
 <li><p>JobManager.JobCallable 被 <code>ServerCacheClient</code> 使用。</p>
 </li>
@@ -122,7 +122,7 @@
 <li>PhoenixEmbeddedDriver 定义了函数 <code>abstract public QueryServices getQueryServices() throws SQLException;</code> 参数列表竟然是空的！</li>
 <li><code>QueryServicesImpl</code>使用了一个默认的参数配置！</li>
 </ol>
-<p><img src="http://tempwork.qiniudn.com/Snip20160926_119.png" alt="图片"></p>
+<p><img src="images/Snip20160926_119.png" alt="图片"></p>
 <hr>
 <h4 id="第一次尝试：">第一次尝试：</h4><p>所以修改 <code>PhoenixEmbeddedDriver</code> 定义 ， <code>PhoenixDriver</code> 的实现：</p>
 <ol>
@@ -206,7 +206,7 @@ properties.setProperty(QueryServices.HCONNECTION_POOL_MAX_SIZE, <span class="str
     </div>
     <footer class="article-footer">
       
-        <a data-url="https://danieldingzju.github.io/2016/09/27/hacking-phoenix/" data-id="cjrn8vyko000hnnbubyijvxfq" class="article-share-link" data-share="baidu" data-title="hacking phoenix">分享到</a>
+        <a data-url="https://danieldingzju.github.io/2016/09/27/hacking-phoenix/" data-id="cjrzykoun000dlabugzpapcfn" class="article-share-link" data-share="baidu" data-title="hacking phoenix">分享到</a>
       
 
       

@@ -14,12 +14,12 @@
 <meta property="og:site_name" content="磐石">
 <meta property="og:description" content="使用 java agent 横向收集一些日志，在上线老应用servicemanager的时候，cpu和load飙升。 第一次尝试先用了这个脚本跑了下获取cpu最高的几个线程对应的jstack（此脚本适用于由固定生命周期长的线程引起的cpu飙升）： #!/bin/bash  JAVA_HOME=&quot;/opt/taobao/java&quot; PID=$(${JAVA_HOME}/bin/jps | grep">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:image" content="http://tempwork.qiniudn.com/fastjson_current_problem.png">
-<meta property="og:updated_time" content="2017-09-16T09:28:24.000Z">
+<meta property="og:image" content="https://danieldingzju.github.io/2016/02/19/性能优化-ClassLoader/images/fastjson_current_problem.png">
+<meta property="og:updated_time" content="2019-02-11T05:04:56.187Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="hacking fastjson">
 <meta name="twitter:description" content="使用 java agent 横向收集一些日志，在上线老应用servicemanager的时候，cpu和load飙升。 第一次尝试先用了这个脚本跑了下获取cpu最高的几个线程对应的jstack（此脚本适用于由固定生命周期长的线程引起的cpu飙升）： #!/bin/bash  JAVA_HOME=&quot;/opt/taobao/java&quot; PID=$(${JAVA_HOME}/bin/jps | grep">
-<meta name="twitter:image" content="http://tempwork.qiniudn.com/fastjson_current_problem.png">
+<meta name="twitter:image" content="https://danieldingzju.github.io/2016/02/19/性能优化-ClassLoader/images/fastjson_current_problem.png">
   
     <link rel="alternative" href="/atom.xml" title="磐石" type="application/atom+xml">
   
@@ -213,7 +213,7 @@ bash ./call.<span class="keyword">sh</span>
 <span class="keyword">rm</span> ./call.<span class="keyword">sh</span>
 <span class="keyword">cd</span> -
 echo
-</code></pre><p>获得栈信息如下：<br><img src="http://tempwork.qiniudn.com/fastjson_current_problem.png" alt="fastjson"></p>
+</code></pre><p>获得栈信息如下：<br><img src="images/fastjson_current_problem.png" alt="fastjson"></p>
 <p>然后翻翻代码意识到了JDK6 ClassLoader里面使用了大量的<strong>synchronized</strong>。</p>
 <p>主要性能问题来源于两个原因：</p>
 <ol>
@@ -228,7 +228,7 @@ echo
     </div>
     <footer class="article-footer">
       
-        <a data-url="https://danieldingzju.github.io/2016/02/19/性能优化-ClassLoader/" data-id="cjrn8vyku000wnnbupt4s017a" class="article-share-link" data-share="baidu" data-title="hacking fastjson">分享到</a>
+        <a data-url="https://danieldingzju.github.io/2016/02/19/性能优化-ClassLoader/" data-id="cjrzykoux000slabuk14q01le" class="article-share-link" data-share="baidu" data-title="hacking fastjson">分享到</a>
       
 
       

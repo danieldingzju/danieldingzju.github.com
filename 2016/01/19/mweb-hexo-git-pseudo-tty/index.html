@@ -4,18 +4,24 @@
 <head><meta name="generator" content="Hexo 3.8.0">
   <meta charset="utf-8">
   
-  <title>Tag: Life | 磐石</title>
+  <title>pseudo-tty | 磐石</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="danielding&apos;s blog | java | bi">
-<meta property="og:type" content="website">
-<meta property="og:title" content="磐石">
-<meta property="og:url" content="https://danieldingzju.github.io/tags/Life/index.html">
+  <meta name="description" content="很长时间没有再给增加新的博客内容了，机缘巧合，重新拾笔，发现了七牛的图床出现问题了，测试时使用的域名失效了，导致了图片全部失效。 经过了如下步骤：  找回图片：https://zhuanlan.zhihu.com/p/30513914 安装mweb，注册imgur作为远程图床，唯一一点麻烦的是，必须要开启shadowsocks的全局模式，然后才能上传图片。（按照：https://zhuanlan.">
+<meta name="keywords" content="Linux">
+<meta property="og:type" content="article">
+<meta property="og:title" content="pseudo-tty">
+<meta property="og:url" content="https://danieldingzju.github.io/2016/01/19/mweb-hexo-git-pseudo-tty/index.html">
 <meta property="og:site_name" content="磐石">
-<meta property="og:description" content="danielding&apos;s blog | java | bi">
+<meta property="og:description" content="很长时间没有再给增加新的博客内容了，机缘巧合，重新拾笔，发现了七牛的图床出现问题了，测试时使用的域名失效了，导致了图片全部失效。 经过了如下步骤：  找回图片：https://zhuanlan.zhihu.com/p/30513914 安装mweb，注册imgur作为远程图床，唯一一点麻烦的是，必须要开启shadowsocks的全局模式，然后才能上传图片。（按照：https://zhuanlan.">
 <meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="https://danieldingzju.github.io/images/hexo-error.jpg">
+<meta property="og:image" content="https://danieldingzju.github.io/images/hexo-pseudo-tty.jpg">
+<meta property="og:image" content="https://danieldingzju.github.io/images/pseudo.jpg">
+<meta property="og:updated_time" content="2019-02-11T08:50:09.774Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="磐石">
-<meta name="twitter:description" content="danielding&apos;s blog | java | bi">
+<meta name="twitter:title" content="pseudo-tty">
+<meta name="twitter:description" content="很长时间没有再给增加新的博客内容了，机缘巧合，重新拾笔，发现了七牛的图床出现问题了，测试时使用的域名失效了，导致了图片全部失效。 经过了如下步骤：  找回图片：https://zhuanlan.zhihu.com/p/30513914 安装mweb，注册imgur作为远程图床，唯一一点麻烦的是，必须要开启shadowsocks的全局模式，然后才能上传图片。（按照：https://zhuanlan.">
+<meta name="twitter:image" content="https://danieldingzju.github.io/images/hexo-error.jpg">
   
     <link rel="alternative" href="/atom.xml" title="磐石" type="application/atom+xml">
   
@@ -72,39 +78,77 @@
   </div>
 </header>
     <div class="outer">
-      <section id="main">
-  
-  
-    
-    
-      
-      
-      <section class="archives-wrap">
-        <div class="archive-year-wrap">
-          <a href="/archives/2015" class="archive-year">2015</a>
-        </div>
-        <div class="archives">
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      <a href="/2015/10/06/亲身经历icloud账号被黑事件/" class="archive-article-date">
-  <time datetime="2015-10-06T02:04:00.000Z" itemprop="datePublished">10月 6</time>
+      <section id="main"><article id="post-mweb-hexo-git-pseudo-tty" class="article article-type-post" itemscope="" itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2016/01/19/mweb-hexo-git-pseudo-tty/" class="article-date">
+  <time datetime="2016-01-19T03:51:02.000Z" itemprop="datePublished">1月 19 2016</time>
 </a>
-      
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
   
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2015/10/06/亲身经历icloud账号被黑事件/">亲身经历icloud账号被黑事件</a>
+    <h1 class="article-title" itemprop="name">
+      pseudo-tty
     </h1>
   
 
-    </header>
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>很长时间没有再给增加新的博客内容了，机缘巧合，重新拾笔，发现了七牛的图床出现问题了，测试时使用的域名失效了，导致了图片全部失效。</p>
+<p>经过了如下步骤：</p>
+<ol>
+<li>找回图片：<a href="https://zhuanlan.zhihu.com/p/30513914" target="_blank" rel="noopener">https://zhuanlan.zhihu.com/p/30513914</a></li>
+<li>安装mweb，注册imgur作为远程图床，唯一一点麻烦的是，必须要开启shadowsocks的全局模式，然后才能上传图片。（按照：<a href="https://zhuanlan.zhihu.com/p/30513914" target="_blank" rel="noopener">https://zhuanlan.zhihu.com/p/30513914</a> 的教程不过其实并不需要远程图床，因为都是使用的相对路径读取的图片，图片已经传到github上面了；暂且拿这个图床做一个备份好了）</li>
+<li>然后命令行的形式下上传内容的时候碰到了如下错误：<br><img src="/images/hexo-error.jpg" alt="error"></li>
+</ol>
+<hr>
+<h3 id="ssh_通过_http-proxy代理（https://zhuanlan-zhihu-com/p/36102433）">ssh 通过 http-proxy代理（<a href="https://zhuanlan.zhihu.com/p/36102433）" target="_blank" rel="noopener">https://zhuanlan.zhihu.com/p/36102433）</a></h3><p>通过这篇<a href="https://www.cyberciti.biz/faq/linux-unix-ssh-proxycommand-passing-through-one-host-gateway-server/" target="_blank" rel="noopener">文章</a>，看到了如下内容：<br><img src="/images/hexo-pseudo-tty.jpg" alt="hexo-pseudo-tty"><br>中文大多译为“伪终端”，勾起了我的好奇心，经过一番搜索和了解的到如下总结：<br><img src="/images/pseudo.jpg" alt="pseudo"><br>参考文章：<a href="https://blog.csdn.net/w1857518575/article/details/82670522" target="_blank" rel="noopener">A</a>, <a href="https://aisxyz.iteye.com/blog/2423960" target="_blank" rel="noopener">B</a></p>
+<p>大致了解这个概念之后，继续进行。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      
+        <a data-url="https://danieldingzju.github.io/2016/01/19/mweb-hexo-git-pseudo-tty/" data-id="cjs03qm5p000kwkbuq5oowmr7" class="article-share-link" data-share="baidu" data-title="pseudo-tty">分享到</a>
+      
+
+      
+
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Linux/">Linux</a></li></ul>
+
+    </footer>
   </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2016/01/28/ASM/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">下一篇</strong>
+      <div class="article-nav-title">
+        
+          ASM
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2016/01/19/Zero-Copy/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">上一篇</strong>
+      <div class="article-nav-title">Zero Copy</div>
+    </a>
+  
+</nav>
+
+  
 </article>
-  
-  
-    </div></section>
-  
+
 </section>
       
       <aside id="sidebar">

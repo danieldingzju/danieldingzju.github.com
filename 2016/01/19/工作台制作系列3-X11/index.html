@@ -4,18 +4,20 @@
 <head><meta name="generator" content="Hexo 3.8.0">
   <meta charset="utf-8">
   
-  <title>Tag: Life | 磐石</title>
+  <title>工作台制作系列3-X11 | 磐石</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="danielding&apos;s blog | java | bi">
-<meta property="og:type" content="website">
-<meta property="og:title" content="磐石">
-<meta property="og:url" content="https://danieldingzju.github.io/tags/Life/index.html">
+  <meta name="description" content="在自己装配完成主机之后，要开始安装主机和虚拟机了，这个时候主机并没有显示器，只有网线，所以考虑通过自己的笔记本连接主机进行安装，可是安装vmware需要界面如何处理？经过一段时间的了解，X11正好合适，顺道了解下。 什么是X11神奇的X11，这个古老的Unix下的产物：一种C/S结构的协议。 适合这种场景：我有一个电脑A，希望使用服务器B来启动有界面的应用。通常通过如下方式：  A ssh 到 B">
+<meta name="keywords" content="Linux">
+<meta property="og:type" content="article">
+<meta property="og:title" content="工作台制作系列3-X11">
+<meta property="og:url" content="https://danieldingzju.github.io/2016/01/19/工作台制作系列3-X11/index.html">
 <meta property="og:site_name" content="磐石">
-<meta property="og:description" content="danielding&apos;s blog | java | bi">
+<meta property="og:description" content="在自己装配完成主机之后，要开始安装主机和虚拟机了，这个时候主机并没有显示器，只有网线，所以考虑通过自己的笔记本连接主机进行安装，可是安装vmware需要界面如何处理？经过一段时间的了解，X11正好合适，顺道了解下。 什么是X11神奇的X11，这个古老的Unix下的产物：一种C/S结构的协议。 适合这种场景：我有一个电脑A，希望使用服务器B来启动有界面的应用。通常通过如下方式：  A ssh 到 B">
 <meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2019-02-11T08:11:41.053Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="磐石">
-<meta name="twitter:description" content="danielding&apos;s blog | java | bi">
+<meta name="twitter:title" content="工作台制作系列3-X11">
+<meta name="twitter:description" content="在自己装配完成主机之后，要开始安装主机和虚拟机了，这个时候主机并没有显示器，只有网线，所以考虑通过自己的笔记本连接主机进行安装，可是安装vmware需要界面如何处理？经过一段时间的了解，X11正好合适，顺道了解下。 什么是X11神奇的X11，这个古老的Unix下的产物：一种C/S结构的协议。 适合这种场景：我有一个电脑A，希望使用服务器B来启动有界面的应用。通常通过如下方式：  A ssh 到 B">
   
     <link rel="alternative" href="/atom.xml" title="磐石" type="application/atom+xml">
   
@@ -72,39 +74,91 @@
   </div>
 </header>
     <div class="outer">
-      <section id="main">
-  
-  
-    
-    
-      
-      
-      <section class="archives-wrap">
-        <div class="archive-year-wrap">
-          <a href="/archives/2015" class="archive-year">2015</a>
-        </div>
-        <div class="archives">
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      <a href="/2015/10/06/亲身经历icloud账号被黑事件/" class="archive-article-date">
-  <time datetime="2015-10-06T02:04:00.000Z" itemprop="datePublished">10月 6</time>
+      <section id="main"><article id="post-工作台制作系列3-X11" class="article article-type-post" itemscope="" itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2016/01/19/工作台制作系列3-X11/" class="article-date">
+  <time datetime="2016-01-19T03:51:02.000Z" itemprop="datePublished">1月 19 2016</time>
 </a>
-      
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
   
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2015/10/06/亲身经历icloud账号被黑事件/">亲身经历icloud账号被黑事件</a>
+    <h1 class="article-title" itemprop="name">
+      工作台制作系列3-X11
     </h1>
   
 
-    </header>
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>在自己装配完成主机之后，要开始安装主机和虚拟机了，这个时候主机并没有显示器，只有网线，所以考虑通过自己的笔记本连接主机进行安装，可是安装vmware需要界面如何处理？经过一段时间的了解，X11正好合适，顺道了解下。</p>
+<h3 id="什么是X11">什么是X11</h3><p>神奇的X11，这个古老的Unix下的产物：一种C/S结构的协议。</p>
+<p>适合这种场景：我有一个电脑A，希望使用服务器B来启动有界面的应用。通常通过如下方式：</p>
+<ol>
+<li>A ssh 到 B</li>
+<li>B 通过sshd设置ssh server配置来forward X11的协议数据到 A，这个时候 B是 X11的client， A是 X11的Server</li>
+</ol>
+<h3 id="背景">背景</h3><p><strong>A</strong> : macOs 13.3</p>
+<p><strong>B</strong> : Centos7</p>
+<ol>
+<li>在 <strong>A</strong> 中安装xQuartz，自行搜索安装方式。</li>
+<li>修改 <strong>B</strong> 的sshd配置：<ul>
+<li>增加如下配置：<br>X11Forwarding yes<br>X11DisplayOffset 10<br>X11UseLocalhost yes</li>
+<li>重启服务：service sshd restart。</li>
+</ul>
+</li>
+<li>在 <strong>A</strong> 的 ~/.ssh/config 下面添加配置：XAuthLocation /opt/X11/bin/xauth。<a href="https://stackoverflow.com/questions/27384725/ssh-x-warning-untrusted-x11-forwarding-setup-failed-xauth-key-data-not-gener" target="_blank" rel="noopener">原因</a></li>
+<li>ssh -X B’s_username@B’s_host。(第一次要使用AX，用来生成授权文件)</li>
+<li>xclock 验证。</li>
+</ol>
+<h3 id="发散">发散</h3><p>现在的投屏软件有些也是用这个协议实现的。</p>
+<p>VNC : RFB协议， vnc-server一般是和x11协议联合使用</p>
+<p>X11是协议，一般情况下 A是我们自己机器，B是服务器端机器，A是X11的server，B是client；是通过ssh -X forwarding 连接到远程服务器，最后让B的client告诉了A来显示图形。</p>
+<p>mac也是用X11协议来显示图画，不过将一些模块做到了kernal里面来提升性能。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      
+        <a data-url="https://danieldingzju.github.io/2016/01/19/工作台制作系列3-X11/" data-id="cjs03qm5z0012wkbu8qd8yt49" class="article-share-link" data-share="baidu" data-title="工作台制作系列3-X11">分享到</a>
+      
+
+      
+
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Linux/">Linux</a></li></ul>
+
+    </footer>
   </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2016/01/19/Zero-Copy/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">下一篇</strong>
+      <div class="article-nav-title">
+        
+          Zero Copy
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2015/12/26/认识java-agent/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">上一篇</strong>
+      <div class="article-nav-title">认识java agent</div>
+    </a>
+  
+</nav>
+
+  
 </article>
-  
-  
-    </div></section>
-  
+
 </section>
       
       <aside id="sidebar">

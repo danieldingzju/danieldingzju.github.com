@@ -74,6 +74,185 @@
     <div class="outer">
       <section id="main">
   
+    <article id="post-工作台制作系列3-X11" class="article article-type-post" itemscope="" itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2016/01/19/工作台制作系列3-X11/" class="article-date">
+  <time datetime="2016-01-19T03:51:02.000Z" itemprop="datePublished">1月 19 2016</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2016/01/19/工作台制作系列3-X11/">工作台制作系列3-X11</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>在自己装配完成主机之后，要开始安装主机和虚拟机了，这个时候主机并没有显示器，只有网线，所以考虑通过自己的笔记本连接主机进行安装，可是安装vmware需要界面如何处理？经过一段时间的了解，X11正好合适，顺道了解下。</p>
+<h3 id="什么是X11">什么是X11</h3><p>神奇的X11，这个古老的Unix下的产物：一种C/S结构的协议。</p>
+<p>适合这种场景：我有一个电脑A，希望使用服务器B来启动有界面的应用。通常通过如下方式：</p>
+<ol>
+<li>A ssh 到 B</li>
+<li>B 通过sshd设置ssh server配置来forward X11的协议数据到 A，这个时候 B是 X11的client， A是 X11的Server</li>
+</ol>
+<h3 id="背景">背景</h3><p><strong>A</strong> : macOs 13.3</p>
+<p><strong>B</strong> : Centos7</p>
+<ol>
+<li>在 <strong>A</strong> 中安装xQuartz，自行搜索安装方式。</li>
+<li>修改 <strong>B</strong> 的sshd配置：<ul>
+<li>增加如下配置：<br>X11Forwarding yes<br>X11DisplayOffset 10<br>X11UseLocalhost yes</li>
+<li>重启服务：service sshd restart。</li>
+</ul>
+</li>
+<li>在 <strong>A</strong> 的 ~/.ssh/config 下面添加配置：XAuthLocation /opt/X11/bin/xauth。<a href="https://stackoverflow.com/questions/27384725/ssh-x-warning-untrusted-x11-forwarding-setup-failed-xauth-key-data-not-gener" target="_blank" rel="noopener">原因</a></li>
+<li>ssh -X B’s_username@B’s_host。(第一次要使用AX，用来生成授权文件)</li>
+<li>xclock 验证。</li>
+</ol>
+<h3 id="发散">发散</h3><p>现在的投屏软件有些也是用这个协议实现的。</p>
+<p>VNC : RFB协议， vnc-server一般是和x11协议联合使用</p>
+<p>X11是协议，一般情况下 A是我们自己机器，B是服务器端机器，A是X11的server，B是client；是通过ssh -X forwarding 连接到远程服务器，最后让B的client告诉了A来显示图形。</p>
+<p>mac也是用X11协议来显示图画，不过将一些模块做到了kernal里面来提升性能。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      
+        <a data-url="https://danieldingzju.github.io/2016/01/19/工作台制作系列3-X11/" data-id="cjs03qm5z0012wkbu8qd8yt49" class="article-share-link" data-share="baidu" data-title="工作台制作系列3-X11">分享到</a>
+      
+
+      
+
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Linux/">Linux</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-认识java-agent" class="article article-type-post" itemscope="" itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2015/12/26/认识java-agent/" class="article-date">
+  <time datetime="2015-12-26T14:25:02.000Z" itemprop="datePublished">12月 26 2015</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2015/12/26/认识java-agent/">认识java agent</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h4 id="java_agent">java agent</h4><h6 id="agent">agent</h6><p>java agent是在JDK1.5之后引入的，是main方法之前的拦截器；其作用是在main之前之前执行agent中的逻辑。</p>
+<p>假设 A 是主要业务逻辑应用所在进程； B 是要拦截在A的main方法之前的 agent。</p>
+<p>那么agent有两种启动方式：</p>
+<ul>
+<li><p>（1）B在A之前启动：通过 启动A时添加vm参数 -javaagent:xxxx.jar</p>
+<p>  a. xxxx.jar包含了自己实现的agent类，实现规范中一种形式如下：</p>
+<pre><code><span class="keyword">public</span> <span class="keyword">static</span> <span class="function"><span class="keyword">void</span> <span class="title">premain</span><span class="params">(String agentOps, Instrumentation inst)</span></span>{  
+    <span class="comment">//TODO </span>
+}
+</code></pre><p>  b. xxxx.jar包含的资源配置文件Manifest中需要指明premain所在的类：</p>
+<pre><code>Premain-Class: com<span class="class">.mypackage</span><span class="class">.MyAgent</span>
+</code></pre></li>
+</ul>
+<ul>
+<li><p>（2）B在A之后启动：通过 VirtualMachine 的 attach 和 loadAgent 方法实现。</p>
+<p>  VirtualMachine类所在包为：com.sun.tools.attach；相关代码：</p>
+<pre><code><span class="keyword">try</span>{
+    <span class="built_in">String</span> pid = fetchPidId(); <span class="comment">//获取到java 的 pid（各种方式）</span>
+    <span class="keyword">if</span>( pid != <span class="keyword">null</span> ){
+        vm = VirtualMachine.attach( pid );    <span class="comment">// 获取attach到的vm对象实例                                 </span>
+        vm.loadAgent(agentJarFilePath, args); <span class="comment">// 加载agent</span>
+    }
+}<span class="keyword">finally</span> {
+    vm.detach();
+}
+</code></pre><p>  a. agentJarFilePath包含了自己实现的agent类，实现规范中一种形式如下：</p>
+<pre><code><span class="keyword">public</span> <span class="keyword">static</span> <span class="function"><span class="keyword">void</span> <span class="title">agentmain</span><span class="params">(String args, Instrumentation inst)</span> </span>{
+    <span class="comment">//TODO</span>
+}
+</code></pre><p>  b. agentJarFilePath包含了资源配置文件Manifest中需要指明agentmain所在的类：</p>
+<pre><code><span class="attribute">Agent-Class</span>: <span class="string">war.Hatch</span>
+</code></pre></li>
+</ul>
+<p><strong><em>tips</em></strong>：<br>资源描述文件Manifest里面agent相关的额外配置项如下：</p>
+<ul>
+<li><p>Can-Redefine-Classes</p>
+<p>  如果此值为true，可以修改已经加载的class的字节码。</p>
+</li>
+<li><p>Can-Retransform-Classes  </p>
+<p>  如果此值为true，表示支持重复修改class的字节码。这个和redefine的区别是，transform只是一个filter，没有修改本源字节码。</p>
+</li>
+</ul>
+<h6 id="instrument">instrument</h6><p>在<strong>agent</strong>介绍中，我们可以看到instrument的身影，用来增强字节码。</p>
+<p>instrument中可以：</p>
+<pre><code><span class="number">1.</span> 在 A 所在的JVM进程的BootstrapClassLoader 或者 SystemClassLoader（AppClassLoader）中加载额外的jar包。
+<span class="number">2.</span> 可以获得 A 中已经加载的所有的<span class="class"><span class="keyword">class</span>类。</span>
+<span class="number">3.</span> 可以添加 ClassFileTransformer 类来进行<span class="class"><span class="keyword">class</span>文件（字节码）的修改。</span>
+    instrument.add
+</code></pre><p>更多请参考API。<a href="http://www.chinaxing.org/articles/Java/2014/09/25/2014-09-24-instrumentation.html" target="_blank" rel="noopener">这里</a>有一篇比较好的理解，强烈推荐。</p>
+<h6 id="实践经验">实践经验</h6><ul>
+<li><p>因为com.sun.tools.attach.VirtualMachine在tools.jar中，所以在（2）情况下要调用其attach和loadAgent的时候，需要在classpath中添加tools.jar。形如：</p>
+<pre><code>java -<span class="keyword">classpath</span> {JAVA_HOME}<span class="regexp">/lib/</span>tools.jar:myTransport.jar Transport
+</code></pre><p>  Transport 中的main方法包含了（2）中的示例代码。</p>
+</li>
+<li><p>加入是用maven打包的推荐使用 maven-assembly-plugin，用其<manifestentries>来管理资源管理文件配置项，示例配置如下：</manifestentries></p>
+<pre><code><span class="tag">&lt;<span class="title">manifestEntries</span>&gt;</span>
+    <span class="tag">&lt;<span class="title">Premain-Class</span>&gt;</span>agent<span class="tag">&lt;/<span class="title">Premain-Class</span>&gt;</span>
+    <span class="tag">&lt;<span class="title">Agent-Class</span>&gt;</span>agent<span class="tag">&lt;/<span class="title">Agent-Class</span>&gt;</span>
+    <span class="tag">&lt;<span class="title">Can-Redine-Classes</span>&gt;</span>true<span class="tag">&lt;/<span class="title">Can-Redine-Classes</span>&gt;</span>
+    <span class="tag">&lt;<span class="title">Can-Retransform-Classes</span>&gt;</span>true<span class="tag">&lt;/<span class="title">Can-Retransform-Classes</span>&gt;</span>
+<span class="tag">&lt;/<span class="title">manifestEntries</span>&gt;</span>
+</code></pre></li>
+<li><p>获取PID的示例命令：</p>
+<pre><code>ps ax | grep <span class="string">'java'</span> | cut <span class="operator">-d</span> <span class="string">" "</span> <span class="operator">-f</span>2
+</code></pre></li>
+</ul>
+<h6 id="agent技术已知商业价值">agent技术已知商业价值</h6><ul>
+<li>性能剖析：Btrace</li>
+<li>错误诊断：Btrace， Greys</li>
+<li>AOP切面技术：Spring</li>
+</ul>
+
+      
+    </div>
+    <footer class="article-footer">
+      
+        <a data-url="https://danieldingzju.github.io/2015/12/26/认识java-agent/" data-id="cjs03qm5y0010wkbuqrpdyi8o" class="article-share-link" data-share="baidu" data-title="认识java agent">分享到</a>
+      
+
+      
+
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Java/">Java</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
     <article id="post-JVMS7笔记" class="article article-type-post" itemscope="" itemprop="blogPost">
   <div class="article-meta">
     <a href="/2015/12/20/JVMS7笔记/" class="article-date">
@@ -293,7 +472,7 @@ signature polymorphic（MethodHandler）这个也是JDK7加入的，为了实现
     </div>
     <footer class="article-footer">
       
-        <a data-url="https://danieldingzju.github.io/2015/12/20/JVMS7笔记/" data-id="cjrzyxtcn0002s7budg7nib2g" class="article-share-link" data-share="baidu" data-title="JVMS7笔记">分享到</a>
+        <a data-url="https://danieldingzju.github.io/2015/12/20/JVMS7笔记/" data-id="cjs03qm5f0007wkbuv9m1tmt9" class="article-share-link" data-share="baidu" data-title="JVMS7笔记">分享到</a>
       
 
       
@@ -384,7 +563,7 @@ signature polymorphic（MethodHandler）这个也是JDK7加入的，为了实现
     </div>
     <footer class="article-footer">
       
-        <a data-url="https://danieldingzju.github.io/2015/11/21/理解CPU-steal-time/" data-id="cjrzyxtd8000ss7buxextfoib" class="article-share-link" data-share="baidu" data-title="理解CPU steal time">分享到</a>
+        <a data-url="https://danieldingzju.github.io/2015/11/21/理解CPU-steal-time/" data-id="cjs03qm5x000ywkbus1i82fdm" class="article-share-link" data-share="baidu" data-title="理解CPU steal time">分享到</a>
       
 
       
@@ -446,7 +625,7 @@ signature polymorphic（MethodHandler）这个也是JDK7加入的，为了实现
     </div>
     <footer class="article-footer">
       
-        <a data-url="https://danieldingzju.github.io/2015/10/06/亲身经历icloud账号被黑事件/" data-id="cjrzyxtd5000ns7buvu5jpheg" class="article-share-link" data-share="baidu" data-title="亲身经历icloud账号被黑事件">分享到</a>
+        <a data-url="https://danieldingzju.github.io/2015/10/06/亲身经历icloud账号被黑事件/" data-id="cjs03qm5q000mwkbur80qojgr" class="article-share-link" data-share="baidu" data-title="亲身经历icloud账号被黑事件">分享到</a>
       
 
       
@@ -738,7 +917,7 @@ cacheManager.addCache(cache1Name);
     </div>
     <footer class="article-footer">
       
-        <a data-url="https://danieldingzju.github.io/2015/09/04/本地缓存组件选型/" data-id="cjrzyxtd9000vs7buvedahkgx" class="article-share-link" data-share="baidu" data-title="本地缓存组件选型">分享到</a>
+        <a data-url="https://danieldingzju.github.io/2015/09/04/本地缓存组件选型/" data-id="cjs03qm5w000wwkbu7baxd9ih" class="article-share-link" data-share="baidu" data-title="本地缓存组件选型">分享到</a>
       
 
       
@@ -836,7 +1015,7 @@ cacheManager.addCache(cache1Name);
     </div>
     <footer class="article-footer">
       
-        <a data-url="https://danieldingzju.github.io/2015/04/09/Dynamic-Bean/" data-id="cjrzyxtcr0004s7buwoke1xo0" class="article-share-link" data-share="baidu" data-title="Dynamic Bean">分享到</a>
+        <a data-url="https://danieldingzju.github.io/2015/04/09/Dynamic-Bean/" data-id="cjs03qm550000wkbu6jjt96ns" class="article-share-link" data-share="baidu" data-title="Dynamic Bean">分享到</a>
       
 
       
@@ -882,7 +1061,7 @@ cacheManager.addCache(cache1Name);
     </div>
     <footer class="article-footer">
       
-        <a data-url="https://danieldingzju.github.io/2015/04/09/JavaBeans-TM/" data-id="cjrzyxtcs0005s7buqksgv5h7" class="article-share-link" data-share="baidu" data-title="JavaBeans(TM)">分享到</a>
+        <a data-url="https://danieldingzju.github.io/2015/04/09/JavaBeans-TM/" data-id="cjs03qm5e0006wkbuzak9fzp3" class="article-share-link" data-share="baidu" data-title="JavaBeans(TM)">分享到</a>
       
 
       
@@ -912,7 +1091,7 @@ cacheManager.addCache(cache1Name);
   <div class="widget-wrap">
     <h3 class="widget-title">标签</h3>
     <div class="widget">
-      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Java/">Java</a><span class="tag-list-count">11</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Life/">Life</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Linux/">Linux</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/problem/">problem</a><span class="tag-list-count">2</span></li></ul>
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Java/">Java</a><span class="tag-list-count">11</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Life/">Life</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Linux/">Linux</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/problem/">problem</a><span class="tag-list-count">2</span></li></ul>
     </div>
   </div>
 
@@ -921,7 +1100,7 @@ cacheManager.addCache(cache1Name);
   <div class="widget-wrap">
     <h3 class="widget-title">标签云</h3>
     <div class="widget tagcloud">
-      <a href="/tags/Java/" style="font-size: 20px;">Java</a> <a href="/tags/Life/" style="font-size: 10px;">Life</a> <a href="/tags/Linux/" style="font-size: 15px;">Linux</a> <a href="/tags/problem/" style="font-size: 15px;">problem</a>
+      <a href="/tags/Java/" style="font-size: 20px;">Java</a> <a href="/tags/Life/" style="font-size: 10px;">Life</a> <a href="/tags/Linux/" style="font-size: 16.67px;">Linux</a> <a href="/tags/problem/" style="font-size: 13.33px;">problem</a>
     </div>
   </div>
 
@@ -930,7 +1109,7 @@ cacheManager.addCache(cache1Name);
   <div class="widget-wrap">
     <h3 class="widget-title">归档</h3>
     <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/02/">二月 2019</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/12/">十二月 2017</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/12/">十二月 2016</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/09/">九月 2016</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/02/">二月 2016</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/01/">一月 2016</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/12/">十二月 2015</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/11/">十一月 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/10/">十月 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/09/">九月 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/04/">四月 2015</a><span class="archive-list-count">2</span></li></ul>
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/02/">二月 2019</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/12/">十二月 2017</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/12/">十二月 2016</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/09/">九月 2016</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/02/">二月 2016</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/01/">一月 2016</a><span class="archive-list-count">5</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/12/">十二月 2015</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/11/">十一月 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/10/">十月 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/09/">九月 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/04/">四月 2015</a><span class="archive-list-count">2</span></li></ul>
     </div>
   </div>
 

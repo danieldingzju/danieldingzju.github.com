@@ -74,9 +74,9 @@
     <div class="outer">
       <section id="main">
   
-    <article id="post-工作台制作系列3-X11" class="article article-type-post" itemscope="" itemprop="blogPost">
+    <article id="post-mweb-hexo-git-pseudo-tty" class="article article-type-post" itemscope="" itemprop="blogPost">
   <div class="article-meta">
-    <a href="/2016/01/19/工作台制作系列3-X11/" class="article-date">
+    <a href="/2016/01/19/mweb-hexo-git-pseudo-tty/" class="article-date">
   <time datetime="2016-01-19T03:51:02.000Z" itemprop="datePublished">1月 19 2016</time>
 </a>
     
@@ -88,7 +88,7 @@
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2016/01/19/工作台制作系列3-X11/">工作台制作系列3-X11</a>
+      <a class="article-title" href="/2016/01/19/mweb-hexo-git-pseudo-tty/">mweb-hexo-git-pseudo-tty</a>
     </h1>
   
 
@@ -96,36 +96,25 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        <p>在自己装配完成主机之后，要开始安装主机和虚拟机了，这个时候主机并没有显示器，只有网线，所以考虑通过自己的笔记本连接主机进行安装，可是安装vmware需要界面如何处理？经过一段时间的了解，X11正好合适，顺道了解下。</p>
-<h3 id="什么是X11">什么是X11</h3><p>神奇的X11，这个古老的Unix下的产物：一种C/S结构的协议。</p>
-<p>适合这种场景：我有一个电脑A，希望使用服务器B来启动有界面的应用。通常通过如下方式：</p>
+        <p>很长时间没有再给增加新的博客内容了，机缘巧合，重新拾笔，发现了七牛的图床出现问题了，测试时使用的域名失效了，导致了图片全部失效。</p>
+<p>经过了如下步骤：</p>
 <ol>
-<li>A ssh 到 B</li>
-<li>B 通过sshd设置ssh server配置来forward X11的协议数据到 A，这个时候 B是 X11的client， A是 X11的Server</li>
+<li>找回图片：<a href="https://zhuanlan.zhihu.com/p/30513914" target="_blank" rel="noopener">https://zhuanlan.zhihu.com/p/30513914</a></li>
+<li>安装mweb，注册imgur作为远程图床，唯一一点麻烦的是，必须要开启shadowsocks的全局模式，然后才能上传图片。（按照：<a href="https://zhuanlan.zhihu.com/p/30513914" target="_blank" rel="noopener">https://zhuanlan.zhihu.com/p/30513914</a> 的教程不过其实并不需要远程图床，因为都是使用的相对路径读取的图片，图片已经传到github上面了；暂且拿这个图床做一个备份好了）</li>
+<li>然后命令行的形式下上传内容的时候碰到了如下错误：<br><img src="/images/hexo-error.jpg" alt="error"></li>
 </ol>
-<h3 id="背景">背景</h3><p><strong>A</strong> : macOs 13.3</p>
-<p><strong>B</strong> : Centos7</p>
-<ol>
-<li>在 <strong>A</strong> 中安装xQuartz，自行搜索安装方式。</li>
-<li>修改 <strong>B</strong> 的sshd配置：<ul>
-<li>增加如下配置：<br>X11Forwarding yes<br>X11DisplayOffset 10<br>X11UseLocalhost yes</li>
-<li>重启服务：service sshd restart。</li>
-</ul>
-</li>
-<li>在 <strong>A</strong> 的 ~/.ssh/config 下面添加配置：XAuthLocation /opt/X11/bin/xauth。<a href="https://stackoverflow.com/questions/27384725/ssh-x-warning-untrusted-x11-forwarding-setup-failed-xauth-key-data-not-gener" target="_blank" rel="noopener">原因</a></li>
-<li>ssh -X B’s_username@B’s_host。(第一次要使用AX，用来生成授权文件)</li>
-<li>xclock 验证。</li>
-</ol>
-<h3 id="发散">发散</h3><p>现在的投屏软件有些也是用这个协议实现的。</p>
-<p>VNC : RFB协议， vnc-server一般是和x11协议联合使用</p>
-<p>X11是协议，一般情况下 A是我们自己机器，B是服务器端机器，A是X11的server，B是client；是通过ssh -X forwarding 连接到远程服务器，最后让B的client告诉了A来显示图形。</p>
-<p>mac也是用X11协议来显示图画，不过将一些模块做到了kernal里面来提升性能。</p>
+<hr>
+<h3 id="ssh_通过_http-proxy代理（https://zhuanlan-zhihu-com/p/36102433）">ssh 通过 http-proxy代理（<a href="https://zhuanlan.zhihu.com/p/36102433）" target="_blank" rel="noopener">https://zhuanlan.zhihu.com/p/36102433）</a></h3><p>通过这篇<a href="https://www.cyberciti.biz/faq/linux-unix-ssh-proxycommand-passing-through-one-host-gateway-server/" target="_blank" rel="noopener">文章</a>，看到了如下内容：<br><img src="/images/hexo-pseudo-tty.jpg" alt="hexo-pseudo-tty"><br>中文大多译为“伪终端”，勾起了我的好奇心，经过一番搜索和了解的到如下总结：<br><img src="/images/pseudo.jpg" alt="pseudo"><br>参考文章：<a href="https://blog.csdn.net/w1857518575/article/details/82670522" target="_blank" rel="noopener">A</a>, <a href="https://aisxyz.iteye.com/blog/2423960" target="_blank" rel="noopener">B</a></p>
+<p>大致了解这个概念之后，继续进行，在<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">~/.ssh/config</span><br></pre></td></tr></table></figure></p>
+<p>中增加如下代码：<br><img src="/images/ssh-socket5.jpg" alt="ssh-socket5"><br>搞定了和github之间那堵墙的问题。</p>
+<hr>
+<p>好了，搞定～～ </p>
 
       
     </div>
     <footer class="article-footer">
       
-        <a data-url="https://danieldingzju.github.io/2016/01/19/工作台制作系列3-X11/" data-id="cjs03qm5z0012wkbu8qd8yt49" class="article-share-link" data-share="baidu" data-title="工作台制作系列3-X11">分享到</a>
+        <a data-url="https://danieldingzju.github.io/2016/01/19/mweb-hexo-git-pseudo-tty/" data-id="cjs0400e0000k0nbugk9p7oxx" class="article-share-link" data-share="baidu" data-title="mweb-hexo-git-pseudo-tty">分享到</a>
       
 
       
@@ -238,7 +227,7 @@
     </div>
     <footer class="article-footer">
       
-        <a data-url="https://danieldingzju.github.io/2015/12/26/认识java-agent/" data-id="cjs03qm5y0010wkbuqrpdyi8o" class="article-share-link" data-share="baidu" data-title="认识java agent">分享到</a>
+        <a data-url="https://danieldingzju.github.io/2015/12/26/认识java-agent/" data-id="cjs0400e700110nbuoggj862h" class="article-share-link" data-share="baidu" data-title="认识java agent">分享到</a>
       
 
       
@@ -472,7 +461,7 @@ signature polymorphic（MethodHandler）这个也是JDK7加入的，为了实现
     </div>
     <footer class="article-footer">
       
-        <a data-url="https://danieldingzju.github.io/2015/12/20/JVMS7笔记/" data-id="cjs03qm5f0007wkbuv9m1tmt9" class="article-share-link" data-share="baidu" data-title="JVMS7笔记">分享到</a>
+        <a data-url="https://danieldingzju.github.io/2015/12/20/JVMS7笔记/" data-id="cjs0400dm00050nbu5903bcn0" class="article-share-link" data-share="baidu" data-title="JVMS7笔记">分享到</a>
       
 
       
@@ -563,7 +552,7 @@ signature polymorphic（MethodHandler）这个也是JDK7加入的，为了实现
     </div>
     <footer class="article-footer">
       
-        <a data-url="https://danieldingzju.github.io/2015/11/21/理解CPU-steal-time/" data-id="cjs03qm5x000ywkbus1i82fdm" class="article-share-link" data-share="baidu" data-title="理解CPU steal time">分享到</a>
+        <a data-url="https://danieldingzju.github.io/2015/11/21/理解CPU-steal-time/" data-id="cjs0400e6000z0nbuayray2yb" class="article-share-link" data-share="baidu" data-title="理解CPU steal time">分享到</a>
       
 
       
@@ -625,7 +614,7 @@ signature polymorphic（MethodHandler）这个也是JDK7加入的，为了实现
     </div>
     <footer class="article-footer">
       
-        <a data-url="https://danieldingzju.github.io/2015/10/06/亲身经历icloud账号被黑事件/" data-id="cjs03qm5q000mwkbur80qojgr" class="article-share-link" data-share="baidu" data-title="亲身经历icloud账号被黑事件">分享到</a>
+        <a data-url="https://danieldingzju.github.io/2015/10/06/亲身经历icloud账号被黑事件/" data-id="cjs0400e2000p0nbut440ver4" class="article-share-link" data-share="baidu" data-title="亲身经历icloud账号被黑事件">分享到</a>
       
 
       
@@ -917,7 +906,7 @@ cacheManager.addCache(cache1Name);
     </div>
     <footer class="article-footer">
       
-        <a data-url="https://danieldingzju.github.io/2015/09/04/本地缓存组件选型/" data-id="cjs03qm5w000wwkbu7baxd9ih" class="article-share-link" data-share="baidu" data-title="本地缓存组件选型">分享到</a>
+        <a data-url="https://danieldingzju.github.io/2015/09/04/本地缓存组件选型/" data-id="cjs0400e800130nbud7gx4l7j" class="article-share-link" data-share="baidu" data-title="本地缓存组件选型">分享到</a>
       
 
       
@@ -1015,7 +1004,7 @@ cacheManager.addCache(cache1Name);
     </div>
     <footer class="article-footer">
       
-        <a data-url="https://danieldingzju.github.io/2015/04/09/Dynamic-Bean/" data-id="cjs03qm550000wkbu6jjt96ns" class="article-share-link" data-share="baidu" data-title="Dynamic Bean">分享到</a>
+        <a data-url="https://danieldingzju.github.io/2015/04/09/Dynamic-Bean/" data-id="cjs0400di00020nburo7l55qy" class="article-share-link" data-share="baidu" data-title="Dynamic Bean">分享到</a>
       
 
       
@@ -1061,7 +1050,7 @@ cacheManager.addCache(cache1Name);
     </div>
     <footer class="article-footer">
       
-        <a data-url="https://danieldingzju.github.io/2015/04/09/JavaBeans-TM/" data-id="cjs03qm5e0006wkbuzak9fzp3" class="article-share-link" data-share="baidu" data-title="JavaBeans(TM)">分享到</a>
+        <a data-url="https://danieldingzju.github.io/2015/04/09/JavaBeans-TM/" data-id="cjs0400dn00060nbuigj609wb" class="article-share-link" data-share="baidu" data-title="JavaBeans(TM)">分享到</a>
       
 
       

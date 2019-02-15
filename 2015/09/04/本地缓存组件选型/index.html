@@ -15,7 +15,7 @@
 <meta property="og:description" content="需求： 记录系统执行数据，能持久化，容错。 Guava官网就没有说有persistent的功能，直接略过。 ehcache企业版需要缴费，然后持久化功能和保证重启可用的功能都需要缴费。 看看开源版ehcache的是否可以满足，现状是：可以在只是DiskStore相关配置，让cache把内容序列化后直接overflow到文件。现在问题是： 重启重启以后，是重新新建文件并覆盖同名文件—也就是之前同名c">
 <meta property="og:locale" content="zh-CN">
 <meta property="og:image" content="https://danieldingzju.github.io/2015/09/04/本地缓存组件选型/images/思路.jpg">
-<meta property="og:updated_time" content="2019-02-11T06:11:18.162Z">
+<meta property="og:updated_time" content="2019-02-14T08:27:59.479Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="本地缓存组件选型">
 <meta name="twitter:description" content="需求： 记录系统执行数据，能持久化，容错。 Guava官网就没有说有persistent的功能，直接略过。 ehcache企业版需要缴费，然后持久化功能和保证重启可用的功能都需要缴费。 看看开源版ehcache的是否可以满足，现状是：可以在只是DiskStore相关配置，让cache把内容序列化后直接overflow到文件。现在问题是： 重启重启以后，是重新新建文件并覆盖同名文件—也就是之前同名c">
@@ -353,7 +353,7 @@ cacheManager.addCache(cache1Name);
     </div>
     <footer class="article-footer">
       
-        <a data-url="https://danieldingzju.github.io/2015/09/04/本地缓存组件选型/" data-id="cjs0400e800130nbud7gx4l7j" class="article-share-link" data-share="baidu" data-title="本地缓存组件选型">分享到</a>
+        <a data-url="https://danieldingzju.github.io/2015/09/04/本地缓存组件选型/" data-id="cjs5pnnq70013nwbuiovrg57n" class="article-share-link" data-share="baidu" data-title="本地缓存组件选型">分享到</a>
       
 
       
@@ -397,7 +397,7 @@ cacheManager.addCache(cache1Name);
   <div class="widget-wrap">
     <h3 class="widget-title">标签</h3>
     <div class="widget">
-      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Java/">Java</a><span class="tag-list-count">11</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Life/">Life</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Linux/">Linux</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/problem/">problem</a><span class="tag-list-count">2</span></li></ul>
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Java/">Java</a><span class="tag-list-count">11</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Life/">Life</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Linux/">Linux</a><span class="tag-list-count">6</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/problem/">problem</a><span class="tag-list-count">2</span></li></ul>
     </div>
   </div>
 
@@ -415,7 +415,7 @@ cacheManager.addCache(cache1Name);
   <div class="widget-wrap">
     <h3 class="widget-title">归档</h3>
     <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/02/">二月 2019</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/12/">十二月 2017</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/12/">十二月 2016</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/09/">九月 2016</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/02/">二月 2016</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/01/">一月 2016</a><span class="archive-list-count">5</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/12/">十二月 2015</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/11/">十一月 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/10/">十月 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/09/">九月 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/04/">四月 2015</a><span class="archive-list-count">2</span></li></ul>
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/02/">二月 2019</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/12/">十二月 2017</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/12/">十二月 2016</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/09/">九月 2016</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/02/">二月 2016</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/01/">一月 2016</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/12/">十二月 2015</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/11/">十一月 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/10/">十月 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/09/">九月 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/04/">四月 2015</a><span class="archive-list-count">2</span></li></ul>
     </div>
   </div>
 
@@ -427,23 +427,23 @@ cacheManager.addCache(cache1Name);
       <ul>
         
           <li>
+            <a href="/2019/02/14/工作台系列1-DIY工作台/">工作台系列1-DIY工作站</a>
+          </li>
+        
+          <li>
+            <a href="/2019/02/14/工作台制作系列3-X11/">工作台制作系列3-X11</a>
+          </li>
+        
+          <li>
+            <a href="/2019/02/10/mweb-hexo-git-pseudo-tty/">mweb-hexo-git-pseudo-tty</a>
+          </li>
+        
+          <li>
             <a href="/2019/02/02/LinkageError-排查过程/">LinkageError 排查过程</a>
           </li>
         
           <li>
             <a href="/2017/12/11/Metaspace-OOM/">fastjson引发的oom事件</a>
-          </li>
-        
-          <li>
-            <a href="/2016/12/09/hdfs-case-one/">hdfs-case-one</a>
-          </li>
-        
-          <li>
-            <a href="/2016/12/09/zeppelin-case-one/">zeppelin-case-one</a>
-          </li>
-        
-          <li>
-            <a href="/2016/09/27/hacking-phoenix/">hacking phoenix</a>
           </li>
         
       </ul>

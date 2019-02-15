@@ -4,18 +4,22 @@
 <head><meta name="generator" content="Hexo 3.8.0">
   <meta charset="utf-8">
   
-  <title>Archives: 2016/12 | 磐石</title>
+  <title>内网穿透 | 磐石</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="danielding&apos;s blog | java | bi">
-<meta property="og:type" content="website">
-<meta property="og:title" content="磐石">
-<meta property="og:url" content="https://danieldingzju.github.io/archives/2016/12/index.html">
+  <meta name="description" content="内网穿透机缘巧合，正好在考虑工作台可以进行远程控制的问题。打算平时工作就在位置上用台式工作台完成工作，如果是去短途会议或者出差，那么就带一个ipad就够了。 在这种思路下，考虑并且实践了一些方案。 Win安装了win10，然后在ipad上面安装了remote desktop，非常非常好用；但是碰到一个问题，当自己拿着pad在家的时候，想要远程控制是不可能的了。于是开始寻找方法，这个过程中就涉及到了">
+<meta name="keywords" content="Linux">
+<meta property="og:type" content="article">
+<meta property="og:title" content="内网穿透">
+<meta property="og:url" content="https://danieldingzju.github.io/2016/01/19/内网穿透/index.html">
 <meta property="og:site_name" content="磐石">
-<meta property="og:description" content="danielding&apos;s blog | java | bi">
+<meta property="og:description" content="内网穿透机缘巧合，正好在考虑工作台可以进行远程控制的问题。打算平时工作就在位置上用台式工作台完成工作，如果是去短途会议或者出差，那么就带一个ipad就够了。 在这种思路下，考虑并且实践了一些方案。 Win安装了win10，然后在ipad上面安装了remote desktop，非常非常好用；但是碰到一个问题，当自己拿着pad在家的时候，想要远程控制是不可能的了。于是开始寻找方法，这个过程中就涉及到了">
 <meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="https://danieldingzju.github.io/images/penetrate.jpg">
+<meta property="og:updated_time" content="2019-02-15T07:06:23.597Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="磐石">
-<meta name="twitter:description" content="danielding&apos;s blog | java | bi">
+<meta name="twitter:title" content="内网穿透">
+<meta name="twitter:description" content="内网穿透机缘巧合，正好在考虑工作台可以进行远程控制的问题。打算平时工作就在位置上用台式工作台完成工作，如果是去短途会议或者出差，那么就带一个ipad就够了。 在这种思路下，考虑并且实践了一些方案。 Win安装了win10，然后在ipad上面安装了remote desktop，非常非常好用；但是碰到一个问题，当自己拿着pad在家的时候，想要远程控制是不可能的了。于是开始寻找方法，这个过程中就涉及到了">
+<meta name="twitter:image" content="https://danieldingzju.github.io/images/penetrate.jpg">
   
     <link rel="alternative" href="/atom.xml" title="磐石" type="application/atom+xml">
   
@@ -72,58 +76,95 @@
   </div>
 </header>
     <div class="outer">
-      <section id="main">
-  
-  
-    
-    
-      
-      
-      <section class="archives-wrap">
-        <div class="archive-year-wrap">
-          <a href="/archives/2016" class="archive-year">2016</a>
-        </div>
-        <div class="archives">
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      <a href="/2016/12/09/hdfs-case-one/" class="archive-article-date">
-  <time datetime="2016-12-09T08:42:17.000Z" itemprop="datePublished">12月 9</time>
+      <section id="main"><article id="post-内网穿透" class="article article-type-post" itemscope="" itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2016/01/19/内网穿透/" class="article-date">
+  <time datetime="2016-01-19T03:51:02.000Z" itemprop="datePublished">1月 19 2016</time>
 </a>
-      
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
   
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2016/12/09/hdfs-case-one/">hdfs-case-one</a>
+    <h1 class="article-title" itemprop="name">
+      内网穿透
     </h1>
   
 
-    </header>
-  </div>
-</article>
-  
+      </header>
     
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      <a href="/2016/12/09/zeppelin-case-one/" class="archive-article-date">
-  <time datetime="2016-12-09T08:18:43.000Z" itemprop="datePublished">12月 9</time>
-</a>
+    <div class="article-entry" itemprop="articleBody">
       
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2016/12/09/zeppelin-case-one/">zeppelin-case-one</a>
-    </h1>
-  
+        <h3 id="内网穿透">内网穿透</h3><p>机缘巧合，正好在考虑工作台可以进行远程控制的问题。打算平时工作就在位置上用台式工作台完成工作，如果是去短途会议或者出差，那么就带一个ipad就够了。</p>
+<p>在这种思路下，考虑并且实践了一些方案。</p>
+<h4 id="Win">Win</h4><p>安装了win10，然后在ipad上面安装了remote desktop，非常非常好用；但是碰到一个问题，当自己拿着pad在家的时候，想要远程控制是不可能的了。于是开始寻找方法，这个过程中就涉及到了一个词语：“内网穿透”。</p>
+<h4 id="Mac">Mac</h4><p>mac下面也有比较火的“内网穿透”的项目：ngrok。</p>
+<hr>
+<h3 id="概要原理">概要原理</h3><p><img src="/images/penetrate.jpg" alt="penetrate"><br>远程控制（花生壳），FQ（ss），微信小程序开发（ngrok）都可以用这个图解释。</p>
+<ol>
+<li>远程控制（花生壳）：<ul>
+<li>外部B：代表了自己在家的时候的机器（包含了路由了）。</li>
+<li>proxy：代表花生壳自己的服务器，并且有对应的域名和端口。</li>
+<li>内部A：代表安装了花生壳客户端，想要被远程控制的公司内部机器。<br>逻辑关系：<br><strong>外部B</strong> 请求 <strong>proxy</strong>，<strong>proxy</strong> 找到与 <strong>内部A</strong> 之间的长链接，然后代理接受和发送RDP协议数据，达到远程控制的效果。</li>
+</ul>
+</li>
+<li>FQ（ss）：<ul>
+<li>外部B：代表被访问的fb，tw等Q外内容。</li>
+<li>proxy：代表ss服务商提供的服务器，提供了对应的地址和端口。</li>
+<li>内部A：代表安装了ss客户端的，想要FQ的机器。<br>逻辑关系：<br>ss使用了socket5的协议，ss客户端监控了特定的端口，<strong>内部A</strong> 上面的数据只要是通过特定的端口经过ss客户端，就会被特定算法对称加密，然后到达 <strong>proxy</strong> 会做对称解密，最后 <strong>proxy</strong> 和 <strong>外部B</strong> 交互的到结果，最终再次加密返回给 <strong>内部A</strong> ，由 <strong>内部A</strong> 解密给给对应的应用。</li>
+</ul>
+</li>
+<li>ngrok：<ul>
+<li>外部B：微信小程序api或者银行链条方</li>
+<li>proxy：公网的机器带有域名，ngrok的服务端</li>
+<li>内部A：自己的机器，ngrok的客户端<br>逻辑关系：<br>ngrok的客户端和服务端直接使用tcp开socket长链接通信。客户端和服务端都维护了映射表：服务端维护了二级域名和客户端之间的关系；客户端维护了二级域名加端口和自己所在局域网中的ip加端口之间的关系；<strong>外部B</strong> 先通过 <strong>proxy</strong> 找到对应的 <strong>内部B</strong> ，<strong>内部B</strong> 然后再调用对应的服务达到穿透的效果。</li>
+</ul>
+</li>
+</ol>
+<hr>
+<h3 id="自己简易实现内网穿透">自己简易实现内网穿透</h3><p>有现成的例子：<br><a href="https://segmentfault.com/a/1190000011862912" target="_blank" rel="noopener">清晰的协议</a><br><a href="http://www.what21.com/sys/view/java_java-network_1456896036628.html" target="_blank" rel="noopener">java实现的客户端</a><br><a href="https://blog.csdn.net/java2000_net/article/details/7826660" target="_blank" rel="noopener">java实现的服务端</a></p>
 
-    </header>
+      
+    </div>
+    <footer class="article-footer">
+      
+        <a data-url="https://danieldingzju.github.io/2016/01/19/内网穿透/" data-id="cjs5pnnpu000inwbukm339agu" class="article-share-link" data-share="baidu" data-title="内网穿透">分享到</a>
+      
+
+      
+
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Linux/">Linux</a></li></ul>
+
+    </footer>
   </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2016/01/19/Zero-Copy/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">下一篇</strong>
+      <div class="article-nav-title">
+        
+          Zero Copy
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2015/12/26/认识java-agent/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">上一篇</strong>
+      <div class="article-nav-title">认识java agent</div>
+    </a>
+  
+</nav>
+
+  
 </article>
-  
-  
-    </div></section>
-  
+
 </section>
       
       <aside id="sidebar">

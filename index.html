@@ -74,6 +74,226 @@
     <div class="outer">
       <section id="main">
   
+    <article id="post-工作台系列1-DIY工作台" class="article article-type-post" itemscope="" itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2019/02/14/工作台系列1-DIY工作台/" class="article-date">
+  <time datetime="2019-02-14T03:51:02.000Z" itemprop="datePublished">2月 14 2019</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2019/02/14/工作台系列1-DIY工作台/">工作台系列1-DIY工作站</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h3 id="因">因</h3><p>​    很小的时候就有了电脑，但是都没有成功拆掉重新安装过。那时候就羡慕能够拆掉并且自己DIY的年轻人（那个时候觉得这就是聪明，有天赋）。可能是我太笨，也可能是我三心二意，即使买了多年的“电脑爱好者”（我竟然记得这本书名，当时大多数都看不懂，但就是喜欢买），也没有学会自己DIY这件事情。已经到了这个年纪的自己（有老婆有娃），突然后那么种渴望：哪怕是被生活所迫（必须好好工作养家），也要抽空也要弥补遗憾；我有种感觉：一直渴望得到的东西，以后终归会以某种形式在生命中得到完结。于是借着自我提升学习，公司申请服务器困难为理由，开始了人生中第一次的DIY：</p>
+<h3 id="过程">过程</h3><ol>
+<li><p>看了很多人的DIY分享，自制渲染服务器，游戏多开工作室机器，深度学习机器等的文章，大致有了概念：</p>
+<ul>
+<li>洋垃圾：服务器拆出来的零部件性能比家用的全新零部件好，价格还便宜。一般着淘宝上面专业的卖家，基本质量没有问题。</li>
+<li>因为走的是“服务器”路线，所以主板也是ATX或者EX-ATX的，需要大极限。</li>
+<li>主板主要分为CPU计算密集型和GPU计算密集型：CPU计算密集型的可以是双路主板：X79，X99组装的人比较多；GPU密集型则要求主板有多个PCI-X接口。</li>
+</ul>
+</li>
+<li><p>确定了以上的信息开始通过淘宝找各种零部件了：</p>
+<ul>
+<li>主板：x79 双路主板，看了下价格，差距非常大，有650左右的，有2000左右的；毫无疑问，确认能用就上最便宜的。在看过几家的说明之后，确认了650左右的富士康，英业达c602主板也是可以用的，就是有短路问题，可能让主板报废。我想问题不大，到时候咨询下卖家怎么解决就好了，于是就大胆没了，最终证明我的判断没有错， 附<a href="https://item.taobao.com/item.htm?spm=a1z09.2.0.0.158b2e8d5nADc2&amp;id=566585645415&amp;_u=at2m176c16" target="_blank" rel="noopener">主板链接（卖家很不错，一直耐心处理我的咨询）</a>。 610</li>
+<li>CPU:  主板敲定之后，确认合适的E5系列CPU，那必须是要上20核的，最终选择2660v2，附<a href="https://item.taobao.com/item.htm?spm=a1z09.2.0.0.158b2e8d5nADc2&amp;id=549403412615&amp;_u=at2m1743d1" target="_blank" rel="noopener">CPU链接</a>。 1680</li>
+<li>内存：随意买了，先上<a href="https://item.taobao.com/item.htm?spm=a1z09.2.0.0.158b2e8d5nADc2&amp;id=560473661102&amp;_u=at2m175b18" target="_blank" rel="noopener">32G</a>。 563</li>
+<li>散热器：感觉水冷比较酷，查了一些资料说水冷散热效果不错，于是买了两个<a href="https://detail.tmall.com/item.htm?id=548145258477&amp;spm=a1z09.2.0.0.158b2e8d5nADc2&amp;_u=at2m177184" target="_blank" rel="noopener">单风扇水冷</a>。 388</li>
+<li>机箱：<a href="https://item.taobao.com/item.htm?spm=a1z09.2.0.0.158b2e8d5nADc2&amp;id=570913604709&amp;_u=at2m171db6" target="_blank" rel="noopener">先马坦克</a>，EX-ATX，ATX等都支持。 209</li>
+<li>硬盘：二手<a href="https://item.taobao.com/item.htm?spm=a1z09.2.0.0.158b2e8d5nADc2&amp;id=553717997986&amp;_u=at2m1796bb" target="_blank" rel="noopener">3T硬盘</a>随便来一块。因为二手主板没有<a href="https://item.taobao.com/item.htm?spm=a1z09.2.0.0.158b2e8d5nADc2&amp;id=42468683216&amp;_u=at2m17df53" target="_blank" rel="noopener">SATA线</a>，补两根（一根备用）。 358 + 12.8</li>
+<li>电源：主板是24+8+8，所以只能买特定的电源，刚开始买了伯爵的，但是发现支持不了，差点烧坏主板；换了主板卖家推荐的<a href="https://item.taobao.com/item.htm?spm=a1z09.2.0.0.158b2e8d5nADc2&amp;id=569406486307&amp;_u=at2m17aaff" target="_blank" rel="noopener">电源</a> : 239</li>
+<li>网卡：因为是服务器主板，只有光线网卡，需要购买家用<a href="https://item.taobao.com/item.htm?spm=a1z09.2.0.0.158b2e8d5nADc2&amp;id=566286177589&amp;_u=at2m175c98" target="_blank" rel="noopener">千兆网卡一枚</a>。18</li>
+<li>显卡：<del>一年前买的显卡GT730一直没用上。368</del>; GTX750   259</li>
+</ul>
+<p>总价：4136</p>
+</li>
+<li><p>拿到这些零部件之后就要开始动手了。</p>
+<ul>
+<li>主板安装如果和机箱接触就会发生短路，然后就彻底完蛋了，毕竟不是ATX的主板，非常规，所以在淘宝卖家的指导下买了特定的主机箱加上特定位置的胶带纸解决问题。</li>
+<li>安装CPU，内存，显卡，硬盘，散热器和连接usb线。</li>
+</ul>
+</li>
+</ol>
+<hr>
+<h3 id="软件篇">软件篇</h3><p>为了达到不带mac上班的目的（15 实在是重啊），考虑了可行性：</p>
+<ol>
+<li>上班只要使用台式机，可以运行mac系统的话，编程画图等工作足够了。</li>
+<li>如果是需要移动办公的话，利用ipad 进行远程连接自己的主机操作展示就行了。</li>
+</ol>
+<p>于是有了两套方案：</p>
+<ol>
+<li>安装centos为主系统，使用vnc来控制主机</li>
+<li>安装win10为主系统，使用remote destop来控制主机</li>
+</ol>
+<h4 id="方案一">方案一</h4><p>在尝试了方案一之后，怎么也解决不了vnc的显示问题，其实还是没有处理好显卡驱动。处理了整整一个礼拜，最终放弃。</p>
+<h4 id="方案二">方案二</h4><p>使用 win10 做宿主机加鲁大师果然方便靠谱，remote desktop一点毛病没有。</p>
+<p>接下来就是安装mac了，最终只有虚拟机这一条路了，考虑到自己的机器毕竟CPU能力还是强大的，只是安装了进行编程和omni相关软件的使用，想来应该问题不大，于是开始了。</p>
+<h5 id="问题1:_Remote_Desktop_内网和外网的访问方式">问题1: Remote Desktop 内网和外网的访问方式</h5><ul>
+<li>内网：ipad直接下载RD client官方应用，直接配置ip+port的形式就可以连接。</li>
+<li>外网：下载一个花生壳内网穿透版，根据<a href="https://hsk.oray.com/news/4660.html设置新的内网的ip映射到外网域名地址，内网默认端口是3389，就是有一个月限制1G的流量，还是需要花钱，这个暂时不找其他替代方案。总之可行。" target="_blank" rel="noopener">https://hsk.oray.com/news/4660.html设置新的内网的ip映射到外网域名地址，内网默认端口是3389，就是有一个月限制1G的流量，还是需要花钱，这个暂时不找其他替代方案。总之可行。</a></li>
+<li>设置每天晚上11点关机，早上8点自动开机。</li>
+</ul>
+<h5 id="问题2:_如何使用mac的问题">问题2: 如何使用mac的问题</h5><ul>
+<li>mac因为是虚拟机中安装的，感觉还是有明显的卡顿的，先关闭各种特效解决看看。结果还是不理想的。</li>
+<li>于是找了淘宝远程支持安装黑苹果（就不折腾了，节省点时间，350RMB），在过程中还发现了之前的买的368的显卡是“马甲卡”，是被刷过的显卡，真是水好深啊。后来又买了个一块技嘉gtx750，等待搞定。</li>
+</ul>
+<h5 id="问题3:_分辨率问题">问题3: 分辨率问题</h5><ul>
+<li>remote desktop相关的RDP协议本身也不是为了显示性能设计的， 默认最多2K，所以体验是差了点，和直接用机器去驱动显示还是不同的。</li>
+<li>remote desktop的现实分辨率还收到client端的实际限制。</li>
+</ul>
+
+      
+    </div>
+    <footer class="article-footer">
+      
+        <a data-url="https://danieldingzju.github.io/2019/02/14/工作台系列1-DIY工作台/" data-id="cjs5pnnq3000tnwbu82lxnbh6" class="article-share-link" data-share="baidu" data-title="工作台系列1-DIY工作站">分享到</a>
+      
+
+      
+
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Linux/">Linux</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-工作台制作系列3-X11" class="article article-type-post" itemscope="" itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2019/02/14/工作台制作系列3-X11/" class="article-date">
+  <time datetime="2019-02-14T03:51:02.000Z" itemprop="datePublished">2月 14 2019</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2019/02/14/工作台制作系列3-X11/">工作台制作系列3-X11</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>在自己装配完成主机之后，要开始安装主机和虚拟机了，这个时候主机并没有显示器，只有网线，所以考虑通过自己的笔记本连接主机进行安装，可是安装vmware需要界面如何处理？经过一段时间的了解，X11正好合适，顺道了解下。</p>
+<h3 id="什么是X11">什么是X11</h3><p>神奇的X11，这个古老的Unix下的产物：一种C/S结构的协议。</p>
+<p>适合这种场景：我有一个电脑A，希望使用服务器B来启动有界面的应用。通常通过如下方式：</p>
+<ol>
+<li>A ssh 到 B</li>
+<li>B 通过sshd设置ssh server配置来forward X11的协议数据到 A，这个时候 B是 X11的client， A是 X11的Server</li>
+</ol>
+<h3 id="背景">背景</h3><p><strong>A</strong> : macOs 13.3</p>
+<p><strong>B</strong> : Centos7</p>
+<ol>
+<li>在 <strong>A</strong> 中安装xQuartz，自行搜索安装方式。</li>
+<li>修改 <strong>B</strong> 的sshd配置：<ul>
+<li>增加如下配置：<br>X11Forwarding yes<br>X11DisplayOffset 10<br>X11UseLocalhost yes</li>
+<li>重启服务：service sshd restart。</li>
+</ul>
+</li>
+<li>在 <strong>A</strong> 的 ~/.ssh/config 下面添加配置：XAuthLocation /opt/X11/bin/xauth。<a href="https://stackoverflow.com/questions/27384725/ssh-x-warning-untrusted-x11-forwarding-setup-failed-xauth-key-data-not-gener" target="_blank" rel="noopener">原因</a></li>
+<li>ssh -X B’s_username@B’s_host。(第一次要使用AX，用来生成授权文件)</li>
+<li>xclock 验证。</li>
+</ol>
+<h3 id="发散">发散</h3><p>现在的投屏软件有些也是用这个协议实现的。</p>
+<p>VNC : RFB协议， vnc-server一般是和x11协议联合使用</p>
+<p>X11是协议，一般情况下 A是我们自己机器，B是服务器端机器，A是X11的server，B是client；是通过ssh -X forwarding 连接到远程服务器，最后让B的client告诉了A来显示图形。</p>
+<p>mac也是用X11协议来显示图画，不过将一些模块做到了kernal里面来提升性能。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      
+        <a data-url="https://danieldingzju.github.io/2019/02/14/工作台制作系列3-X11/" data-id="cjs5pnnq0000rnwbujv8e5i5y" class="article-share-link" data-share="baidu" data-title="工作台制作系列3-X11">分享到</a>
+      
+
+      
+
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Linux/">Linux</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-mweb-hexo-git-pseudo-tty" class="article article-type-post" itemscope="" itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2019/02/10/mweb-hexo-git-pseudo-tty/" class="article-date">
+  <time datetime="2019-02-10T03:51:02.000Z" itemprop="datePublished">2月 10 2019</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2019/02/10/mweb-hexo-git-pseudo-tty/">mweb-hexo-git-pseudo-tty</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>很长时间没有再给增加新的博客内容了，机缘巧合，重新拾笔，发现了七牛的图床出现问题了，测试时使用的域名失效了，导致了图片全部失效。</p>
+<p>经过了如下步骤：</p>
+<ol>
+<li>找回图片：<a href="https://zhuanlan.zhihu.com/p/30513914" target="_blank" rel="noopener">https://zhuanlan.zhihu.com/p/30513914</a></li>
+<li>安装mweb，注册imgur作为远程图床，唯一一点麻烦的是，必须要开启shadowsocks的全局模式，然后才能上传图片。（按照：<a href="https://zhuanlan.zhihu.com/p/30513914" target="_blank" rel="noopener">https://zhuanlan.zhihu.com/p/30513914</a> 的教程不过其实并不需要远程图床，因为都是使用的相对路径读取的图片，图片已经传到github上面了；暂且拿这个图床做一个备份好了）</li>
+<li>然后命令行的形式下上传内容的时候碰到了如下错误：<br><img src="/images/hexo-error.jpg" alt="error"></li>
+</ol>
+<hr>
+<h3 id="ssh_通过_http-proxy代理（https://zhuanlan-zhihu-com/p/36102433）">ssh 通过 http-proxy代理（<a href="https://zhuanlan.zhihu.com/p/36102433）" target="_blank" rel="noopener">https://zhuanlan.zhihu.com/p/36102433）</a></h3><p>通过这篇<a href="https://www.cyberciti.biz/faq/linux-unix-ssh-proxycommand-passing-through-one-host-gateway-server/" target="_blank" rel="noopener">文章</a>，看到了如下内容：<br><img src="/images/hexo-pseudo-tty.jpg" alt="hexo-pseudo-tty"><br>中文大多译为“伪终端”，勾起了我的好奇心，经过一番搜索和了解的到如下总结：<br><img src="/images/pseudo.jpg" alt="pseudo"><br>参考文章：<a href="https://blog.csdn.net/w1857518575/article/details/82670522" target="_blank" rel="noopener">A</a>, <a href="https://aisxyz.iteye.com/blog/2423960" target="_blank" rel="noopener">B</a></p>
+<p>大致了解这个概念之后，继续进行，在<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">~/.ssh/config</span><br></pre></td></tr></table></figure></p>
+<p>中增加如下代码：<br><img src="/images/ssh-socket5.jpg" alt="ssh-socket5"><br>搞定了和github之间那堵墙的问题。</p>
+<hr>
+<p>好了，搞定～～ </p>
+
+      
+    </div>
+    <footer class="article-footer">
+      
+        <a data-url="https://danieldingzju.github.io/2019/02/10/mweb-hexo-git-pseudo-tty/" data-id="cjs5pnnpx000lnwbuigl765ld" class="article-share-link" data-share="baidu" data-title="mweb-hexo-git-pseudo-tty">分享到</a>
+      
+
+      
+
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Linux/">Linux</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
     <article id="post-LinkageError-排查过程" class="article article-type-post" itemscope="" itemprop="blogPost">
   <div class="article-meta">
     <a href="/2019/02/02/LinkageError-排查过程/" class="article-date">
@@ -119,7 +339,7 @@
     </div>
     <footer class="article-footer">
       
-        <a data-url="https://danieldingzju.github.io/2019/02/02/LinkageError-排查过程/" data-id="cjs0400dp00070nbuookq527z" class="article-share-link" data-share="baidu" data-title="LinkageError 排查过程">分享到</a>
+        <a data-url="https://danieldingzju.github.io/2019/02/02/LinkageError-排查过程/" data-id="cjs5pnnpn000anwbuaenebdqq" class="article-share-link" data-share="baidu" data-title="LinkageError 排查过程">分享到</a>
       
 
       
@@ -187,7 +407,7 @@
     </div>
     <footer class="article-footer">
       
-        <a data-url="https://danieldingzju.github.io/2017/12/11/Metaspace-OOM/" data-id="cjs0400ds000a0nbuzwdltaim" class="article-share-link" data-share="baidu" data-title="fastjson引发的oom事件">分享到</a>
+        <a data-url="https://danieldingzju.github.io/2017/12/11/Metaspace-OOM/" data-id="cjs5pnnpo000cnwbu7d8vz5z6" class="article-share-link" data-share="baidu" data-title="fastjson引发的oom事件">分享到</a>
       
 
       
@@ -237,7 +457,7 @@
     </div>
     <footer class="article-footer">
       
-        <a data-url="https://danieldingzju.github.io/2016/12/09/hdfs-case-one/" data-id="cjs0400dy000h0nbuowstispc" class="article-share-link" data-share="baidu" data-title="hdfs-case-one">分享到</a>
+        <a data-url="https://danieldingzju.github.io/2016/12/09/hdfs-case-one/" data-id="cjs5pnnpy000mnwbui8zsuw2j" class="article-share-link" data-share="baidu" data-title="hdfs-case-one">分享到</a>
       
 
       
@@ -313,7 +533,7 @@
     </div>
     <footer class="article-footer">
       
-        <a data-url="https://danieldingzju.github.io/2016/12/09/zeppelin-case-one/" data-id="cjs0400e1000m0nbugcntzvvv" class="article-share-link" data-share="baidu" data-title="zeppelin-case-one">分享到</a>
+        <a data-url="https://danieldingzju.github.io/2016/12/09/zeppelin-case-one/" data-id="cjs5pnnps000gnwbukglhw8hm" class="article-share-link" data-share="baidu" data-title="zeppelin-case-one">分享到</a>
       
 
       
@@ -457,7 +677,7 @@ properties.setProperty(QueryServices.HCONNECTION_POOL_MAX_SIZE, <span class="str
     </div>
     <footer class="article-footer">
       
-        <a data-url="https://danieldingzju.github.io/2016/09/27/hacking-phoenix/" data-id="cjs0400dx000f0nbuxc4ovw5b" class="article-share-link" data-share="baidu" data-title="hacking phoenix">分享到</a>
+        <a data-url="https://danieldingzju.github.io/2016/09/27/hacking-phoenix/" data-id="cjs5pnnpp000enwbuqczuh3d8" class="article-share-link" data-share="baidu" data-title="hacking phoenix">分享到</a>
       
 
       
@@ -624,7 +844,7 @@ echo
     </div>
     <footer class="article-footer">
       
-        <a data-url="https://danieldingzju.github.io/2016/02/19/性能优化-ClassLoader/" data-id="cjs0400e5000w0nbunaagnqcd" class="article-share-link" data-share="baidu" data-title="hacking fastjson">分享到</a>
+        <a data-url="https://danieldingzju.github.io/2016/02/19/性能优化-ClassLoader/" data-id="cjs5pnnq5000ynwbuezq7jjg8" class="article-share-link" data-share="baidu" data-title="hacking fastjson">分享到</a>
       
 
       
@@ -670,371 +890,13 @@ echo
     </div>
     <footer class="article-footer">
       
-        <a data-url="https://danieldingzju.github.io/2016/01/29/开源tomcat类加载机制/" data-id="cjs0400e4000u0nbu2fbvyc6j" class="article-share-link" data-share="baidu" data-title="开源tomcat类加载机制">分享到</a>
+        <a data-url="https://danieldingzju.github.io/2016/01/29/开源tomcat类加载机制/" data-id="cjs5pnnq4000vnwbu3zqtkf6v" class="article-share-link" data-share="baidu" data-title="开源tomcat类加载机制">分享到</a>
       
 
       
 
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Java/">Java</a></li></ul>
-
-    </footer>
-  </div>
-  
-</article>
-
-
-  
-    <article id="post-ASM" class="article article-type-post" itemscope="" itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2016/01/28/ASM/" class="article-date">
-  <time datetime="2016-01-28T07:22:34.000Z" itemprop="datePublished">1月 28 2016</time>
-</a>
-    
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2016/01/28/ASM/">ASM</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>ASM是个2002年就开始的项目，真是古老至极。许多流行且包含了动态代理功能的框架应该直接或者间接使用了asm（cglib是基于asm做的二次开发）。</p>
-<p>在最近的项目中使用到了asm，所以做了一些小记，内容有翻译，有摘录，有总结。</p>
-<h4 id="ASM_模型">ASM 模型</h4><p>ASM提供了两套API：</p>
-<ul>
-<li><p>core API : 提供 event-based 字节码控制。</p>
-<p>  asm通过JVMS定义的字节码结构把字节码中的如field，method 声明，指令等变成event，然后操纵event以达成修改字节码的目的。</p>
-<p>  相关主要类：ClassVisitor, MethodVisitor (4.0之前还有基于这两个类的如 ClassAdapter 类等)</p>
-</li>
-<li><p>tree API : 提供 tree-based 字节码控制</p>
-<p>  基于event-based的模型，继续抽象了下，用一棵树的形式展现字节码。</p>
-<p>  相关主要类：ClassNode, MethodNode</p>
-</li>
-</ul>
-<p>在<a href="file:///Users/tingjieding/Dropbox/See%20my%20life%20here/%E5%AD%A6%E4%B9%A0%E8%B5%84%E6%96%99/asm4-guide.pdf" target="_blank" rel="noopener">此文</a>中就拿了SAX 和 DOM 来描述解析xml的比较 来 类比 core API 和 tree API 的比较：</p>
-<ul>
-<li><p>core API 比 tree API 占用更少的系统资源。从内存的角度看：tree API 由于要把字节码抽象成tree，在内存中会占用跟多的空间</p>
-</li>
-<li><p>core API 比 tree API 更难用，每次只能操作一个指令，需要非常了解字节码相关规范，写起来要小心翼翼。</p>
-</li>
-</ul>
-<h4 id="ASM_架构">ASM 架构</h4><p>经典图如下：<br><img src="http://img.blog.csdn.net/20140809214609558?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQveHlzbWlyYWNsZQ==/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center" alt="经典图"></p>
-<p>使用了经典的 producer-consumer 模型，中间的白框都是filter。</p>
-<pre><code><span class="comment">producer</span> <span class="literal">-</span><span class="literal">-</span>&gt; <span class="comment">filters</span> <span class="literal">-</span><span class="literal">-</span>&gt; <span class="comment">consumer:</span>
-</code></pre><p>对于Class：</p>
-<pre><code>ClassReader 是 producer，<span class="built_in">filter</span> 都是 ClassVisitor 的实现类，ClassWriter 作为 consumer。
-</code></pre><p>对于Method：</p>
-<pre><code>ClassReader 是 producer, <span class="built_in">filter</span> 是 MethodVistor 的实现类, MethodWriter 作为consumer。
-</code></pre><p>对于Field：</p>
-<pre><code>ClassReader 是 producer， <span class="built_in">filter</span> 是 FieldVistor 的实现类， FieldWriter 作为consumer。
-</code></pre><h4 id="ASM_实例">ASM 实例</h4><p>添加System.out.println(“here I am”); 代码到方法中:</p>
-<ul>
-<li><p>core api使用方法如下：</p>
-<pre><code>ClassReader cr <span class="subst">=</span> <span class="literal">new</span> ClassReader(<span class="built_in">bytes</span>);
-ClassWriter cw <span class="subst">=</span> <span class="literal">new</span> ClassWriter(cr, COMPUTE_FRAMES <span class="subst">|</span> COMPUTE_MAXS); <span class="comment">//cr只是定义来源reader，无用。</span>
-ClassVisitor cv <span class="subst">=</span> <span class="literal">new</span> ClassVisitor(Opcodes<span class="built_in">.</span>ASM5, cw){
-    <span class="attribute">...</span><span class="built_in">.
-</span>}
-cr<span class="built_in">.</span>accept(cv, ClassReader<span class="built_in">.</span>EXPAND_FRAMES);                
-<span class="keyword">return</span> cw<span class="built_in">.</span>toByteArray();
-
-<span class="comment">//cr--&gt;cv--&gt;cw</span>
-</code></pre></li>
-<li><p>tree api使用方法如下：</p>
-<pre><code><span class="type">ClassReader</span> cr = new <span class="type">ClassReader</span>(bytecode);
-<span class="type">ClassNode</span> cn = new <span class="type">ClassNode</span>();
-cr.accept(cn, <span class="type">ClassReader</span>.<span class="type">SKIP_DEBUG</span>);
-
-<span class="type">List</span> methods = cn.methods;
-<span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>; i &lt; methods.size(); ++i) {
-    <span class="type">MethodNode</span> <span class="keyword">method</span> = (<span class="type">MethodNode</span>) methods.get(i);
-    <span class="keyword">if</span> (<span class="keyword">method</span>.instructions.size() &gt; <span class="number">0</span>) {                   instructions.insert(new <span class="type">FieldInsnNode</span>(<span class="type">Opcodes</span>.<span class="type">GETSTATIC</span>, <span class="string">"java/lang/System"</span>, <span class="string">"out"</span>, <span class="string">"Ljava/io/PrintStream;"</span>)); 
-        instructions.insert(new <span class="type">LdcInsnNode</span>(<span class="string">"hi, here I am!"</span>));
-        instructions.insert(new <span class="type">MethodInsnNode</span>(<span class="type">Opcodes</span>.<span class="type">INVOKEVIRTUAL</span>, <span class="string">"java/io/PrintStream"</span>, <span class="string">"println"</span>, <span class="string">"(Ljava/lang/String;)V"</span>, <span class="literal">false</span>))
-    }
-}
-<span class="type">ClassWriter</span> cw = new <span class="type">ClassWriter</span>(<span class="type">COMPUTE_FRAMES</span> | <span class="type">COMPUTE_MAXS</span>);
-cn.accept(c);
-<span class="keyword">return</span> cw.toByteArray();
-
-//cr--&gt;cn--&gt;cw
-</code></pre></li>
-</ul>
-<p>PS：推荐在IDE上面安装<a href="https://plugins.jetbrains.com/plugin/5918?pr=idea" target="_blank" rel="noopener">ASM字节码工具</a>，在一个正常类里面写完代码以后，用工具一转，可以参考转出的字节码，开始写asm相关代码了。</p>
-<h3 id="ASM其他">ASM其他</h3><h4 id="ASM_core_api">ASM core api</h4><ul>
-<li><p>TraceClassVisitor:</p>
-<p>  通过 <strong>PrintWriter</strong> 实例打印可读的字节码信息。</p>
-</li>
-<li><p>CheckClassAdapter</p>
-<p>  在被JVM拒绝之前检测修改后的字节码是否合法。</p>
-</li>
-<li><p>AnalyzerAdapter</p>
-<p>  可以自动计算stack的深度，感觉没太大作用，在ClassWriter的option里面有两个选项：<strong>COMPUTE_FRAMES, COMPUTE_MAXS</strong></p>
-</li>
-<li><p>LocalVariablesSorter</p>
-<p>  有newLocal方法可以添加local variable，自动维护local variable数量变化，引起的local variable对应的index变化的问题。</p>
-</li>
-<li><p>AdviceAdapter</p>
-<p>  有onMethodEnter()和onMethodExit()方法，可以在方法最开始和RETURN 或者 ATHROW指令之前插入指令。</p>
-</li>
-</ul>
-<p>Metadata 相关 vistor：SignatureVisitor， AnnotationVisitor。这两个还没有用过，暂做记录。</p>
-<h4 id="ASM_tree_api">ASM tree api</h4><p>实际使用的时候，碰到了问题，没有细看，暂做记录。</p>
-
-      
-    </div>
-    <footer class="article-footer">
-      
-        <a data-url="https://danieldingzju.github.io/2016/01/28/ASM/" data-id="cjs0400de00000nbu8xec5cv4" class="article-share-link" data-share="baidu" data-title="ASM">分享到</a>
-      
-
-      
-
-      
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Java/">Java</a></li></ul>
-
-    </footer>
-  </div>
-  
-</article>
-
-
-  
-    <article id="post-Zero-Copy" class="article article-type-post" itemscope="" itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2016/01/19/Zero-Copy/" class="article-date">
-  <time datetime="2016-01-19T03:51:02.000Z" itemprop="datePublished">1月 19 2016</time>
-</a>
-    
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2016/01/19/Zero-Copy/">Zero Copy</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>xflush，metaq都适用了zero copy技术来提高性能，多次看到这个词，却一直没有理解透彻，于是找了一些资料了解。以下此技术点知识的翻译及汇总。</p>
-<p>翻译自<a href="http://www.linuxjournal.com/article/6345" target="_blank" rel="noopener">这里</a></p>
-<p>到目前为止几乎所有的人都听说过linux下的所谓的zero-copy，但是我还是经常碰到不能完全理解这个内容的人。 基于此，我打算写一些文章深挖，剖析一下这个有用的功能。在这个文章里面，我们从user-mode（用户模式）应用这个角度来看下zero copy， 所以更详尽的kernel-level（内核）细节会被有意的忽略。</p>
-<h4 id="What_is_Zero-Copy?">What is Zero-Copy?</h4><p>为了更好的理解一个问题的解决方案，我们首先需要的是理解问题本身。让我们了解下网络服务器进程（？network server dæmon ）为client端提供数据存储在文件中的服务的简单过程中包含了什么。一下是实例代码：</p>
-<pre><code><span class="keyword">read</span>(<span class="keyword">file</span>, tmp_buf, <span class="built_in">len</span>);
-
-<span class="keyword">write</span>(socket, tmp_buf, <span class="built_in">len</span>);
-</code></pre><p>看起来非常简单；你可能会想里面最多也就两个系统调用（system calls）。事实上，实时也就是如此。在这两次调用之后，数据（data）已经被复制了最少四次，同时执行了相同次数的 user/kernel mode上下文切换 。（事实上这个过程比这个描述的更复杂）。为了更深入的理解这个过程，请看图1。上半部展示了user/kernel mode上下文切换，并且下半部展示了复制操作。</p>
-<p><img src="http://www.linuxjournal.com/files/linuxjournal.com/linuxjournal/articles/063/6345/6345f1.jpg" alt="Copying in Two Sample System Calls"></p>
-<ul>
-<li><p>第一步：读系统调用（read system call）引起了从user mode to kernel mode 的上下文切换。第一次的copy被DMA engine执行，它从磁盘中读取了文件的内容然后存储到kernel address space buffer 里面。</p>
-</li>
-<li><p>第二步：第二次的copy是数据从kernel buffer 复制到 user buffer，然后读系统调用（read system call）返回。这个 返回 引起了从 kernel mode 变回 user mode 的上下文切换。现在数据被存在了user address space buffer了。</p>
-</li>
-<li><p>第三步：写系统调用（write system call）引起了从user mode to kernel mode。第三次copy是为了把再次把数据放入到kernel address space buffer。这次数据被放在了不同的buffer，是跟sockets相关的buffer。</p>
-</li>
-<li><p>第四步：写系统调用（write system call）返回，创建了我们的第四次的上下文切换。异步且于之前不依赖（Independently and asynchronously）的情况下，第四次是在DMA engine 从kernel buffer 复制 到 protocol engine的时候发生的。你可能问自己，“什么是 Independently and asynchronously？ 数据难道不是在调用返回之前就完成数据传输的么？” 事实上，调用返回 步保证 输入传输完成；它甚至步保证数据开始传输。 它只是意味着网卡驱动在其处理队列中有清空的描述符（？free descriptors）并且接收了我们需要传输的数据。这个时候在网卡的处理队列中可能还有很多的数据包在我们的数据之前。除非驱动／硬件实现了优先级环活着队列，不然数据在处理队列中都是按照先进先出的方式传输的。（带分叉的DMA 复制 表示了最后的复制能够被延迟）。</p>
-</li>
-</ul>
-<p>正如你所看到的， 以上过程有很多的数据复制是不必要的。其中一部分复制是可以消除来减少资源浪费以提高性能的。 作为一个驱动开发者， 我在一些有非常先进功能的硬件上面工作过。有些硬件能够绕过主存直接传送数据到另外一个设备。这个功能能够减少系统内存中的数据冗余，非常值得拥有，但是不是所有的硬件都是支持的。可能还会存在额外的数据问题会引入一定的复杂性：来源于disk的数据需要repackage才能发送给网卡。 为了减少资源浪费， 我们可以从减少kernel buffers和 user buffers之间的数据复制。</p>
-<p>减少一次复制的一种方法是跳过调用 read 而用 调用 mmap 来替代。举例来说：</p>
-<pre><code>tmp_buf = mmp(<span class="keyword">file</span>, <span class="built_in">len</span>);
-<span class="keyword">write</span>(socket, tmp_buf, <span class="built_in">len</span>);
-</code></pre><p>为了更好的了解这个过程，请看下图 2. Context switches（上下文切换）仍然一样。<br><img src="http://www.linuxjournal.com/files/linuxjournal.com/linuxjournal/articles/063/6345/6345f2.jpg" alt="Calling mmap"></p>
-<ul>
-<li><p>第一步：mmap 系统调用通过DMA engine复制到kernel buffer。这个buffer之后会被user process（用户京城）共享使用，而不需要在kernel memory space 和 user memory sapce之间执行数据的复制。</p>
-</li>
-<li><p>第二步：写系统调用让kernal 把之前的 kernel buffer中的数据传输到 socket相关的kernel buffer。</p>
-</li>
-<li><p>第三步：第三次数据复制发生在 DMA engine 传输数据从 kernel socket buffers 到protocal engine。</p>
-</li>
-</ul>
-<p>通过使用mmap来替代read，我们已经减少了一半的kernel不得步复制的次数。在大量数据需要传输的时候，这种方式带来了很好的结果。然而，这种提升不是没有代价的；这种使用mmap＋write方法的方式会存在隐藏的陷阱。其中一种情况是党你正在使用mmap（memory map）读取文件的时候并且已经调用了write操作 的时候，另外一个线程删减了文件的部分内容。你的write system call 就会被bus error（signal SIGBUS）打断，因为你执行了一个次有问题的内存访问。这个signal的默认行为就是杀死对应的进程和dump core－－但对网络服务器无法记全所有希望了解的操作。有两种方式能够解决这个问题。</p>
-<ul>
-<li><p>第一种解决方案是为 SIGBUS signal 添加singal handler，然后handler只要简单的return逻辑就可以了。通过这种方式，write system call 会返回在它被中断前要写的字节流并且errno会被设置成success。这种方式在我看来是一种不好的解决方案，只是一种处理了表层症状而不是问题的根本的方式。因为SIGBUS signals 有时候说明了进程出现了非常严重的问题，但现在却被屏蔽了，所以不推荐使用这种方案。</p>
-</li>
-<li><p>第二种解决方案使用了 kernel 的file leasing[文件租约]（在Microsoft Windows里面叫做“opportunistic locking”）。我认为这是一种解决这个问题的正确方法。通过在文件描述符(file descriptor)续约(leasing)，你可以在kernel中获得某个具体文件的租约(lease)。紧接着你可以在kernel中请求一次读／写租约(lease)。当另一个进程尝试着删减(修改)你正在传输的文件内容的时候，kernel会发送给你一个实时的signal，RT_SIGNAL_LEASE signal。它告诉你kernel正在打断你在某个文件上面的读／写租约。你的write system call会在你的程序访问非法地址和北SIGBUS signal杀掉之前就被中断。write system call 返回的数据是中断之间将要卸乳的字节流数据，并且errno 会被设置成 success。一下是从kernel获得租约的事例代码：</p>
-<pre><code><span class="keyword">if</span>(fcntl(fd, F_SETSIG, RT_SIGNAL_LEASE) == -<span class="number">1</span>) {
-    perror(<span class="string">"kernel lease set signal"</span>);
-    <span class="built_in">return</span> -<span class="number">1</span>;
-}
-/* l_<span class="built_in">type</span> can be F_RDLCK F_WRLCK */
-<span class="keyword">if</span>(fcntl(fd, F_SETLEASE, l_<span class="built_in">type</span>)){
-    perror(<span class="string">"kernel lease set type"</span>);
-    <span class="built_in">return</span> -<span class="number">1</span>;
-}
-</code></pre><p>你需要在 mmap 文件之前获得租约，然后在你完成逻辑之后解除租约。解除租约可以通过调用 fcntl F_SETLEASE with the lease type of F_UNLCK 来完成。</p>
-</li>
-</ul>
-<p>在kerverl version 2.1, the sendfile system call 被添加来简化网络内机器之间或一台机器本地文件之间的数据传输。 sendfile 不但能减少数据的复制，还能减少context switches(kernel， user)，是按照如下方式使用的：</p>
-<pre><code>sendfile(<span class="keyword">socket</span>, <span class="keyword">file</span>, len);
-</code></pre><p>为了更好的理解这个过程，请看图3.<br><img src="http://www.linuxjournal.com/files/linuxjournal.com/linuxjournal/articles/063/6345/6345f4.jpg" alt="图3"></p>
-<ul>
-<li><p>第一步：sendfile system call 把文件的数据通过DMA engine 复制到kernel buffer里面。然后数据通过kernel复制到sockets相关的kernel buffer里面。</p>
-</li>
-<li><p>第二步：第三次的复制是当DMA engine 从kernel socket buffers中数据传送数据到protocal engine中。</p>
-</li>
-</ul>
-<p>你可能会想当另外一个线程删减这个我们正在使用sendfile system call 来传输的文件的时候会发生什么。如果我们没有注册任何signal handlers（信号量处理器），sendfile call 会返回被中断之前将要传输的字节流，并且errno会被设置为sucess状态。</p>
-<p>如果我们在调用sendfile之前通过kernel获得获得文件的租约，那么之后的行为和返回状态就和之前描述的一样。我们也会在sendfile call 返回之前得到RT_SIGNAL_LEASE信号量。</p>
-<p>到现在位置，我们已经能够减少若干次kernel发生的数据复制了，但是我们仍然留下了一次复制。那么是否那次复制也能避免？当然可以，只要通过一些硬件的帮助。为了消除所有通过kernel完成的数据复制，我们需要网卡支持gather(聚合) operations。简单理解就是等在等待被传输的数据不需要在连续的内存中；他们能够被存储在不同的内存位置。在内部版本2.4，socket buffer discriptor为了适应这些需求而做了修改－－这就是Linux的zero copy。这个方法不但减少多次的context switches，而且它减少processors(处理器)完成的多次数据复制。对于user-level的应用什么都不需要改变，代码仍然如下：</p>
-<pre><code>sendfile(<span class="keyword">socket</span>, <span class="keyword">file</span>, len);
-</code></pre><p>为了能够更深入的理解这个过程，请看图4.<br><img src="http://www.linuxjournal.com/files/linuxjournal.com/linuxjournal/articles/063/6345/6345f4.jpg" alt="图4"></p>
-<ul>
-<li><p>第一步：the sendfile system call 通过DMA engine复制数据内容至kernel buffer。</p>
-</li>
-<li><p>第二步：没有数据被复制到socket buffer。只有包含数据的 whereabouts（内存地址信息？）和长度信息的descriptors(描述符号)才被添加到socket buffer。The DMA engine 直接把数据从kernel buffer 传递到 protocol engine，所以消除了剩余最后的数据复制。</p>
-</li>
-</ul>
-<p>因为数据实际上仍然从disk复制到了memory并且之后从memory到了wire，有人可能会说这个不是真正的 zero copy。 之前所描述的是 操作系统角度 的zero copy，因为数据没有在kernel buffers之间被复制。当使用zero copy的时候，能得到除了避免数据复制之外的性能提升，例如更少的context switches，更少的CPU data cache pollution（cpu 数据缓存污染，不需要修改cpu的缓存内容？）和 no CPU checksum calculations（这个是什么？）</p>
-<h4 id="How_to_use_Zero-Copy?">How to use Zero-Copy?</h4><p>现在我们知道了什么是zero copy，让我们实践下理论并且写一些代码吧。</p>
-<p>C的代码参考<a href="http://www.linuxjournal.com/article/6345" target="_blank" rel="noopener">这里</a></p>
-<p>以下为JAVA中如何完成zero copy，只要使用api：</p>
-<pre><code>java.nio.channel.FileChannel的transferTo(<span class="keyword">long</span> position, <span class="keyword">long</span> count, WritableByteChannel <span class="keyword">target</span>) <span class="keyword">throws</span> IOException;
-</code></pre><p>来自<a href="">参考</a>的性能数据：</p>
-<table>
-<thead>
-<tr>
-<th>File size</th>
-<th>Normal file transfer (ms)</th>
-<th>transferTo (ms)</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>7MB</td>
-<td>156</td>
-<td>45</td>
-</tr>
-<tr>
-<td>21MB</td>
-<td>337</td>
-<td>128</td>
-</tr>
-<tr>
-<td>63MB</td>
-<td>843</td>
-<td>387</td>
-</tr>
-<tr>
-<td>98MB</td>
-<td>1320</td>
-<td>617</td>
-</tr>
-<tr>
-<td>200MB</td>
-<td>2124</td>
-<td>1150</td>
-</tr>
-<tr>
-<td>350MB</td>
-<td>3631</td>
-<td>1762</td>
-</tr>
-<tr>
-<td>700MB</td>
-<td>13498</td>
-<td>4422</td>
-</tr>
-<tr>
-<td>1GB</td>
-<td>18399</td>
-<td>8537</td>
-</tr>
-</tbody>
-</table>
-
-      
-    </div>
-    <footer class="article-footer">
-      
-        <a data-url="https://danieldingzju.github.io/2016/01/19/Zero-Copy/" data-id="cjs0400dt000c0nbucpnvwigs" class="article-share-link" data-share="baidu" data-title="Zero Copy">分享到</a>
-      
-
-      
-
-      
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Linux/">Linux</a></li></ul>
-
-    </footer>
-  </div>
-  
-</article>
-
-
-  
-    <article id="post-工作台制作系列3-X11" class="article article-type-post" itemscope="" itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2016/01/19/工作台制作系列3-X11/" class="article-date">
-  <time datetime="2016-01-19T03:51:02.000Z" itemprop="datePublished">1月 19 2016</time>
-</a>
-    
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2016/01/19/工作台制作系列3-X11/">工作台制作系列3-X11</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>在自己装配完成主机之后，要开始安装主机和虚拟机了，这个时候主机并没有显示器，只有网线，所以考虑通过自己的笔记本连接主机进行安装，可是安装vmware需要界面如何处理？经过一段时间的了解，X11正好合适，顺道了解下。</p>
-<h3 id="什么是X11">什么是X11</h3><p>神奇的X11，这个古老的Unix下的产物：一种C/S结构的协议。</p>
-<p>适合这种场景：我有一个电脑A，希望使用服务器B来启动有界面的应用。通常通过如下方式：</p>
-<ol>
-<li>A ssh 到 B</li>
-<li>B 通过sshd设置ssh server配置来forward X11的协议数据到 A，这个时候 B是 X11的client， A是 X11的Server</li>
-</ol>
-<h3 id="背景">背景</h3><p><strong>A</strong> : macOs 13.3</p>
-<p><strong>B</strong> : Centos7</p>
-<ol>
-<li>在 <strong>A</strong> 中安装xQuartz，自行搜索安装方式。</li>
-<li>修改 <strong>B</strong> 的sshd配置：<ul>
-<li>增加如下配置：<br>X11Forwarding yes<br>X11DisplayOffset 10<br>X11UseLocalhost yes</li>
-<li>重启服务：service sshd restart。</li>
-</ul>
-</li>
-<li>在 <strong>A</strong> 的 ~/.ssh/config 下面添加配置：XAuthLocation /opt/X11/bin/xauth。<a href="https://stackoverflow.com/questions/27384725/ssh-x-warning-untrusted-x11-forwarding-setup-failed-xauth-key-data-not-gener" target="_blank" rel="noopener">原因</a></li>
-<li>ssh -X B’s_username@B’s_host。(第一次要使用AX，用来生成授权文件)</li>
-<li>xclock 验证。</li>
-</ol>
-<h3 id="发散">发散</h3><p>现在的投屏软件有些也是用这个协议实现的。</p>
-<p>VNC : RFB协议， vnc-server一般是和x11协议联合使用</p>
-<p>X11是协议，一般情况下 A是我们自己机器，B是服务器端机器，A是X11的server，B是client；是通过ssh -X forwarding 连接到远程服务器，最后让B的client告诉了A来显示图形。</p>
-<p>mac也是用X11协议来显示图画，不过将一些模块做到了kernal里面来提升性能。</p>
-
-      
-    </div>
-    <footer class="article-footer">
-      
-        <a data-url="https://danieldingzju.github.io/2016/01/19/工作台制作系列3-X11/" data-id="cjs0400e3000r0nbugrppxvzf" class="article-share-link" data-share="baidu" data-title="工作台制作系列3-X11">分享到</a>
-      
-
-      
-
-      
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Linux/">Linux</a></li></ul>
 
     </footer>
   </div>
@@ -1058,7 +920,7 @@ cn.accept(c);
   <div class="widget-wrap">
     <h3 class="widget-title">标签</h3>
     <div class="widget">
-      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Java/">Java</a><span class="tag-list-count">11</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Life/">Life</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Linux/">Linux</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/problem/">problem</a><span class="tag-list-count">2</span></li></ul>
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Java/">Java</a><span class="tag-list-count">11</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Life/">Life</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Linux/">Linux</a><span class="tag-list-count">6</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/problem/">problem</a><span class="tag-list-count">2</span></li></ul>
     </div>
   </div>
 
@@ -1076,7 +938,7 @@ cn.accept(c);
   <div class="widget-wrap">
     <h3 class="widget-title">归档</h3>
     <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/02/">二月 2019</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/12/">十二月 2017</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/12/">十二月 2016</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/09/">九月 2016</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/02/">二月 2016</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/01/">一月 2016</a><span class="archive-list-count">5</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/12/">十二月 2015</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/11/">十一月 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/10/">十月 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/09/">九月 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/04/">四月 2015</a><span class="archive-list-count">2</span></li></ul>
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/02/">二月 2019</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/12/">十二月 2017</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/12/">十二月 2016</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/09/">九月 2016</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/02/">二月 2016</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/01/">一月 2016</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/12/">十二月 2015</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/11/">十一月 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/10/">十月 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/09/">九月 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/04/">四月 2015</a><span class="archive-list-count">2</span></li></ul>
     </div>
   </div>
 
@@ -1088,23 +950,23 @@ cn.accept(c);
       <ul>
         
           <li>
+            <a href="/2019/02/14/工作台系列1-DIY工作台/">工作台系列1-DIY工作站</a>
+          </li>
+        
+          <li>
+            <a href="/2019/02/14/工作台制作系列3-X11/">工作台制作系列3-X11</a>
+          </li>
+        
+          <li>
+            <a href="/2019/02/10/mweb-hexo-git-pseudo-tty/">mweb-hexo-git-pseudo-tty</a>
+          </li>
+        
+          <li>
             <a href="/2019/02/02/LinkageError-排查过程/">LinkageError 排查过程</a>
           </li>
         
           <li>
             <a href="/2017/12/11/Metaspace-OOM/">fastjson引发的oom事件</a>
-          </li>
-        
-          <li>
-            <a href="/2016/12/09/hdfs-case-one/">hdfs-case-one</a>
-          </li>
-        
-          <li>
-            <a href="/2016/12/09/zeppelin-case-one/">zeppelin-case-one</a>
-          </li>
-        
-          <li>
-            <a href="/2016/09/27/hacking-phoenix/">hacking phoenix</a>
           </li>
         
       </ul>
